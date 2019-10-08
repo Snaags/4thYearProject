@@ -3,7 +3,7 @@
 
 
 ##Gets historical Stock data
-def stockhist(TAG):
+def stockhist(TAG,startDate,endDate):
 
 	import yfinance as yf
 	import os
@@ -15,14 +15,14 @@ def stockhist(TAG):
 	str(TAG)
 	##Getting Data
 	data = yf.Ticker(TAG)
-	hist = data.history(start = "2018-01-01", end = "2018-12-31")
+	hist = data.history(start = startDate, end = endDate)
 	
 
 	##Writing file
 	filename = str(TAG+".csv")
 	pandas.DataFrame.to_csv(hist,filename)
 
-stockhist("GOOGL")
+stockhist("GOOGL","2018-01-01","2018-12-31")
 
 
 
