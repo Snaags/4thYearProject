@@ -4,7 +4,7 @@
 
 ##Gets historical Stock data from yahoo finance and saves as .csv file
 def StockHist(TAG,startDate,endDate):
-
+	import feather
 	import yfinance as yf
 	import os
 	import pandas
@@ -23,8 +23,9 @@ def StockHist(TAG,startDate,endDate):
 	formattedData = hist.to_records()
 	formattedData.tofile(str(TAG)+".npy")
 
+	feather.write_dataframe(hist, 'test.feather')
 
-StockHist("GOOGL","2018-01-01","2018-12-31")
+StockHist("GOOGL","2009-01-01","2018-12-31")
 
 
 
