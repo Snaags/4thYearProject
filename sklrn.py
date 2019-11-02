@@ -1,5 +1,7 @@
 print(__doc__)
 
+import sys
+sys.path.append(r'C:\Users\chris\Anaconda3\Lib\site-packages')
 from sklearn.svm import SVC
 from sklearn.datasets import load_digits
 from sklearn.feature_selection import RFE

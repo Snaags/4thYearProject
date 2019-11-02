@@ -1,28 +1,52 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 29 12:35:22 2019
+Created on Thu Oct 31 23:29:56 2019
 
 @author: chris
 """
 
-from sklearn.svm import SVC
-from sklearn.datasets import load_digits
-from sklearn.feature_selection import RFE
-import matplotlib.pyplot as plt
+from selenium import webdriver
+import string
+import bs4
 
-# Load the digits dataset
-digits = load_digits()
-X = digits.images.reshape((len(digits.images), -1))
-y = digits.target
+browser = webdriver.Chrome("C:\\Users\\chris\\Downloads\\chromedriver_win32\\chromedriver")
 
-# Create the RFE object and rank each pixel
-svc = SVC(kernel="linear", C=1)
-rfe = RFE(estimator=svc, n_features_to_select=1, step=1)
-rfe.fit(X, y)
-ranking = rfe.ranking_.reshape(digits.images[0].shape)
+browser.get("https://www.advfn.com/nyse/newyorkstockexchange.asp?companies=A")
 
-# Plot pixel ranking
-plt.matshow(ranking, cmap=plt.cm.Blues)
-plt.colorbar()
-plt.title("Ranking of pixels with RFE")
-plt.show()
+TAGS = []
+tags = []
+datahold = 1
+#print(Tags)
+for i in string.ascii_uppercase:
+    browser.get("https://www.advfn.com/nyse/newyorkstockexchange.asp?companies="+i)
+    
+    html = browser.page_source
+    soup = bs4.BeautifulSoup(html)
+    
+    x = soup.body.table.next_sibling.next_sibling.next_sibling.next_sibling.tbody \
+        .tr.next_sibling.next_sibling.td.next_sibling.next_sibling.table.tbody.tr \
+        .td.table.tbody.tr.next_sibling.next_sibling.next_sibling.next_sibling
+    
+    while x != None:
+        datahold = x.td.next_sibling.a
+        tags.append(datahold)
+        x = x.next_sibling.next_sibling
+   
+for i in tags:
+    if 'stock-price">' in str(i):
+        TAGS.append(str(i)[str(i).find('stock-price">')+13:].strip("</a>"))
+    
+    
+    
+    
+
+    
+#[contains(@rel, "next")]
+
+#elem = browser.find_element_by_class_name("pagination")
+
+"/html/body/table[2]/tbody/tr[2]/td[2]/table/tbody/tr/td/table/tbody"
+
+
+
+#elem.click()
