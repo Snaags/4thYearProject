@@ -8,7 +8,7 @@ import pandas
 import numpy as np
 
 path = os.getcwd()
-os.chdir(path+"\\StockData")
+os.chdir(path+"/StockData")
 
 
 ##Gets historical Stock data from yahoo finance and saves as .csv file
@@ -25,8 +25,9 @@ def StockHist(TAG,startDate,endDate):
 	pandas.DataFrame.to_csv(hist,str(TAG+".csv"))
 
 
-
-
+StockHist("AAPL","2000-01-01","2019-11-22")
+StockHist("^DJI","2000-01-01","2019-01-01")
+StockHist("GOOGL","2000-01-01","2019-01-01")
 
 
 

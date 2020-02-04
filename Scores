@@ -1,0 +1,27 @@
+#####Scores from search#####
+lr: 0.01,hiddenDimension: 150,seq_length: 2  -- MSRE:  11.66722134679368
+lr: 1e-05,hiddenDimension: 125,seq_length: 8  -- MSRE:  13.45022562397886
+lr: 0.001,hiddenDimension: 175,seq_length: 4  -- MSRE:  13.460220503793472
+lr: 0.01,hiddenDimension: 150,seq_length: 4  -- MSRE:  14.07629369071926
+lr: 1e-05,hiddenDimension: 175,seq_length: 4  -- MSRE:  14.683944466581732
+lr: 0.001,hiddenDimension: 175,seq_length: 2  -- MSRE:  14.883773652526715
+lr: 1e-05,hiddenDimension: 125,seq_length: 6  -- MSRE:  16.309600923241213
+lr: 1e-05,hiddenDimension: 175,seq_length: 6  -- MSRE:  16.54109207551851
+lr: 0.0001,hiddenDimension: 150,seq_length: 2  -- MSRE:  16.571471810871707
+lr: 0.0001,hiddenDimension: 175,seq_length: 6  -- MSRE:  16.6331785348991
+lr: 0.01,hiddenDimension: 125,seq_length: 2  -- MSRE:  17.323394762676156
+lr: 0.001,hiddenDimension: 125,seq_length: 2  -- MSRE:  17.483108651917874
+lr: 0.0001,hiddenDimension: 175,seq_length: 2  -- MSRE:  17.571533486366523
+lr: 1e-05,hiddenDimension: 150,seq_length: 8  -- MSRE:  17.59751881536233
+lr: 0.0001,hiddenDimension: 150,seq_length: 8  -- MSRE:  18.323119954132146
+lr: 0.001,hiddenDimension: 125,seq_length: 8  -- MSRE:  18.37933340032316
+lr: 0.0001,hiddenDimension: 100,seq_length: 6  -- MSRE:  20.66111746499554
+lr: 1e-05,hiddenDimension: 150,seq_length: 4  -- MSRE:  21.16308627547327
+lr: 0.01,hiddenDimension: 125,seq_length: 6  -- MSRE:  22.931823526999274
+lr: 0.001,hiddenDimension: 100,seq_length: 4  -- MSRE:  23.212783395971307
+lr: 0.01,hiddenDimension: 100,seq_length: 6  -- MSRE:  24.385436968256535
+lr: 0.001,hiddenDimension: 100,seq_length: 8  -- MSRE:  26.639663884788998
+lr: 0.01,hiddenDimension: 100,seq_length: 4  -- MSRE:  28.676346083610987
+lr: 0.0001,hiddenDimension: 100,seq_length: 8  -- MSRE:  31.915328539759408
+Total runtime: 1620.0239143371582
+

@@ -1,0 +1,23 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+requests = "*"
+numpy = "*"
+pandas = "*"
+scipy = "*"
+sklearn = "*"
+matplotlib = "*"
+seaborn = "*"
+torch = "*"
+torchvision = "*"
+yfinance = "*"
+cython = "==0.29.0"
+matlibplot = "*"
+
+[requires]
+python_version = "3.6"
