@@ -12,53 +12,27 @@ from torch.nn.utils.rnn import pack_sequence
 import math
 import threading
 path = os.getcwd()
-#torch.cuda.set_device(0)
-
-############TO DO##############
-"""
 
 
-
-
-
-make error measurement a percentage
-
-refactor code into a function
-
-set up batching
-
-set up allowing multiple features
-
-
-
-
-
-
-"""
-###############################
-
-
-
-
-
-
-
-
-
-
-
-def Batch(X, batchSize):
-	X = list(X)
-	while len(X)%batchSize != 0:
-		X.pop()
-
-	output = torch.cuda.FloatTensor(X)
-	output = output.view(-1,10,batchSize,1)
-
-	return output
 
 
 def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,num_epochs = 5):
+
+#Create dictionary of hyperparameters
+
+
+	HyperParameters = {
+		
+		"lr" : lr,
+		"hiddenDimension": hiddenDimension,
+		"seq_length": seq_length,
+		"numberLayers":numberLayers,
+		"num_epochs":num_epochs
+	}
+
+
+
+###Data Processing####################################################################################################
 
 	## transforms time series into samples of length "seq_length" each paired with a lable for trainging "predict_distance" after the last element in the sample 
 	def GroupData(X,seq_length,predict_distance):
@@ -93,6 +67,8 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
 	lables = torch.cuda.FloatTensor(y)
+
+######################################################################################################################
 
 
 
@@ -195,7 +171,15 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	#RMSE
 	#print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- RMSE:",float(error))
 	
-	return float(error)
+
+	ReturnDict = {
+
+	"EvalScore": float(error),
+	"ModelState": model.state_dict(),
+	"HyperParameters": HyperParameters
+	}
+
+	return ReturnDict
 
 
 

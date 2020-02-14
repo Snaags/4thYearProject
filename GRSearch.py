@@ -15,81 +15,44 @@ import concurrent.futures
 import os
 from multiprocessing import Pool
 import multiprocessing
-import random
+from Utils import RandomRange,CreateSets,CreateRandomSets
+
+#########HyperParameter Search Settings###########
+
+#Comment out section to select search type
 
 
 
-def Exploit(Network):
-	#Find high proforming networks
-	#Select network based on a probability distrobution
-	#Extract weights and hyperparameters
-	#Apply to the targeted network
-	pass
-
-def Explore():
-
-	pass
+SearchType = "Random"
 
 
-
-##Creates a range of values between 2 boundries. Types = log, int 
-def RandomRange(min, max, steps,types):
-	output = []
-
-	if types == "int":
-		while steps >= 1:
-			output.append(random.randint(min,max))
-			steps -=1
-
-	if types == "log":
-		minexp = np.log10(np.abs(min))
-		print(minexp)
-		maxexp = np.log10(np.abs(max))
-		print(maxexp)
-		while steps >= 1:
-			output.append(random.randint(1,9)*10**random.randint(minexp,maxexp))
-			steps -=1			
-
-	return output
-
-def CreateSets(Hyperparms):
-
-	set_new = []
-	subsets = []
-	names = list(Hyperparms.keys())
-	set_old = []
-	for i in Hyperparms[names[0]]:
-		set_old.append([i])
-	del names[0]
-
-	for name in names: 
-		#Append each value to each element in list
-		for i in Hyperparms[name]:
-
-
-			for c in set_old:
-				x = c+[i]
-
-				set_new.append(x)
-		set_old = set_new
-		set_new = []
+hyperparameters = {
 	
-	#Adds dataset to the hyperparameter sequence
-	for x in set_old:
-		x.insert(0,file)
+	"lr" :[0.000001,0.01,"log"],
+	"hiddenDimension": [150,250,"int"],
+	"seq_length": [2,15,"int"],
+	"numberLayers":[1,2,"int"]
 
-	return set_old
+}
+
+"""
+
+SearchType = "Grid"
+
+hyperparameters = {
+
+	"lr" :[0.00001],
+	"hiddenDimension": [2],
+	"seq_length": [3],
+	"numberLayers":[1]
+	}
+"""
+####################################################
 
 
-#(name:(min max steps types))
-def CreateRandomSet(preparameters):
-	
-	hyperparameters = dict()
-	for i in preparameters:
-		hyperparameters[i] = RandomRange(*preparameters[i])
 
-	print(hyperparameters)
-	return CreateSets(hyperparameters)
+
+
 
 
 path = os.getcwd()
@@ -99,37 +62,22 @@ path = os.getcwd()
 file = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
 file = np.asarray(file)#convert to numpy array
 
-#print(RandomRange(0.000001,0.01,5,"log"))
 
 
+if SearchType == "Random":
 
-print("ready")
+	searchSpace = CreateRandomSets(file,hyperparameters,20)
 
+elif SearchType == "Grid":
 
-parameters = {
-	
-	"lr" :[0.000001,0.01,3,"log"],
-	"hiddenDimension": [150,250,3,"int"],
-	"seq_length": [2,15,3,"int"]
+	searchSpace = CreateSets(file,hyperparameters)
 
-}
+else:
+	print("No search selected, select type from top of file")
+	exit()
 
+print(len(searchSpace)," iterations of model to run")
 
-
-hyperparameters = {
-
-	"lr" :[0.00001],
-	"hiddenDimension": [2],
-	"seq_length": [3],
-	"numberLayers":[1]
-	}
-
-#searchSpace = CreateRandomSet(parameters)
-
-searchSpace = CreateSets(hyperparameters)
-print(len(searchSpace))
-#del searchSpace[0]
-print(searchSpace)
 
 threads = []
 
@@ -139,15 +87,16 @@ SearchResults = {}
 
 
 
-print(os.cpu_count())
-
+print(os.cpu_count()," CPU logical cores detected")
+concurrentTasks = 3 
+print("Running",concurrentTasks,"models in parrallel")
 
 
 
 
 if __name__ == "__main__":
 
-	p = Pool(3,maxtasksperchild = 10)
+	p = Pool(concurrentTasks,maxtasksperchild = 10)
 	results = p.starmap(RunModel,searchSpace)
 	p.close()
 	p.join()
