@@ -17,12 +17,22 @@ from multiprocessing import Pool
 import multiprocessing
 import random
 
-def Exploit(Network):
+def Exploit_Best(Network):
+	#Find high proforming networks
+	#Select network based on highest proformance
+	#Extract weights and hyperparameters
+	#Apply to the targeted network
+	pass
+
+
+def Exploit_Stocastic(Network):
 	#Find high proforming networks
 	#Select network based on a probability distrobution
 	#Extract weights and hyperparameters
 	#Apply to the targeted network
 	pass
+
+
 
 def Explore():
 
@@ -35,17 +45,18 @@ def RandomRange(min, max,types):
 
 	if types == "int":
 		
-		output = random.randint(min,max)
+		output = int(random.randint(min,max))
 	
 
 	if types == "log":
 		minexp = np.log10(np.abs(min))
+		print(minexp)
 		maxexp = np.log10(np.abs(max))
-
+		print(maxexp)
 
 		output = random.randint(1,9)*10**random.randint(minexp,maxexp)
-
-	return int(output)
+		
+	return output
 
 def CreateSets(file,Hyperparms):
 

@@ -189,6 +189,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	plt.plot(lables.cpu(), label=("Data days ahead"))
 	plt.legend()
 	plt.savefig(("Graphs/"+str(float(error))+".png"))
+	plt.clf()
 	#MAPE
 	print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- MAPE:",float(error),"%")
 	

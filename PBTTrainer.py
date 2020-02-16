@@ -16,7 +16,7 @@ path = os.getcwd()
 
 
 
-def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,num_epochs = 5):
+def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,num_epochs = 5, modelPATH = None):
 
 #Create dictionary of hyperparameters
 
@@ -27,6 +27,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		"hiddenDimension": hiddenDimension,
 		"seq_length": seq_length,
 		"numberLayers":numberLayers,
+		"predict_distance":predict_distance,
 		"num_epochs":num_epochs
 	}
 
@@ -73,7 +74,14 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 
 	model = LSTMModel(input_dim = 1, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers)
+	print(model.state_dict())
+	if modelPATH != None:
+		#model.load_state_dict(torch.load(modelPATH)) 
+		model = torch.load(modelPATH)
+		print("model loaded!")
+	print(model.state_dict())
 	model.cuda()
+
 
 
 	loss_fn = torch.nn.MSELoss(reduction = "none")
@@ -84,7 +92,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	optimiser = torch.optim.Adam(model.parameters(), lr=lr)
 
 
-
+	res = []
 	startTime = time.time()
 	model.init_hidden()
 	for t in range(num_epochs):
@@ -97,6 +105,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		for X,y in zip(samples,lables):
 
 			y_pred = model(X)
+			res.append(y_pred)
 			loss = loss_fn(y_pred, y)
 
 
@@ -105,12 +114,27 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 			# Update parameters
 			optimiser.step()
-
+			model.zero_grad()
 			# Zero out gradient, else they will accumulate between epochs
-			optimiser.zero_grad()
-		torch.save(model,path+"/Models/"+str(lr)+".pth")
+			
+		#torch.save(model,path+"/Models/"+str(lr)+".pth")
 
 		print("Epoch",t,"completed in:",time.time()-startTime,"seconds")
+
+
+
+	##Debugging 
+	plt.plot(res, label="Preds")
+	plt.plot(lables.cpu(), label=("Data days ahead"))
+	plt.legend()
+	plt.savefig(("Graphs/"+str(HyperParameters.keys())+".png"))
+	plt.clf()
+
+
+
+
+
+
 
 	X, y = GroupData(X_test,seq_length,predict_distance)
 
@@ -129,6 +153,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	##test_lost_score =  list(test_lost_score.cpu())
 
 	lables = lables.cpu()
+	results = results
 
 	results = np.asarray(results)
 	results = scaler.inverse_transform(results.reshape(-1,1))
@@ -165,17 +190,19 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	plt.plot(lables.cpu(), label=("Data days ahead"))
 	plt.legend()
 	plt.savefig(("Graphs/"+str(float(error))+".png"))
+	plt.clf()
 	#MAPE
 	print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- MAPE:",float(error),"%")
 	
 	#RMSE
 	#print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- RMSE:",float(error))
 	
+	torch.save(model,path+"/Models/"+str(lr)+".pth")
 
 	ReturnDict = {
 
 	"EvalScore": float(error),
-	"ModelState": model.state_dict(),
+	"ModelState": str(path+"/Models/"+str(lr)+".pth"),
 	"HyperParameters": HyperParameters
 	}
 

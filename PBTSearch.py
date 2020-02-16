@@ -26,12 +26,12 @@ SearchType = "Random"
 
 hyperparameters = {
 	
-	"lr" :[0.000001,0.01,3,"log"],
-	"hiddenDimension": [150,250,3,"int"],
-	"seq_length": [2,15,3,"int"],
-	"numberLayers":[1,1,1,"int"],
-	"predict_distance":[1,1,1,"int"],
-	"num_epochs":[1,1,1,"int"]
+	"lr" :[0.0000001,0.001,"log"],
+	"hiddenDimension": [10,250,"int"],
+	"seq_length": [2,15,"int"],
+	"numberLayers":[1,1,"int"],
+	"predict_distance":[1,1,"int"],
+	"num_epochs":[2,2,"int"]
 }
 
 
@@ -55,7 +55,12 @@ file = np.asarray(file)#convert to numpy array
 
 if SearchType == "Random":
 
-	searchSpace = CreateRandomSets(file,hyperparameters)
+	searchSpace = CreateRandomSets(file,hyperparameters,4)
+
+print(searchSpace)
+#searchSpace[0].append('/home/snaags/4thYearProject/Models/7e-06.pth')
+print(searchSpace)
+
 
 
 
@@ -67,10 +72,10 @@ start = time.time()
 
 SearchResults = {}
 
-
+print(searchSpace)
 
 print(os.cpu_count()," CPU logical cores detected")
-concurrentTasks = 3 
+concurrentTasks = 4
 print("Running",concurrentTasks,"models in parrallel")
 
 
@@ -78,15 +83,37 @@ print("Running",concurrentTasks,"models in parrallel")
 if __name__ == "__main__":
 
 
-	p = Pool(concurrentTasks,maxtasksperchild = 10)
+	##Intial random search steps
+	p = Pool(concurrentTasks,maxtasksperchild = 1)
 	results = p.starmap(RunModel,searchSpace)
 	p.close()
 	p.join()
-	print(results)
+
+	min_error = 100000
+	pos = "NA"
+	for i in results:
+		if i["EvalScore"] < min_error:
+			min_error = i["EvalScore"]
+			pos = results.index(i)
+	Search = []
+	search = list(results[pos]["HyperParameters"].values())
+	search.append(results[pos]["ModelState"])
+	search.insert(0,file)
+	Search.append(search)
+	print(search)
+
+	p = Pool(concurrentTasks,maxtasksperchild = 1)
+	results2 = p.starmap(RunModel,Search)
+	p.close()
+	p.join()
+	print(results2)
 
 scores = {}
 
 parms = list(hyperparameters.keys())
+
+
+exit()
 
 for valueSet,result in zip(searchSpace,results):
 	name = []
@@ -105,7 +132,7 @@ print("#####Scores from search#####")
 
 
 
-
+exit()
 
 
 x = len(scores)
