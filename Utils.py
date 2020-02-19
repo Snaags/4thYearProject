@@ -17,26 +17,69 @@ from multiprocessing import Pool
 import multiprocessing
 import random
 
-def Exploit_Best(Network):
-	#Find high proforming networks
-	#Select network based on highest proformance
-	#Extract weights and hyperparameters
-	#Apply to the targeted network
-	pass
+def Exploit(probability, models,score,file):	##Selection offset
+	
+	score = float(score)
+
+	num_healthy = int(len(models)*probability)
+
+	#Sets healthy set to 1 when calculation produces a number smaller than this
+	if num_healthy < 1:
+		num_healthy = 1
 
 
-def Exploit_Stocastic(Network):
+	modelrank = int(num_healthy)
+	
+	#loops through models to find the score passed to functions placement.
+	for i in models:
+		if score > float(i):
+			modelrank -= 1
+		
+
+		#Finds replacement model if model is deemed unfit.
+		if modelrank <= 0:
+			#Randomly select healthy model to exploit.
+			x = random.randint(1,num_healthy)
+
+			modelscores = []
+			for i in models:
+				modelscores.append(float(i))
+			print(modelscores)
+			for c in range(x):
+				output = modelscores.pop(modelscores.index(min(modelscores)))
+			print(output)
+			
+			
+			output = Explore(models[output],file)
+			return output
+
+	#return the same model if within the number of healthy models 
+	return Explore(models[score],file)
+
 	#Find high proforming networks
 	#Select network based on a probability distrobution
 	#Extract weights and hyperparameters
 	#Apply to the targeted network
 	pass
 
+def Explore(hyperparameters,file,mutation = 0.2):
+	mutablesf = ["lr"]
+	mutablesi =["seq_length"]
+	mutablesh = ["hiddenDimension","numberLayers"]
+	output = [file]
+	for i in hyperparameters:
+		print(i)
+		if i == "lr":
+			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
+		elif i == "seq_length":
+			x = int(hyperparameters[i]+random.randint(-1,1))
+		elif i == "hiddenDimension" or i == "numberLayers":
+			x = int(hyperparameters[i]+math.ceil(random.uniform(0,1))*(mutation)*hyperparameters[i])
+		else:
+			x = hyperparameters[i]
+		output.append(x)
+	return output
 
-
-def Explore():
-
-	pass
 
 
 ##Creates a range of values between 2 boundries. Types = log, int 	for scales of number distrobution
@@ -50,9 +93,7 @@ def RandomRange(min, max,types):
 
 	if types == "log":
 		minexp = np.log10(np.abs(min))
-		print(minexp)
 		maxexp = np.log10(np.abs(max))
-		print(maxexp)
 
 		output = random.randint(1,9)*10**random.randint(minexp,maxexp)
 		

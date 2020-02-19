@@ -16,7 +16,7 @@ import os
 from multiprocessing import Pool
 import multiprocessing
 import random
-from Utils import CreateRandomSets
+from Utils import CreateRandomSets, Exploit
 path = os.getcwd()
 #########HyperParameter Search Settings###########
 
@@ -27,25 +27,13 @@ SearchType = "Random"
 hyperparameters = {
 	
 	"lr" :[0.0000001,0.001,"log"],
-	"hiddenDimension": [10,250,"int"],
-	"seq_length": [2,15,"int"],
+	"hiddenDimension": [10,200,"int"],
+	"seq_length": [1,50,"int"],
 	"numberLayers":[1,1,"int"],
 	"predict_distance":[1,1,"int"],
-	"num_epochs":[2,2,"int"]
+	"num_epochs":[3,3,"int"]
 }
 
-
-
-def Exploit(Network):
-	#Find high proforming networks
-	#Select network based on a probability distrobution
-	#Extract weights and hyperparameters
-	#Apply to the targeted network
-	pass
-
-def Explore():
-
-	pass
 
 
 ###Import and scale
@@ -57,63 +45,84 @@ if SearchType == "Random":
 
 	searchSpace = CreateRandomSets(file,hyperparameters,4)
 
-print(searchSpace)
-#searchSpace[0].append('/home/snaags/4thYearProject/Models/7e-06.pth')
-print(searchSpace)
-
-
 
 
 print(len(searchSpace)," iterations of model to run")
-
-threads = []
-
 start = time.time()
-
-SearchResults = {}
-
-print(searchSpace)
-
 print(os.cpu_count()," CPU logical cores detected")
 concurrentTasks = 4
 print("Running",concurrentTasks,"models in parrallel")
 
 
 
+
+
+
+
+
 if __name__ == "__main__":
 
 
+	"""
 	##Intial random search steps
 	p = Pool(concurrentTasks,maxtasksperchild = 1)
 	results = p.starmap(RunModel,searchSpace)
 	p.close()
 	p.join()
+	"""
+	end = True
+	counter = 10
+	Models = {}
+	
+	while end == True:
+		Models = {}
+		with Pool(processes=2) as pool:
+			results = pool.starmap(RunModel,searchSpace)
+			pool.close()
+			pool.join()
 
-	min_error = 100000
-	pos = "NA"
-	for i in results:
-		if i["EvalScore"] < min_error:
-			min_error = i["EvalScore"]
-			pos = results.index(i)
-	Search = []
-	search = list(results[pos]["HyperParameters"].values())
-	search.append(results[pos]["ModelState"])
-	search.insert(0,file)
-	Search.append(search)
-	print(search)
+		searchSpace = []
+		
+		
+		#Adds the new models to a dictionary of models labled by Evaluation Score
+		for i in results:
+			Models[i["EvalScore"]] = i["HyperParameters"]
+		
 
-	p = Pool(concurrentTasks,maxtasksperchild = 1)
-	results2 = p.starmap(RunModel,Search)
-	p.close()
-	p.join()
-	print(results2)
+		##Searches Models for top performers
+
+		for i in Models:
+			searchSpace.append(Exploit(0.1, Models,i,file))
+	
+		
+		counter -= 1
+		if counter == 0:
+			end = False 
+			
 
 scores = {}
 
 parms = list(hyperparameters.keys())
 
 
+
+
+
+
+
+
+
+
+
+
+
 exit()
+
+
+
+
+
+
 
 for valueSet,result in zip(searchSpace,results):
 	name = []

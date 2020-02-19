@@ -58,7 +58,7 @@ class LSTMModel(nn.Module):
         self.layer_dim = layer_dim
 
         self.lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=False,dropout = 0)
-        #self.act = nn.ReLU()
+        self.act = nn.ReLU()
         # Readout layer
         self.fc = nn.Linear(hidden_dim, output_dim)
 
@@ -69,12 +69,12 @@ class LSTMModel(nn.Module):
         # Initialize cell state
         self.c0 = torch.zeros(self.layer_dim, 1, self.hidden_dim).requires_grad_().cuda()
 
-
     def forward(self, x):
         
         out, (self.h0, self.c0) = self.lstm(x.view(self.seq_len,1,-1), (self.h0.detach(), self.c0.detach()))
+        out = self.act(out) 
         out = self.fc(out[-1,-1,:])
-        #out = self.fc(out) 
+        
 
         return out.view(1)
 

@@ -16,7 +16,7 @@ path = os.getcwd()
 
 
 
-def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,num_epochs = 5, modelPATH = None):
+def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,num_epochs = 5,ID= None):
 
 #Create dictionary of hyperparameters
 
@@ -28,7 +28,8 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		"seq_length": seq_length,
 		"numberLayers":numberLayers,
 		"predict_distance":predict_distance,
-		"num_epochs":num_epochs
+		"num_epochs":num_epochs,
+		"ID":ID
 	}
 
 
@@ -72,15 +73,39 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 ######################################################################################################################
 
 
-
+	
 	model = LSTMModel(input_dim = 1, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers)
-	print(model.state_dict())
-	if modelPATH != None:
-		#model.load_state_dict(torch.load(modelPATH)) 
-		model = torch.load(modelPATH)
+	if ID != None:
+		#model.load_state_dict(torch.load(path+"/Models/"+str(ID)+".pth")) 
+		#model = torch.load(path+"/Models/"+str(ID)+".pth")
 		print("model loaded!")
-	print(model.state_dict())
+		for i in model.state_dict():
+			if i in ID:
+
+				#if model.state_dict()[i].size() != ID[i].size():
+					#print(model.state_dict()[i].size())
+					#print(ID[i].size())
+
+
+				model.state_dict()[i] = ID[i]
+		#model.lstm.
+		
+		
+		
+
 	model.cuda()
+
+
+	###Create new ID for model
+
+	ids = ""
+	for i in HyperParameters:
+		if HyperParameters[i] == None:
+			break
+		ids += str(HyperParameters[i])
+	ID = hash(ids)
+
+
 
 
 
@@ -197,12 +222,36 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	#RMSE
 	#print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- RMSE:",float(error))
 	
-	torch.save(model,path+"/Models/"+str(lr)+".pth")
+	#print(model.state_dict())
+	statedict = {}
+	df = model.state_dict()
+	for i in model.state_dict():
+		statedict[i] = df[i].cpu()
+
+
+	HyperParameters = {
+		
+		"lr" : lr,
+		"hiddenDimension": hiddenDimension,
+		"seq_length": seq_length,
+		"numberLayers":numberLayers,
+		"predict_distance":predict_distance,
+		"num_epochs":num_epochs,
+		"ID":statedict
+	}
+
+
+
+
+
+
+	#torch.save(model,path+"/Models/"+str(ID)+".pth")
+
+
 
 	ReturnDict = {
 
 	"EvalScore": float(error),
-	"ModelState": str(path+"/Models/"+str(lr)+".pth"),
 	"HyperParameters": HyperParameters
 	}
 
