@@ -16,7 +16,7 @@ path = os.getcwd()
 
 
 
-def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,num_epochs = 5,ID= None):
+def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,dropout = 0,num_epochs = 5,ID= None):
 
 #Create dictionary of hyperparameters
 
@@ -28,6 +28,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		"seq_length": seq_length,
 		"numberLayers":numberLayers,
 		"predict_distance":predict_distance,
+		"dropout":dropout,
 		"num_epochs":num_epochs,
 		"ID":ID
 	}
@@ -69,26 +70,39 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
 	lables = torch.cuda.FloatTensor(y)
-
+	print(samples.size())
+	exit()
 ######################################################################################################################
 
 
 	
-	model = LSTMModel(input_dim = 1, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers)
+	model = LSTMModel(input_dim = 1, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers,dropout = dropout)
+	
 	if ID != None:
 		#model.load_state_dict(torch.load(path+"/Models/"+str(ID)+".pth")) 
 		#model = torch.load(path+"/Models/"+str(ID)+".pth")
-		print("model loaded!")
 		for i in model.state_dict():
+
 			if i in ID:
 
-				#if model.state_dict()[i].size() != ID[i].size():
-					#print(model.state_dict()[i].size())
-					#print(ID[i].size())
+				if len(model.state_dict()[i].size()) == 2:
+					if model.state_dict()[i].size()[0]-ID[i].size()[0] > 0:
+						paddingRows = torch.zeros(model.state_dict()[i].size()[0]-ID[i].size()[0],ID[i].size()[1])
+						ID[i] = torch.cat((ID[i],paddingRows),0)
 
+					if model.state_dict()[i].size()[1]-ID[i].size()[1] > 0:
+						paddingCols = torch.zeros(ID[i].size()[0],model.state_dict()[i].size()[1]-ID[i].size()[1])
+						
+						ID[i] = torch.cat((ID[i],paddingCols),1)
+				
+				elif len(model.state_dict()[i].size()) == 1:
+					if model.state_dict()[i].size()[0]-ID[i].size()[0] > 0:	
+						paddingRows = torch.zeros(model.state_dict()[i].size()[0]-ID[i].size()[0])
+						
+						ID[i] = torch.cat((ID[i],paddingRows),0)
 
 				model.state_dict()[i] = ID[i]
-		#model.lstm.
+				
 		
 		
 		
@@ -217,7 +231,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	plt.savefig(("Graphs/"+str(float(error))+".png"))
 	plt.clf()
 	#MAPE
-	print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- MAPE:",float(error),"%")
+	print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;dropout:",dropout," -- MAPE:",float(error),"%")
 	
 	#RMSE
 	#print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- RMSE:",float(error))
@@ -236,6 +250,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		"seq_length": seq_length,
 		"numberLayers":numberLayers,
 		"predict_distance":predict_distance,
+		"dropout":dropout,
 		"num_epochs":num_epochs,
 		"ID":statedict
 	}

@@ -54,7 +54,7 @@ def Exploit(probability, models,score,file):	##Selection offset
 			return output
 
 	#return the same model if within the number of healthy models 
-	return Explore(models[score],file)
+	return Explore(models[score],file, 0)
 
 	#Find high proforming networks
 	#Select network based on a probability distrobution
@@ -68,15 +68,22 @@ def Explore(hyperparameters,file,mutation = 0.2):
 	mutablesh = ["hiddenDimension","numberLayers"]
 	output = [file]
 	for i in hyperparameters:
-		print(i)
-		if i == "lr":
+		if i != "ID":
+			print(i,"pre mutation: ", hyperparameters[i])
+		if i == "lr" or i == "dropout":
 			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
 		elif i == "seq_length":
-			x = int(hyperparameters[i]+random.randint(-1,1))
+			if hyperparameters[i] == 1:
+				x = int(hyperparameters[i]+random.randint(0,1))
+			else:
+				x = int(hyperparameters[i]+random.randint(-1,1))
+
 		elif i == "hiddenDimension" or i == "numberLayers":
-			x = int(hyperparameters[i]+math.ceil(random.uniform(0,1))*(mutation)*hyperparameters[i])
+			x = int(hyperparameters[i]+math.ceil(random.uniform(0,1)*(mutation)*hyperparameters[i]))
 		else:
 			x = hyperparameters[i]
+		if i != "ID":
+			print(i," post mutation: ",x)
 		output.append(x)
 	return output
 

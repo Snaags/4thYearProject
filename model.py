@@ -49,7 +49,7 @@ class LSTM(nn.Module):
 
 
 class LSTMModel(nn.Module):
-    def __init__(self, input_dim, hidden_dim, layer_dim, output_dim,seq):
+    def __init__(self, input_dim, hidden_dim, layer_dim, output_dim,seq,dropout,batch_size = 1):
         super(LSTMModel, self).__init__()
         
         self.seq_len = seq
@@ -57,7 +57,7 @@ class LSTMModel(nn.Module):
         self.input_dim = input_dim
         self.layer_dim = layer_dim
 
-        self.lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=False,dropout = 0)
+        self.lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=False,dropout = dropout)
         self.act = nn.ReLU()
         # Readout layer
         self.fc = nn.Linear(hidden_dim, output_dim)
@@ -71,7 +71,7 @@ class LSTMModel(nn.Module):
 
     def forward(self, x):
         
-        out, (self.h0, self.c0) = self.lstm(x.view(self.seq_len,1,-1), (self.h0.detach(), self.c0.detach()))
+        out, (self.h0, self.c0) = self.lstm(x.view(self.seq_len,batch_size,-1), (self.h0.detach(), self.c0.detach()))
         out = self.act(out) 
         out = self.fc(out[-1,-1,:])
         

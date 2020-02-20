@@ -31,7 +31,8 @@ hyperparameters = {
 	"seq_length": [1,50,"int"],
 	"numberLayers":[1,1,"int"],
 	"predict_distance":[1,1,"int"],
-	"num_epochs":[3,3,"int"]
+	"dropout":[0.01,0.1,"log"],
+	"num_epochs":[2,2,"int"]
 }
 
 
@@ -71,7 +72,7 @@ if __name__ == "__main__":
 	p.join()
 	"""
 	end = True
-	counter = 10
+	counter = 3
 	Models = {}
 	
 	while end == True:
