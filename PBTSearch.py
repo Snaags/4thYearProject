@@ -28,11 +28,11 @@ hyperparameters = {
 	
 	"lr" :[0.0000001,0.001,"log"],
 	"hiddenDimension": [10,200,"int"],
-	"seq_length": [1,50,"int"],
+	"seq_length": [1,100,"int"],
 	"numberLayers":[1,1,"int"],
 	"predict_distance":[1,1,"int"],
-	"dropout":[0.01,0.1,"log"],
-	"num_epochs":[2,2,"int"]
+	"batch_size":[50,150,"int"],
+	"num_epochs":[25,25,"int"]
 }
 
 
@@ -44,7 +44,7 @@ file = np.asarray(file)#convert to numpy array
 
 if SearchType == "Random":
 
-	searchSpace = CreateRandomSets(file,hyperparameters,4)
+	searchSpace = CreateRandomSets(file,hyperparameters,24)
 
 
 
@@ -72,12 +72,12 @@ if __name__ == "__main__":
 	p.join()
 	"""
 	end = True
-	counter = 3
+	counter = 10
 	Models = {}
 	
 	while end == True:
-		Models = {}
-		with Pool(processes=2) as pool:
+		ModelsAlive = {}
+		with Pool(processes=4) as pool:
 			results = pool.starmap(RunModel,searchSpace)
 			pool.close()
 			pool.join()
@@ -88,12 +88,12 @@ if __name__ == "__main__":
 		#Adds the new models to a dictionary of models labled by Evaluation Score
 		for i in results:
 			Models[i["EvalScore"]] = i["HyperParameters"]
-		
+			ModelsAlive[i["EvalScore"]] = i["HyperParameters"]
 
 		##Searches Models for top performers
 
-		for i in Models:
-			searchSpace.append(Exploit(0.1, Models,i,file))
+		for i in ModelsAlive:
+			searchSpace.append(Exploit(0.2, Models,i,file))
 	
 		
 		counter -= 1

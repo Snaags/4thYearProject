@@ -16,11 +16,10 @@ path = os.getcwd()
 
 
 
-def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,dropout = 0,num_epochs = 5,ID= None):
+def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,batch_size = 100,num_epochs = 5,ID= None):
 
 #Create dictionary of hyperparameters
-
-
+	dropout = 0
 	HyperParameters = {
 		
 		"lr" : lr,
@@ -28,7 +27,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		"seq_length": seq_length,
 		"numberLayers":numberLayers,
 		"predict_distance":predict_distance,
-		"dropout":dropout,
+		"batch_size":batch_size,
 		"num_epochs":num_epochs,
 		"ID":ID
 	}
@@ -66,17 +65,36 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 
 	X, y = GroupData(X_train,seq_length,predict_distance)
+	"""
+	count = 0
+	hold = []
+	Xnew = []
+	for i in X:
+		hold.append(i)
+		count +=1
+		if count == 100:
+			Xnew.append	
+	"""
 
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
+	samples = torch.split(samples,batch_size)
+	samples = list(samples)
+	del samples[-1]
+	samples = tuple(samples)
 	lables = torch.cuda.FloatTensor(y)
-	print(samples.size())
-	exit()
+	lablesplot = torch.FloatTensor(y)
+	lables = torch.split(lables,batch_size)
+	lables = list(lables)
+	del lables[-1]
+	lables = tuple(lables)
+
+
 ######################################################################################################################
 
 
 	
-	model = LSTMModel(input_dim = 1, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers,dropout = dropout)
+	model = LSTMModel(input_dim = 1, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers,dropout = dropout, batch_size = batch_size)
 	
 	if ID != None:
 		#model.load_state_dict(torch.load(path+"/Models/"+str(ID)+".pth")) 
@@ -131,7 +149,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	optimiser = torch.optim.Adam(model.parameters(), lr=lr)
 
 
-	res = []
+	#res = torch.cuda.FloatTensor()
 	startTime = time.time()
 	model.init_hidden()
 	for t in range(num_epochs):
@@ -141,15 +159,14 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 		# Clear stored gradient
 		model.zero_grad()
-		for X,y in zip(samples,lables):
 
+		for X,y in zip(samples,lables):
 			y_pred = model(X)
-			res.append(y_pred)
+			#res = torch.cat((res, y_pred),0)
 			loss = loss_fn(y_pred, y)
 
-
 			# Backward pass
-			loss.backward()
+			loss.sum().backward()
 
 			# Update parameters
 			optimiser.step()
@@ -157,18 +174,23 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 			# Zero out gradient, else they will accumulate between epochs
 			
 		#torch.save(model,path+"/Models/"+str(lr)+".pth")
+		if t % 5 ==  0:
+			print("Epoch",t,"completed in:",time.time()-startTime,"seconds")
 
-		print("Epoch",t,"completed in:",time.time()-startTime,"seconds")
 
 
-
-	##Debugging 
+	##Debugging
+	#for i in res:
+	#	for c in i:
+	#			out.append(c)
+	"""
+	res = list(res.cpu())
 	plt.plot(res, label="Preds")
-	plt.plot(lables.cpu(), label=("Data days ahead"))
+	plt.plot(lablesplot, label=("Data days ahead"))
 	plt.legend()
 	plt.savefig(("Graphs/"+str(HyperParameters.keys())+".png"))
 	plt.clf()
-
+	"""
 
 
 
@@ -179,20 +201,32 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
+	samples = torch.split(samples,batch_size)
+	samples = list(samples)
+	del samples[-1]
+	samples = tuple(samples)
+
 	lables = torch.cuda.FloatTensor(y)
-	loss_fn = torch.nn.MSELoss(reduction = "none")
+	lablesplot = torch.FloatTensor(y)
+	lables = torch.split(lables,batch_size)
+	lables = list(lables)
+	lablesplot = lablesplot[0:-len(lables[-1])]
+	del lables[-1]
+
+	lables = tuple(lables)
+	loss_fn = torch.nn.MSELoss(reduction = "mean")
 	test_lost_score = 0
 	model.init_hidden()
-	results = []
+	results = torch.cuda.FloatTensor()
 	for X,y in zip(samples,lables):
 
 		y_pred = model(X)
-		results.append(y_pred)
+		results = torch.cat((results, y_pred),0)
 
 	##test_lost_score =  list(test_lost_score.cpu())
 
-	lables = lables.cpu()
-	results = results
+	lables = lablesplot
+	results = results.cpu().detach()
 
 	results = np.asarray(results)
 	results = scaler.inverse_transform(results.reshape(-1,1))
@@ -204,10 +238,16 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	lables = scaler.inverse_transform(lables.reshape(-1,1))
 
 
+
+	##Mean Squared Error
 	results = torch.cuda.FloatTensor(results)
 	lables = torch.cuda.FloatTensor(lables)
+	loss = loss_fn(results, lables)
+
+
 
 	##Mean absolute percentage error (MAPE)
+
 	total_error = 0
 	for i,c in zip(results,lables):
 		test_lost_score = abs(c - i)
@@ -218,20 +258,20 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 	error = total_error*100
 
-	print("Total training and validation time: ",time.time() - startTime)
+	results = results.cpu()#.detach()
+	lables = lables.cpu()#.detach()
 
 
 
 
 
-
-	plt.plot(results.cpu(), label="Preds")
-	plt.plot(lables.cpu(), label=("Data days ahead"))
+	plt.plot(results, label="Preds")
+	plt.plot(lables, label=("Data days ahead"))
 	plt.legend()
-	plt.savefig(("Graphs/"+str(float(error))+".png"))
+	plt.savefig(("Graphs/"+str(float(loss))+".png"))
 	plt.clf()
 	#MAPE
-	print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;dropout:",dropout," -- MAPE:",float(error),"%")
+	print("Total training and validation time: ",time.time() - startTime," \n lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;Batch Size:",batch_size," -- MSE:",float(loss))
 	
 	#RMSE
 	#print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- RMSE:",float(error))
@@ -250,7 +290,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		"seq_length": seq_length,
 		"numberLayers":numberLayers,
 		"predict_distance":predict_distance,
-		"dropout":dropout,
+		"batch_size":batch_size,
 		"num_epochs":num_epochs,
 		"ID":statedict
 	}

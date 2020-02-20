@@ -49,34 +49,34 @@ class LSTM(nn.Module):
 
 
 class LSTMModel(nn.Module):
-    def __init__(self, input_dim, hidden_dim, layer_dim, output_dim,seq,dropout,batch_size = 1):
+    def __init__(self, input_dim, hidden_dim, layer_dim, output_dim,seq,dropout,batch_size = 100):
         super(LSTMModel, self).__init__()
-        
+        self.batch_size = batch_size
         self.seq_len = seq
         self.hidden_dim = hidden_dim
         self.input_dim = input_dim
         self.layer_dim = layer_dim
 
-        self.lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=False,dropout = dropout)
+        self.lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=True,dropout = dropout)
         self.act = nn.ReLU()
         # Readout layer
         self.fc = nn.Linear(hidden_dim, output_dim)
 
     def init_hidden(self):
         # Initialize hidden state with zeros
-        self.h0 = torch.zeros(self.layer_dim, 1, self.hidden_dim).requires_grad_().cuda()
+        self.h0 = torch.zeros(self.layer_dim,self.batch_size, self.hidden_dim).requires_grad_().cuda()
 
         # Initialize cell state
-        self.c0 = torch.zeros(self.layer_dim, 1, self.hidden_dim).requires_grad_().cuda()
+        self.c0 = torch.zeros(self.layer_dim, self.batch_size, self.hidden_dim).requires_grad_().cuda()
 
     def forward(self, x):
         
-        out, (self.h0, self.c0) = self.lstm(x.view(self.seq_len,batch_size,-1), (self.h0.detach(), self.c0.detach()))
+        out, (self.h0, self.c0) = self.lstm(x.view(self.batch_size,self.seq_len,-1), (self.h0.detach(), self.c0.detach()))
         out = self.act(out) 
-        out = self.fc(out[-1,-1,:])
+        out = self.fc(out[:,-1,:])
         
 
-        return out.view(1)
+        return out
 
 """
 class LSTM(nn.Module):

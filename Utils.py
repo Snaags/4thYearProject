@@ -62,7 +62,7 @@ def Exploit(probability, models,score,file):	##Selection offset
 	#Apply to the targeted network
 	pass
 
-def Explore(hyperparameters,file,mutation = 0.2):
+def Explore(hyperparameters,file,mutation = 0.05):
 	mutablesf = ["lr"]
 	mutablesi =["seq_length"]
 	mutablesh = ["hiddenDimension","numberLayers"]
@@ -76,9 +76,9 @@ def Explore(hyperparameters,file,mutation = 0.2):
 			if hyperparameters[i] == 1:
 				x = int(hyperparameters[i]+random.randint(0,1))
 			else:
-				x = int(hyperparameters[i]+random.randint(-1,1))
+				x = int(hyperparameters[i]+math.ceil(random.randint(-1,1)*mutation*hyperparameters[i]))
 
-		elif i == "hiddenDimension" or i == "numberLayers":
+		elif i == "hiddenDimension": #or i == "numberLayers":
 			x = int(hyperparameters[i]+math.ceil(random.uniform(0,1)*(mutation)*hyperparameters[i]))
 		else:
 			x = hyperparameters[i]
