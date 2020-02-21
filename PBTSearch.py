@@ -24,16 +24,16 @@ path = os.getcwd()
 SearchType = "Random"
 
 
-hyperparameters = {
+hyperparameters = [
 	
-	"lr" :[0.0000001,0.001,"log"],
-	"hiddenDimension": [10,200,"int"],
-	"seq_length": [1,100,"int"],
-	"numberLayers":[1,1,"int"],
-	"predict_distance":[1,1,"int"],
-	"batch_size":[50,150,"int"],
-	"num_epochs":[25,25,"int"]
-}
+	[0.0000001,0.001,"log"],			#"lr" 
+	[10,200,"int"],			#"hiddenDimension" [
+	[1,100,"int"],			#"seq_length" 
+	[1,1,"int"],			#"numberLayers"
+	[1,1,"int"],			#predict_distance	
+	[50,150,"int"],			#"batch_size"
+	[25,25,"int"]			#"num_epochs"
+					]
 
 
 
