@@ -39,8 +39,9 @@ def Exploit(probability, models,score,file):	##Selection offset
 		#Finds replacement model if model is deemed unfit.
 		if modelrank <= 0:
 			#Randomly select healthy model to exploit.
-			#x = random.randint(1,num_healthy)
+			x = random.randint(1,num_healthy)
 			x = math.ceil(abs(random.gauss(0,0.2))*num_healthy)
+
 			modelscores = []
 			for i in models:
 				modelscores.append(float(i))
@@ -68,8 +69,7 @@ def Explore(hyperparameters,file,mutation = 0.05):
 	mutablesh = ["hiddenDimension","numberLayers"]
 	output = [file]
 	for i in hyperparameters:
-		if i != "ID":
-			
+
 		if i == "lr" or i == "dropout":
 			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
 		elif i == "seq_length":
@@ -82,8 +82,6 @@ def Explore(hyperparameters,file,mutation = 0.05):
 			x = int(hyperparameters[i]+math.ceil(random.uniform(0,1)*(mutation)*hyperparameters[i]))
 		else:
 			x = hyperparameters[i]
-		if i != "ID":
-			
 		output.append(x)
 	return output
 
@@ -137,7 +135,6 @@ def CreateSets(file,Hyperparms):
 #(name:(min max steps types))
 def CreateRandomSets(file,preparameters,size):
 	
-	hyperparameters = dict()
 	setin = list()
 	setout = list()
 	#Loop through the keys in the input dict, passing the values as arguements to the function for each iteration

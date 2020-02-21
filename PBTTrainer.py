@@ -264,12 +264,13 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 
 
-
+	"""
 	plt.plot(results, label="Preds")
 	plt.plot(lables, label=("Data days ahead"))
 	plt.legend()
 	plt.savefig(("Graphs/"+str(float(loss))+".png"))
 	plt.clf()
+	"""
 	#MAPE
 	print("Total training and validation time: ",time.time() - startTime," \n lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;Batch Size:",batch_size," -- MSE:",float(loss))
 	
