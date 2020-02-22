@@ -17,7 +17,10 @@ from multiprocessing import Pool
 import multiprocessing
 import random
 
-def Exploit(probability, models,score,file):	##Selection offset
+def Exploit(probability, models,score,file, distribution):	##probability: percentage of population deemed healthy, 
+												##models: list of scores from population, Score: score of currently testing model
+												##file: dataset for training, distribution: type of selection from healthy models "Guassian", "Uniform"
+
 	
 	score = float(score)
 
@@ -39,8 +42,12 @@ def Exploit(probability, models,score,file):	##Selection offset
 		#Finds replacement model if model is deemed unfit.
 		if modelrank <= 0:
 			#Randomly select healthy model to exploit.
-			x = random.randint(1,num_healthy)
-			x = math.ceil(abs(random.gauss(0,0.2))*num_healthy)
+
+			if distribution == "Uniform":
+				x = random.randint(1,num_healthy)
+
+			if distribution == "Gaussian":
+				x = math.ceil(abs(random.gauss(0,0.2))*num_healthy)
 
 			modelscores = []
 			for i in models:
@@ -64,25 +71,43 @@ def Exploit(probability, models,score,file):	##Selection offset
 	pass
 
 def Explore(hyperparameters,file,mutation = 0.05):
-	mutablesf = ["lr"]
-	mutablesi =["seq_length"]
-	mutablesh = ["hiddenDimension","numberLayers"]
-	output = [file]
-	for i in hyperparameters:
+	output = [file,0,0,0,0,0,0,0,0]
 
-		if i == "lr" or i == "dropout":
+	for i in hyperparameters:
+		if i == "lr":
 			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
+			output[1] = x
+
+		elif i == "dropout":
+			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
+
+		elif i == "hiddenDimension":
+			x = int(hyperparameters[i]+math.ceil(random.uniform(0,1)*(mutation)*hyperparameters[i]))
+			output[2] = x
+
 		elif i == "seq_length":
 			if hyperparameters[i] == 1:
 				x = int(hyperparameters[i]+random.randint(0,1))
 			else:
 				x = int(hyperparameters[i]+math.ceil(random.randint(-1,1)*mutation*hyperparameters[i]))
+			output[3] = x
 
-		elif i == "hiddenDimension": #or i == "numberLayers":
+		elif i == "numberLayers":
 			x = int(hyperparameters[i]+math.ceil(random.uniform(0,1)*(mutation)*hyperparameters[i]))
-		else:
-			x = hyperparameters[i]
-		output.append(x)
+			output[4] = x
+
+		elif i == "predict_distance":
+			output[5] = hyperparameters[i]
+
+		elif i == "batch_size":
+			output[6] = hyperparameters[i]
+
+		elif i == "num_epochs":
+			output[7] = hyperparameters[i]
+
+		elif i == "ID":
+			output[8] = hyperparameters[i]
+
 	return output
 
 

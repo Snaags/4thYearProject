@@ -307,7 +307,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 	ReturnDict = {
 
-	"EvalScore": float(error),
+	"EvalScore": float(loss),
 	"HyperParameters": HyperParameters
 	}
 

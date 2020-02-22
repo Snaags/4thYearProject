@@ -44,7 +44,7 @@ file = np.asarray(file)#convert to numpy array
 
 if SearchType == "Random":
 
-	searchSpace = CreateRandomSets(file,hyperparameters,24)
+	searchSpace = CreateRandomSets(file,hyperparameters,4)
 
 
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
 		##Searches Models for top performers
 
 		for i in ModelsAlive:
-			searchSpace.append(Exploit(0.2, Models,i,file))
+			searchSpace.append(Exploit(0.2, Models,i,file,"Gaussian"))
 	
 		
 		counter -= 1
