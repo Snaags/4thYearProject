@@ -262,6 +262,8 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 	results = results.cpu()#.detach()
 	lables = lables.cpu()#.detach()
+	results.tolist()
+	lables.tolist()
 
 
 
