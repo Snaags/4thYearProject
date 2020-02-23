@@ -269,11 +269,11 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 
 
-
+	plt.figure(figsize = [19.20,10.80])
 	plt.plot(results, label="Preds")
 	plt.plot(lables, label=("Data days ahead"))
 	plt.legend()
-	plt.savefig(("Graphs/"+str(float(loss))+".png"))
+	plt.savefig(("Graphs/"+str(float(loss))+".pdf"),dpi=1200)
 	plt.clf()
 
 	#MAPE

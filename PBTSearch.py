@@ -96,7 +96,7 @@ hyperparameters = [
 	
 	[0.00000001,0.001,"log"],	#"lr" 
 	[60,150,"int"],				#"hiddenDimension" [
-	[10,40,"int"],				#"seq_length" 
+	[10,80,"int"],				#"seq_length" 
 	[1,1,"int"],				#"numberLayers"	
 	[200,200,"int"],			#"batch_size"
 	[100,100,"int"]					#"num_epochs"
@@ -111,7 +111,7 @@ file = np.asarray(file)#convert to numpy array
 lineage = {}
 if SearchType == "Random":
 	numbers = 0
-	searchSpace = CreateRandomSets(file,hyperparameters,8)
+	searchSpace = CreateRandomSets(file,hyperparameters,80)
 	for i in searchSpace:
 		i.append(None)
 		i.append(numbers)
@@ -144,14 +144,14 @@ if __name__ == "__main__":
 	p.join()
 	"""
 	end = True
-	counter = 3
+	counter = 15
 	
 
 	while end == True:
 
 		Models = {}
 		ModelsAlive = {}
-		with Pool(processes=8) as pool:
+		with Pool(processes=10) as pool:
 			results = pool.starmap(RunModel,searchSpace)
 			pool.close()
 			pool.join()
@@ -224,29 +224,36 @@ points3 = np.array(points3)
 #	score = i
 #	for c in i:
 #		print(c)
+plt.figure(figsize = [19.20,10.80])
 plt.scatter(X[:,0],X[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
 cbar = plt.colorbar()
 cbar.set_label('RME')
-plt.show()
+plt.savefig(("Graphs/"+str(X[0])+".pdf"),dpi=1200)
+plt.clf()
 
 
+"""
 plt.scatter(points1[:,0],points1[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
 cbar = plt.colorbar()
 cbar.set_label('RME')
 #axes.set_xlim(min(points1[:,1]),max(points1[:,1]))
 #axes.set_ylable("Hidden Layer Size")
 #axes.set_xlable("learning Rate")
-plt.show()
+plt.savefig(("Graphs/"+str(X[0])+".pdf"),dpi=1200)
+plt.clf()
+
+
 plt.scatter(points2[:,0],points2[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
 cbar = plt.colorbar()
 cbar.set_label('RME')
 #axes.set_xlim(min(points1[:,1]),max(points1[:,1]))
+plt.savefig(("Graphs/"+str(points2[0])+".pdf"),dpi=1200)
+plt.clf()
 
-plt.show()
 plt.scatter(points3[:,0],points3[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
 cbar = plt.colorbar()
 cbar.set_label('RME')
 plt.show()
 print("Total runtime:",time.time()- start)
-
+"""
 
