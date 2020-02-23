@@ -4,6 +4,7 @@ import pandas
 from model import LSTMModel
 from PBTTrainer import RunModel
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.manifold import TSNE
 import numpy as np
 import torch.nn as nn
 import torch.optim as optim
@@ -14,6 +15,9 @@ import itertools
 import concurrent.futures
 import os
 from multiprocessing import Pool
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import matplotlib.axes as axes 
 import multiprocessing
 import random
 from Utils import CreateRandomSets, Explore
@@ -37,7 +41,6 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 	modelrank = int(num_healthy)
 	
 	#loops through models to find the score passed to functions placement.
-	print(number)
 	for i in models:
 		if score > float(i):
 			modelrank -= 1
@@ -56,7 +59,7 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 			modelscores = []
 			for i in models:
 				modelscores.append(float(i))
-			print(modelscores)
+
 			for c in range(x):
 				output = modelscores.pop(modelscores.index(min(modelscores)))
 			lineage[number].append(str("Mutate "+str(models[output]["number"])))
@@ -92,12 +95,11 @@ SearchType = "Random"
 hyperparameters = [
 	
 	[0.00000001,0.001,"log"],	#"lr" 
-	[5,300,"int"],				#"hiddenDimension" [
-	[1,150,"int"],				#"seq_length" 
-	[1,1,"int"],				#"numberLayers"
-	[1,1,"int"],				#predict_distance	
-	[100,100,"int"],				#"batch_size"
-	[5,5,"int"]				#"num_epochs"
+	[60,150,"int"],				#"hiddenDimension" [
+	[10,40,"int"],				#"seq_length" 
+	[1,1,"int"],				#"numberLayers"	
+	[200,200,"int"],			#"batch_size"
+	[100,100,"int"]					#"num_epochs"
 					]
 
 
@@ -142,13 +144,14 @@ if __name__ == "__main__":
 	p.join()
 	"""
 	end = True
-	counter = 5
+	counter = 3
 	
 
 	while end == True:
+
 		Models = {}
 		ModelsAlive = {}
-		with Pool(processes=4) as pool:
+		with Pool(processes=8) as pool:
 			results = pool.starmap(RunModel,searchSpace)
 			pool.close()
 			pool.join()
@@ -159,40 +162,91 @@ if __name__ == "__main__":
 		#Adds the new models to a dictionary of models labled by Evaluation Score
 		for i in results:
 			Models[i["EvalScore"]] = i["HyperParameters"]
+
 			ModelsAlive[i["EvalScore"]] = [i["HyperParameters"],i["HyperParameters"]["number"]]
+		
 			HP = {}
 			for c in i["HyperParameters"]:
 				if c != "ID":
 					HP[c] = i["HyperParameters"][c]
 
 			lineage[i["HyperParameters"]["number"]].append((i["EvalScore"],HP))
-		
 
 		##Searches Models for top performers
+
+		counter -= 1
+		if counter == 0:
+			end = False 
 
 		for i in ModelsAlive:
 			searchSpace.append(Exploit(0.4, Models,i,file,"Gaussian",ModelsAlive[i][1]))
 	
 		
-		counter -= 1
-		if counter == 0:
-			end = False 
+
 			
+
 
 for i in lineage:
 	print(i,":  ")
 
 	for c in lineage[i]:
+
+
 		print(c)
 
+points = []
+points1 = []
+points2 = []
+points3 = []
+scores = []
+for i in lineage:
+	for c in lineage[i]:
+		if c[0:6] != "Mutate":
+			points.append([c[1]["lr"],c[1]["hiddenDimension"],c[1]["seq_length"]])
+			scores.append(c[0])
+			points1.append([c[1]["lr"],c[1]["hiddenDimension"]])
+			points2.append([c[1]["lr"],c[1]["seq_length"]])
+			points3.append([c[1]["hiddenDimension"],c[1]["seq_length"]])
+
+X = np.array(points)
+#print(X)
+X = TSNE().fit_transform(X)
+#scores = np.asarray(scores)
+#scaler = MinMaxScaler(feature_range=(0, 10))	#scale data
+#scores = scaler.fit_transform(scores.reshape(1, -1))
+#print(scores)
+
+points1 = np.array(points1)
+points2 = np.array(points2)
+points3 = np.array(points3)
+
+#for i in scores:
+#	score = i
+#	for c in i:
+#		print(c)
+plt.scatter(X[:,0],X[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
+cbar = plt.colorbar()
+cbar.set_label('RME')
+plt.show()
 
 
+plt.scatter(points1[:,0],points1[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
+cbar = plt.colorbar()
+cbar.set_label('RME')
+#axes.set_xlim(min(points1[:,1]),max(points1[:,1]))
+#axes.set_ylable("Hidden Layer Size")
+#axes.set_xlable("learning Rate")
+plt.show()
+plt.scatter(points2[:,0],points2[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
+cbar = plt.colorbar()
+cbar.set_label('RME')
+#axes.set_xlim(min(points1[:,1]),max(points1[:,1]))
 
-
-
-
-
-
+plt.show()
+plt.scatter(points3[:,0],points3[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
+cbar = plt.colorbar()
+cbar.set_label('RME')
+plt.show()
 print("Total runtime:",time.time()- start)
 
 

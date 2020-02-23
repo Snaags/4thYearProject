@@ -16,17 +16,17 @@ path = os.getcwd()
 
 
 
-def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,batch_size = 100,num_epochs = 5,ID= None, number = None):
+def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 100,num_epochs = 5,ID= None, number = None):
 
 #Create dictionary of hyperparameters
 	dropout = 0
+	predict_distance = 1
 	HyperParameters = {
 		
 		"lr" : lr,
 		"hiddenDimension": hiddenDimension,
 		"seq_length": seq_length,
 		"numberLayers":numberLayers,
-		"predict_distance":predict_distance,
 		"batch_size":batch_size,
 		"num_epochs":num_epochs,
 		"ID":ID,
@@ -121,7 +121,9 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 						
 						ID[i] = torch.cat((ID[i],paddingRows),0)
 
-				model.state_dict()[i] = ID[i]
+
+				model.state_dict()[i].data.copy_(ID[i])
+
 				
 		
 		
@@ -262,9 +264,8 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 	results = results.cpu()#.detach()
 	lables = lables.cpu()#.detach()
-	results.tolist()
-	lables.tolist()
-
+	results = np.asarray(results)
+	lables = np.asarray(lables)
 
 
 
@@ -294,14 +295,13 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		"hiddenDimension": hiddenDimension,
 		"seq_length": seq_length,
 		"numberLayers":numberLayers,
-		"predict_distance":predict_distance,
 		"batch_size":batch_size,
 		"num_epochs":num_epochs,
 		"ID":statedict,
 		"number":number
 	}
 
-
+	print(hiddenDimension)
 
 
 

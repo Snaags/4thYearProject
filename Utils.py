@@ -26,7 +26,7 @@ import random
 	#Apply to the targeted network
 
 def Explore(hyperparameters,file,mutation = 0.05, number = None):
-	output = [file,0,0,0,0,0,0,0,0]
+	output = [file,0,0,0,0,0,0,0]
 	for i in hyperparameters:
 		if i == "lr":
 			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
@@ -36,31 +36,32 @@ def Explore(hyperparameters,file,mutation = 0.05, number = None):
 			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
 
 		elif i == "hiddenDimension":
-			x = int(hyperparameters[i]+math.ceil(random.uniform(0,1)*(mutation)*hyperparameters[i]))
+			if random.uniform(mutation-1,mutation) > 0:
+				x = int(hyperparameters[i])+math.ceil(random.uniform(0,1*(mutation))*hyperparameters[i])
+			else:
+				x = hyperparameters[i]
 			output[2] = x
 
 		elif i == "seq_length":
 			if hyperparameters[i] == 1:
 				x = int(hyperparameters[i]+random.randint(0,1))
 			else:
-				x = int(hyperparameters[i]+math.ceil(random.randint(-1,1)*mutation*hyperparameters[i]))
+				x = int(hyperparameters[i]+math.ceil(random.uniform(-1,1)*mutation*hyperparameters[i]))
 			output[3] = x
 
 		elif i == "numberLayers":
-			x = int(hyperparameters[i]+math.ceil(random.uniform((1*mutation-1),1*mutation)*hyperparameters[i]))
+			x = int(hyperparameters[i])#+math.ceil(random.uniform((1*mutation-1),1*mutation)*hyperparameters[i]))
 			output[4] = x
 
-		elif i == "predict_distance":
-			output[5] = hyperparameters[i]
-
 		elif i == "batch_size":
-			output[6] = hyperparameters[i]
+			x = int(hyperparameters[i])#+math.ceil(random.uniform(-1,1)*mutation*hyperparameters[i]))
+			output[5] = x
 
 		elif i == "num_epochs":
-			output[7] = hyperparameters[i]
+			output[6] = hyperparameters[i]
 
 		elif i == "ID":
-			output[8] = hyperparameters[i]
+			output[7] = hyperparameters[i]
 	output.append(number)
 	return output
 
