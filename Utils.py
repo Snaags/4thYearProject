@@ -17,62 +17,16 @@ from multiprocessing import Pool
 import multiprocessing
 import random
 
-def Exploit(probability, models,score,file, distribution):	##probability: percentage of population deemed healthy, 
-												##models: list of scores from population, Score: score of currently testing model
-												##file: dataset for training, distribution: type of selection from healthy models "Guassian", "Uniform"
-
-	
-	score = float(score)
-
-	num_healthy = int(len(models)*probability)
-
-	#Sets healthy set to 1 when calculation produces a number smaller than this
-	if num_healthy < 1:
-		num_healthy = 1
 
 
-	modelrank = int(num_healthy)
-	
-	#loops through models to find the score passed to functions placement.
-	for i in models:
-		if score > float(i):
-			modelrank -= 1
-		
-
-		#Finds replacement model if model is deemed unfit.
-		if modelrank <= 0:
-			#Randomly select healthy model to exploit.
-
-			if distribution == "Uniform":
-				x = random.randint(1,num_healthy)
-
-			if distribution == "Gaussian":
-				x = math.ceil(abs(random.gauss(0,0.2))*num_healthy)
-
-			modelscores = []
-			for i in models:
-				modelscores.append(float(i))
-			print(modelscores)
-			for c in range(x):
-				output = modelscores.pop(modelscores.index(min(modelscores)))
-			print(output)
-			
-			
-			output = Explore(models[output],file)
-			return output
-
-	#return the same model if within the number of healthy models 
-	return Explore(models[score],file, 0)
 
 	#Find high proforming networks
 	#Select network based on a probability distrobution
 	#Extract weights and hyperparameters
 	#Apply to the targeted network
-	pass
 
-def Explore(hyperparameters,file,mutation = 0.05):
+def Explore(hyperparameters,file,mutation = 0.05, number = None):
 	output = [file,0,0,0,0,0,0,0,0]
-
 	for i in hyperparameters:
 		if i == "lr":
 			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
@@ -93,7 +47,7 @@ def Explore(hyperparameters,file,mutation = 0.05):
 			output[3] = x
 
 		elif i == "numberLayers":
-			x = int(hyperparameters[i]+math.ceil(random.uniform(0,1)*(mutation)*hyperparameters[i]))
+			x = int(hyperparameters[i]+math.ceil(random.uniform((1*mutation-1),1*mutation)*hyperparameters[i]))
 			output[4] = x
 
 		elif i == "predict_distance":
@@ -107,7 +61,7 @@ def Explore(hyperparameters,file,mutation = 0.05):
 
 		elif i == "ID":
 			output[8] = hyperparameters[i]
-
+	output.append(number)
 	return output
 
 

@@ -16,7 +16,7 @@ path = os.getcwd()
 
 
 
-def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,batch_size = 100,num_epochs = 5,ID= None):
+def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distance = 1,batch_size = 100,num_epochs = 5,ID= None, number = None):
 
 #Create dictionary of hyperparameters
 	dropout = 0
@@ -29,7 +29,8 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		"predict_distance":predict_distance,
 		"batch_size":batch_size,
 		"num_epochs":num_epochs,
-		"ID":ID
+		"ID":ID,
+		"number":number
 	}
 
 
@@ -97,6 +98,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 	model = LSTMModel(input_dim = 1, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers,dropout = dropout, batch_size = batch_size)
 	
 	if ID != None:
+
 		#model.load_state_dict(torch.load(path+"/Models/"+str(ID)+".pth")) 
 		#model = torch.load(path+"/Models/"+str(ID)+".pth")
 		for i in model.state_dict():
@@ -264,13 +266,13 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 
 
 
-	"""
+
 	plt.plot(results, label="Preds")
 	plt.plot(lables, label=("Data days ahead"))
 	plt.legend()
 	plt.savefig(("Graphs/"+str(float(loss))+".png"))
 	plt.clf()
-	"""
+
 	#MAPE
 	print("Total training and validation time: ",time.time() - startTime," \n lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;Batch Size:",batch_size," -- MSE:",float(loss))
 	
@@ -293,7 +295,8 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,predict_distan
 		"predict_distance":predict_distance,
 		"batch_size":batch_size,
 		"num_epochs":num_epochs,
-		"ID":statedict
+		"ID":statedict,
+		"number":number
 	}
 
 

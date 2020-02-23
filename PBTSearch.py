@@ -16,9 +16,74 @@ import os
 from multiprocessing import Pool
 import multiprocessing
 import random
-from Utils import CreateRandomSets, Exploit
+from Utils import CreateRandomSets, Explore
 path = os.getcwd()
+
+
+def Exploit(probability, models,score,file, distribution, number = None):	##probability: percentage of population deemed healthy, 
+												##models: list of scores from population, Score: score of currently testing model
+												##file: dataset for training, distribution: type of selection from healthy models "Guassian", "Uniform"
+
+	
+	score = float(score)
+
+	num_healthy = int(len(models)*probability)
+
+	#Sets healthy set to 1 when calculation produces a number smaller than this
+	if num_healthy < 1:
+		num_healthy = 1
+
+
+	modelrank = int(num_healthy)
+	
+	#loops through models to find the score passed to functions placement.
+	print(number)
+	for i in models:
+		if score > float(i):
+			modelrank -= 1
+		
+
+		#Finds replacement model if model is deemed unfit.
+		if modelrank <= 0:
+			#Randomly select healthy model to exploit.
+
+			if distribution == "Uniform":
+				x = random.randint(1,num_healthy)
+
+			if distribution == "Gaussian":
+				x = math.ceil(abs(random.gauss(0,0.2))*num_healthy)
+
+			modelscores = []
+			for i in models:
+				modelscores.append(float(i))
+			print(modelscores)
+			for c in range(x):
+				output = modelscores.pop(modelscores.index(min(modelscores)))
+			lineage[number].append(str("Mutate "+str(models[output]["number"])))
+			print(output)
+			
+			
+			output = Explore(models[output],file,0.1,number)
+			return output
+
+	#return the same model if within the number of healthy models 
+	return Explore(models[score],file,0,number)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #########HyperParameter Search Settings###########
+
 
 
 SearchType = "Random"
@@ -26,13 +91,13 @@ SearchType = "Random"
 
 hyperparameters = [
 	
-	[0.0000001,0.001,"log"],			#"lr" 
-	[10,200,"int"],			#"hiddenDimension" [
-	[1,100,"int"],			#"seq_length" 
-	[1,1,"int"],			#"numberLayers"
-	[1,1,"int"],			#predict_distance	
-	[50,150,"int"],			#"batch_size"
-	[25,25,"int"]			#"num_epochs"
+	[0.00000001,0.001,"log"],	#"lr" 
+	[5,300,"int"],				#"hiddenDimension" [
+	[1,150,"int"],				#"seq_length" 
+	[1,1,"int"],				#"numberLayers"
+	[1,1,"int"],				#predict_distance	
+	[100,100,"int"],				#"batch_size"
+	[5,5,"int"]				#"num_epochs"
 					]
 
 
@@ -41,10 +106,15 @@ hyperparameters = [
 file = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
 file = np.asarray(file)#convert to numpy array
 
-
+lineage = {}
 if SearchType == "Random":
-
-	searchSpace = CreateRandomSets(file,hyperparameters,4)
+	numbers = 0
+	searchSpace = CreateRandomSets(file,hyperparameters,8)
+	for i in searchSpace:
+		i.append(None)
+		i.append(numbers)
+		lineage[numbers] = []
+		numbers +=1
 
 
 
@@ -72,10 +142,11 @@ if __name__ == "__main__":
 	p.join()
 	"""
 	end = True
-	counter = 10
-	Models = {}
+	counter = 5
 	
+
 	while end == True:
+		Models = {}
 		ModelsAlive = {}
 		with Pool(processes=4) as pool:
 			results = pool.starmap(RunModel,searchSpace)
@@ -88,12 +159,19 @@ if __name__ == "__main__":
 		#Adds the new models to a dictionary of models labled by Evaluation Score
 		for i in results:
 			Models[i["EvalScore"]] = i["HyperParameters"]
-			ModelsAlive[i["EvalScore"]] = i["HyperParameters"]
+			ModelsAlive[i["EvalScore"]] = [i["HyperParameters"],i["HyperParameters"]["number"]]
+			HP = {}
+			for c in i["HyperParameters"]:
+				if c != "ID":
+					HP[c] = i["HyperParameters"][c]
+
+			lineage[i["HyperParameters"]["number"]].append((i["EvalScore"],HP))
+		
 
 		##Searches Models for top performers
 
 		for i in ModelsAlive:
-			searchSpace.append(Exploit(0.2, Models,i,file,"Gaussian"))
+			searchSpace.append(Exploit(0.4, Models,i,file,"Gaussian",ModelsAlive[i][1]))
 	
 		
 		counter -= 1
@@ -101,13 +179,11 @@ if __name__ == "__main__":
 			end = False 
 			
 
-scores = {}
+for i in lineage:
+	print(i,":  ")
 
-parms = list(hyperparameters.keys())
-
-
-
-
+	for c in lineage[i]:
+		print(c)
 
 
 
@@ -116,82 +192,7 @@ parms = list(hyperparameters.keys())
 
 
 
-
-exit()
-
-
-
-
-
-
-
-for valueSet,result in zip(searchSpace,results):
-	name = []
-
-	for value, key in zip(valueSet[1:], parms):
-
-		x = (str(key)+": "+str(value))
-
-		name.append(x)
-
-
-	name = ",".join(name)
-	scores[name] = result
-
-print("#####Scores from search#####")
-
-
-
-exit()
-
-
-x = len(scores)
-ranking = 1
-
-while x > 0:
-
-	score = min(scores.values())
-	name = list(scores.keys())[list(scores.values()).index(score)]
-
-	print(ranking,". ",name," -- MSRE: ", score)
-	ranking += 1 
-	scores.pop(name)
-	if ranking > 3:
-		os.remove("Graphs/"+str(score)+".png") 
-	x -= 1
-
-
-"""
-for i in searchSpace:
-	processes.append(Process(target = RunModel,args= (file,i[0],i[1],i[2],i[3])))
-
-	process = processes[-1]
-	process.start()
-	process.join()
-
-	print(len(multiprocessing.active_children()))
-	while int(active[-2]) > 6:
-		time.sleep(3)
-		print(len(multiprocessing.active_children()))
-"""
-
-"""
-for i in searchSpace[0:4]:
-
-	if threading.active_count() < 1:
-		threads.append(threading.Thread(target = RunModel, args = (file,i[0],i[1],i[2],i[3])))
-		threads[-1].start()
-		print("starting thread",len(threads))
-	else:
-		print("starting main thread")
-		RunModel(file,i[0],i[1],i[2],i[3])
-
-	print("current number of threads",threading.active_count())
-	
-"""
 
 print("Total runtime:",time.time()- start)
 
-
-##Create input sets##
 
