@@ -17,8 +17,15 @@ path = os.getcwd()
 
 
 def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 100,num_epochs = 5,ID= None, number = None):
-
+	"""
+	test = []
+	if ID != None:
+		for i in ID:
+			test.append(ID[i].size())
+	print(test)
+	"""
 #Create dictionary of hyperparameters
+	print("starting model",number)
 	dropout = 0
 	predict_distance = 1
 	HyperParameters = {
@@ -92,37 +99,66 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 
 ######################################################################################################################
-
-
 	
+
 	model = LSTMModel(input_dim = 1, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers,dropout = dropout, batch_size = batch_size)
 	
 	if ID != None:
+		
+
+
 
 		#model.load_state_dict(torch.load(path+"/Models/"+str(ID)+".pth")) 
 		#model = torch.load(path+"/Models/"+str(ID)+".pth")
 		for i in model.state_dict():
-
 			if i in ID:
-
+				test = ID[i].size()
 				if len(model.state_dict()[i].size()) == 2:
+
+
+					if model.state_dict()[i].size()[0]-ID[i].size()[0] < 0:
+						idx = torch.tensor([0,model.state_dict()[i].size()[0]])
+						ID[i] = torch.index_select(ID[i],0,idx)
+					if model.state_dict()[i].size()[1]-ID[i].size()[1] < 0:	
+						idx = torch.tensor([0,model.state_dict()[i].size()[1]])
+						ID[i] = torch.index_select(ID[i],1,idx)
+
+
 					if model.state_dict()[i].size()[0]-ID[i].size()[0] > 0:
 						paddingRows = torch.zeros(model.state_dict()[i].size()[0]-ID[i].size()[0],ID[i].size()[1])
 						ID[i] = torch.cat((ID[i],paddingRows),0)
 
-					if model.state_dict()[i].size()[1]-ID[i].size()[1] > 0:
+					if model.state_dict()[i].size()[1]-ID[i].size()[1] > 0:	
 						paddingCols = torch.zeros(ID[i].size()[0],model.state_dict()[i].size()[1]-ID[i].size()[1])
 						
 						ID[i] = torch.cat((ID[i],paddingCols),1)
 				
 				elif len(model.state_dict()[i].size()) == 1:
+
+
+					if model.state_dict()[i].size()[0]-ID[i].size()[0] < 0:
+						idx = torch.tensor([0,model.state_dict()[i].size()[0]])
+						ID[i] = torch.index_select(ID[i],0,idx)
+
+
 					if model.state_dict()[i].size()[0]-ID[i].size()[0] > 0:	
 						paddingRows = torch.zeros(model.state_dict()[i].size()[0]-ID[i].size()[0])
 						
 						ID[i] = torch.cat((ID[i],paddingRows),0)
+				try:
+					model.state_dict()[i].data.copy_(ID[i])
+				except:
+					print(model.state_dict()[i])
+					print(ID[i])
+					print(model.state_dict()[i].size())
+					print(ID[i].size())
+					print(number)
+					print(hiddenDimension)
 
 
-				model.state_dict()[i].data.copy_(ID[i])
+
+
+					
 
 				
 		
@@ -130,17 +166,6 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		
 
 	model.cuda()
-
-
-	###Create new ID for model
-
-	ids = ""
-	for i in HyperParameters:
-		if HyperParameters[i] == None:
-			break
-		ids += str(HyperParameters[i])
-	ID = hash(ids)
-
 
 
 
@@ -277,7 +302,9 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	plt.clf()
 
 	#MAPE
-	print("Total training and validation time: ",time.time() - startTime," \n lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;Batch Size:",batch_size," -- MSE:",float(loss))
+	print("Total training and validation time for model ",number,": ",time.time() - startTime," \n lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;Batch Size:",batch_size," -- MSE:",float(loss))
+	
+
 	
 	#RMSE
 	#print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- RMSE:",float(error))
@@ -301,7 +328,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		"number":number
 	}
 
-	print(hiddenDimension)
+	
 
 
 

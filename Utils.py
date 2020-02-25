@@ -26,7 +26,7 @@ import random
 	#Apply to the targeted network
 
 def Explore(hyperparameters,file,mutation = 0.05, number = None):
-	output = [file,0,0,0,0,0,0,0]
+	output = [file,0,0,0,0,0,0,hyperparameters["ID"],number]
 	for i in hyperparameters:
 		if i == "lr":
 			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
@@ -36,11 +36,12 @@ def Explore(hyperparameters,file,mutation = 0.05, number = None):
 			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
 
 		elif i == "hiddenDimension":
-			if random.uniform(mutation-1,mutation) > 0:
-				x = int(hyperparameters[i])+math.ceil(random.uniform(0,1*(mutation))*hyperparameters[i])
-			else:
-				x = hyperparameters[i]
-			output[2] = x
+
+			#if random.uniform(mutation-1,mutation) > 0:
+			#x = int(hyperparameters[i])+math.ceil(random.uniform(0,1*(mutation))*hyperparameters[i])
+			#else:
+			#oldh = x - hyperparameters[i]
+			output[2] = hyperparameters[i]+math.ceil(mutation*hyperparameters[i])
 
 		elif i == "seq_length":
 			if hyperparameters[i] == 1:
@@ -60,9 +61,6 @@ def Explore(hyperparameters,file,mutation = 0.05, number = None):
 		elif i == "num_epochs":
 			output[6] = hyperparameters[i]
 
-		elif i == "ID":
-			output[7] = hyperparameters[i]
-	output.append(number)
 	return output
 
 

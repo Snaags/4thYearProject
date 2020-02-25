@@ -62,11 +62,16 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 			for c in range(x):
 				output = modelscores.pop(modelscores.index(min(modelscores)))
-			lineage[number].append(str("Mutate "+str(models[output]["number"])))
+
+			#lineage[number].append(str("Mutate "+str(models[output]["number"])))
+			number_new =max(lineage.keys())+1
+			lineage[number_new] = [lineage[models[output]["number"]][-1]]
+			number = number_new
+
 			print(output)
 			
 			
-			output = Explore(models[output],file,0.1,number)
+			output = Explore(models[output],file,0.2,number)
 			return output
 
 	#return the same model if within the number of healthy models 
@@ -94,12 +99,12 @@ SearchType = "Random"
 
 hyperparameters = [
 	
-	[0.00000001,0.001,"log"],	#"lr" 
-	[60,150,"int"],				#"hiddenDimension" [
-	[10,80,"int"],				#"seq_length" 
+	[0.00001,0.001,"log"],	#"lr" 
+	[1,30,"int"],				#"hiddenDimension" [
+	[1,30,"int"],				#"seq_length" 
 	[1,1,"int"],				#"numberLayers"	
 	[200,200,"int"],			#"batch_size"
-	[100,100,"int"]					#"num_epochs"
+	[50,50,"int"]					#"num_epochs"
 					]
 
 
@@ -109,9 +114,10 @@ file = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
 file = np.asarray(file)#convert to numpy array
 
 lineage = {}
+searchsize = 8
 if SearchType == "Random":
 	numbers = 0
-	searchSpace = CreateRandomSets(file,hyperparameters,80)
+	searchSpace = CreateRandomSets(file,hyperparameters,searchsize)
 	for i in searchSpace:
 		i.append(None)
 		i.append(numbers)
@@ -143,15 +149,15 @@ if __name__ == "__main__":
 	p.close()
 	p.join()
 	"""
-	end = True
-	counter = 15
+	run = True
+	counter = 2
 	
 
-	while end == True:
-
+	while run == True:
+		Alive = []
 		Models = {}
 		ModelsAlive = {}
-		with Pool(processes=10) as pool:
+		with Pool(processes=8) as pool:
 			results = pool.starmap(RunModel,searchSpace)
 			pool.close()
 			pool.join()
@@ -164,22 +170,22 @@ if __name__ == "__main__":
 			Models[i["EvalScore"]] = i["HyperParameters"]
 
 			ModelsAlive[i["EvalScore"]] = [i["HyperParameters"],i["HyperParameters"]["number"]]
-		
+			Alive.append(i["HyperParameters"]["number"])
 			HP = {}
 			for c in i["HyperParameters"]:
 				if c != "ID":
 					HP[c] = i["HyperParameters"][c]
-
 			lineage[i["HyperParameters"]["number"]].append((i["EvalScore"],HP))
 
 		##Searches Models for top performers
 
 		counter -= 1
 		if counter == 0:
-			end = False 
+			break 
 
 		for i in ModelsAlive:
 			searchSpace.append(Exploit(0.4, Models,i,file,"Gaussian",ModelsAlive[i][1]))
+
 	
 		
 
@@ -190,70 +196,72 @@ for i in lineage:
 	print(i,":  ")
 
 	for c in lineage[i]:
-
-
 		print(c)
 
-points = []
-points1 = []
-points2 = []
-points3 = []
-scores = []
+initpoints = []
+finalpoints = []
+finalscores = []
+lines = []
+line = []
+
+
+"""
 for i in lineage:
+	if len(line) > 0:
+		lines.append(line)
+	line = []
 	for c in lineage[i]:
-		if c[0:6] != "Mutate":
-			points.append([c[1]["lr"],c[1]["hiddenDimension"],c[1]["seq_length"]])
-			scores.append(c[0])
-			points1.append([c[1]["lr"],c[1]["hiddenDimension"]])
-			points2.append([c[1]["lr"],c[1]["seq_length"]])
-			points3.append([c[1]["hiddenDimension"],c[1]["seq_length"]])
+		if lineage[i].index(c) == 0 and i > searchsize:
+			initpoints.append([c[1]["lr"],c[1]["hiddenDimension"],c[1]["seq_length"]])
 
-X = np.array(points)
-#print(X)
+		if lineage[i].index(c) == len(lineage[i])-1:
+			finalpoints.append([c[1]["lr"],c[1]["hiddenDimension"],c[1]["seq_length"]])
+			finalscores.append(c[0])
+
+		line.append([c[1]["lr"],c[1]["hiddenDimension"],c[1]["seq_length"]])
+
+
+
+X = np.array(initpoints)
+
 X = TSNE().fit_transform(X)
-#scores = np.asarray(scores)
-#scaler = MinMaxScaler(feature_range=(0, 10))	#scale data
-#scores = scaler.fit_transform(scores.reshape(1, -1))
-#print(scores)
 
-points1 = np.array(points1)
-points2 = np.array(points2)
-points3 = np.array(points3)
-
-#for i in scores:
-#	score = i
-#	for c in i:
-#		print(c)
 plt.figure(figsize = [19.20,10.80])
 plt.scatter(X[:,0],X[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
 cbar = plt.colorbar()
 cbar.set_label('RME')
 plt.savefig(("Graphs/"+str(X[0])+".pdf"),dpi=1200)
 plt.clf()
-
-
 """
-plt.scatter(points1[:,0],points1[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
-cbar = plt.colorbar()
-cbar.set_label('RME')
-#axes.set_xlim(min(points1[:,1]),max(points1[:,1]))
-#axes.set_ylable("Hidden Layer Size")
-#axes.set_xlable("learning Rate")
-plt.savefig(("Graphs/"+str(X[0])+".pdf"),dpi=1200)
-plt.clf()
+
+for i in lineage:
+	if len(line) > 0:
+		lines.append(line)
+	line = []
+	for c in lineage[i]:
+		if lineage[i].index(c) == 0 and i < searchsize -1 :
+			initpoints.append([c[1]["lr"],c[1]["seq_length"]])
+
+		if lineage[i].index(c) == len(lineage[i])-1 and i in Alive:
+
+			finalpoints.append([c[1]["lr"],c[1]["seq_length"]])
+			finalscores.append(c[0])
+
+		line.append([c[1]["lr"],c[1]["seq_length"]])
 
 
-plt.scatter(points2[:,0],points2[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
-cbar = plt.colorbar()
-cbar.set_label('RME')
-#axes.set_xlim(min(points1[:,1]),max(points1[:,1]))
-plt.savefig(("Graphs/"+str(points2[0])+".pdf"),dpi=1200)
-plt.clf()
+init = np.array(initpoints)
+final = np.array(finalpoints)
 
-plt.scatter(points3[:,0],points3[:,1],s = 20,c = scores,vmin = 0, vmax = 3000 , cmap = 'plasma', alpha = 0.3)
+print(lines)
+
+plt.figure(figsize = [19.20,10.80])
+for i in lines:
+	i = np.array(i)
+	plt.plot(i[:,0],i[:,1], alpha = 0.3, c = "b")
+plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
+plt.scatter(final[:,0],final[:,1],s = 20,c = finalscores, cmap = 'plasma', alpha = 0.7)
 cbar = plt.colorbar()
 cbar.set_label('RME')
 plt.show()
-print("Total runtime:",time.time()- start)
-"""
 
