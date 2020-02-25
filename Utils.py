@@ -29,7 +29,12 @@ def Explore(hyperparameters,file,mutation = 0.05, number = None):
 	output = [file,0,0,0,0,0,0,hyperparameters["ID"],number]
 	for i in hyperparameters:
 		if i == "lr":
-			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
+
+			if mutation != 0:
+				x = hyperparameters[i] + hyperparameters[i]*((mutation*10)**random.uniform(-1,1))
+			
+			else:
+				x = hyperparameters[i]
 			output[1] = x
 
 		elif i == "dropout":
@@ -38,11 +43,10 @@ def Explore(hyperparameters,file,mutation = 0.05, number = None):
 		elif i == "hiddenDimension":
 
 			#if random.uniform(mutation-1,mutation) > 0:
-			#x = int(hyperparameters[i])+math.ceil(random.uniform(0,1*(mutation))*hyperparameters[i])
+			#	x = int(hyperparameters[i])+math.ceil(random.uniform(0,1*(mutation))*hyperparameters[i])
 			#else:
-			#oldh = x - hyperparameters[i]
-			output[2] = hyperparameters[i]+math.ceil(mutation*hyperparameters[i])
-
+			x = hyperparameters[i]
+			output[2] = x
 		elif i == "seq_length":
 			if hyperparameters[i] == 1:
 				x = int(hyperparameters[i]+random.randint(0,1))
@@ -55,7 +59,11 @@ def Explore(hyperparameters,file,mutation = 0.05, number = None):
 			output[4] = x
 
 		elif i == "batch_size":
-			x = int(hyperparameters[i])#+math.ceil(random.uniform(-1,1)*mutation*hyperparameters[i]))
+
+			if random.uniform(mutation-1,mutation)>0:
+				x = math.ceil(((hyperparameters[i]**0.5)+(random.choice([-1,1])))**2)
+			else:
+				x = hyperparameters[i]
 			output[5] = x
 
 		elif i == "num_epochs":

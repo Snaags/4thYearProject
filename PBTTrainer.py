@@ -230,21 +230,21 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
-	samples = torch.split(samples,batch_size)
-	samples = list(samples)
-	del samples[-1]
-	samples = tuple(samples)
+	#samples = torch.split(samples,batch_size)
+	#samples = list(samples)
+	#del samples[-1]
+	#samples = tuple(samples)
 
 	lables = torch.cuda.FloatTensor(y)
-	lablesplot = torch.FloatTensor(y)
-	lables = torch.split(lables,batch_size)
-	lables = list(lables)
-	lablesplot = lablesplot[0:-len(lables[-1])]
-	del lables[-1]
-
-	lables = tuple(lables)
+	#lablesplot = torch.FloatTensor(y)
+	#lables = torch.split(lables,batch_size)
+	#lables = list(lables)
+	#lablesplot = lablesplot[0:-len(lables[-1])]
+	#del lables[-1]
+	#lables = tuple(lables)
 	loss_fn = torch.nn.MSELoss(reduction = "mean")
 	test_lost_score = 0
+	model.batch_size = 1
 	model.init_hidden()
 	results = torch.cuda.FloatTensor()
 	for X,y in zip(samples,lables):
@@ -254,9 +254,9 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 	##test_lost_score =  list(test_lost_score.cpu())
 
-	lables = lablesplot
+	#lables = lablesplot
 	results = results.cpu().detach()
-
+	lables = lables.cpu().detach()
 	results = np.asarray(results)
 	results = scaler.inverse_transform(results.reshape(-1,1))
 
