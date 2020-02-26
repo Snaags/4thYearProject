@@ -99,7 +99,7 @@ SearchType = "Random"
 
 hyperparameters = [
 	
-	[0.00001,0.001,"log"],	#"lr" 
+	[0.000001,0.001,"log"],	#"lr" 
 	[1,30,"int"],				#"hiddenDimension" [
 	[1,30,"int"],				#"seq_length" 
 	[1,1,"int"],				#"numberLayers"	
@@ -114,7 +114,7 @@ file = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
 file = np.asarray(file)#convert to numpy array
 
 lineage = {}
-searchsize = 4
+searchsize = 70
 if SearchType == "Random":
 	numbers = 0
 	searchSpace = CreateRandomSets(file,hyperparameters,searchsize)
@@ -191,20 +191,30 @@ if __name__ == "__main__":
 
 			
 best = 9999999999999
-
+file = open("SearchLog.txt","w")
+file.write("lr hidden seq_length \n")
+file.close()
+file = open("SearchLog.txt","a")
+file.write("Hyperparameter Ranges:\n")
+for i in hyperparameters:
+	file.write(str(i)+"\n")
+file.write("Search of size: "+str(searchsize)+"\n")
 for i in lineage:
 	print(i,":  ")
-
+	file.write(str(i)+":  \n")
 	for c in lineage[i]:
+		print(c)
+		file.write(str(c)+"\n")
 		if c[0] < best:
 			best = c[0]
 			bestnum = i
 			besttuple = c
-
+file.write("Lowest error model: \n")
+file.write(str(besttuple))
 print(best)
-OutputHP = []
-for i in lineage:
-	print(i,":  ")
+
+
+
 
 """
 while True:
@@ -218,7 +228,6 @@ while True:
 	bestnum = besttuple[1]["number"]
 """
 
-print(OutputHP)
 
 initpoints = []
 finalpoints = []
@@ -254,13 +263,15 @@ for i in lines:
 	i = np.array(i)
 	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = "b",lw = 0.5)
 plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
-plt.scatter(final[:,0],final[:,1],s = 20,c = finalscores, cmap = 'Blues', alpha = 0.7)
+plt.scatter(final[:,0],final[:,1],s = 15,c = finalscores, cmap = 'summer', alpha = 0.7)
 cbar = plt.colorbar()
 cbar.set_label('RME')
 plt.xscale("log")
 plt.ylabel("Window Sequence Length")
 plt.xlabel("Learning Rate")
-plt.show()
+plt.savefig(("Graphs/"+str(float(best))+": lr Seq.pdf"),dpi=1200)
+plt.clf()
+
 
 initpoints = []
 finalpoints = []
@@ -276,14 +287,14 @@ for i in lineage:
 	line = []
 	for c in lineage[i]:
 		if lineage[i].index(c) == 0 and i < searchsize -1 :
-			initpoints.append([c[1]["lr"],c[1]["hiddenDimension"]])
+			initpoints.append([c[1]["lr"],c[1]["batch_size"]])
 
 		if lineage[i].index(c) == len(lineage[i])-1 and i in Alive:
 
-			finalpoints.append([c[1]["lr"],c[1]["hiddenDimension"]])
+			finalpoints.append([c[1]["lr"],c[1]["batch_size"]])
 			finalscores.append(c[0])
 
-		line.append([c[1]["lr"],c[1]["hiddenDimension"]])
+		line.append([c[1]["lr"],c[1]["batch_size"]])
 
 
 init = np.array(initpoints)
@@ -294,10 +305,11 @@ for i in lines:
 	i = np.array(i)
 	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = "b",lw = 0.5)
 plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
-plt.scatter(final[:,0],final[:,1],s = 20,c = finalscores, cmap = 'Blues', alpha = 0.7)
+plt.scatter(final[:,0],final[:,1],s = 20,c = finalscores, cmap = 'summer', alpha = 0.7)
 cbar = plt.colorbar()
 cbar.set_label('RME')
-plt.ylabel("Hidden Layer Size")
+plt.ylabel("Batch Size")
 plt.xscale("log")
 plt.xlabel("Learning Rate")
-plt.show()
+plt.savefig(("Graphs/"+str(float(best))+": lr batch_size.pdf"),dpi=1200)
+plt.clf()

@@ -1,0 +1,32 @@
+lr hidden seq_length 
+Hyperparameter Ranges:
+[1e-06, 0.001, 'log']
+[1, 30, 'int']
+[1, 30, 'int']
+[1, 1, 'int']
+[128, 128, 'int']
+[1, 1, 'int']
+Search of size: 4
+0:  
+(1836.1282958984375, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
+(1833.677978515625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
+1:  
+(1909.427978515625, {'lr': 5e-05, 'hiddenDimension': 11, 'seq_length': 20, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 1})
+2:  
+(8642.9140625, {'lr': 0.005, 'hiddenDimension': 27, 'seq_length': 30, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 2})
+3:  
+(2010.1015625, {'lr': 1e-05, 'hiddenDimension': 29, 'seq_length': 24, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 3})
+4:  
+(1836.1282958984375, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
+(1833.677978515625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 4})
+5:  
+(1836.1282958984375, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
+(1834.9541015625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 5})
+6:  
+(1836.1282958984375, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
+(1833.677978515625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 6})
+(1832.3955078125, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 6})
+7:  
+(1833.677978515625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 6})
+(1832.3955078125, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 7})
+(1832.3955078125, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 6})
