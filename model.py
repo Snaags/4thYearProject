@@ -57,7 +57,12 @@ class LSTMModel(nn.Module):
         self.input_dim = input_dim
         self.layer_dim = layer_dim
 
+        #self.attnEnc = torch.nn.TransformerEncoderLayer(self.input_dim,nhead = 4)
+        #self.lstmEnc = nn.LSTM(input_dim, hidden_dim/2, layer_dim, batch_first=True,dropout = dropout)
+
+
         self.lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=True,dropout = dropout)
+        
         self.act = nn.ReLU()
         # Readout layer
         self.fc = nn.Linear(hidden_dim, output_dim)
@@ -71,6 +76,7 @@ class LSTMModel(nn.Module):
 
     def forward(self, x):
         
+        #out, (self.h0, self.c0) = self.lstmEnc(x.view(self.batch_size,self.seq_len,-1), (self.h0.detach(), self.c0.detach()))
         out, (self.h0, self.c0) = self.lstm(x.view(self.batch_size,self.seq_len,-1), (self.h0.detach(), self.c0.detach()))
         out = self.act(out) 
         out = self.fc(out[:,-1,:])

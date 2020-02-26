@@ -1,32 +1,119 @@
-lr hidden seq_length 
+Total run time: 115.80891513824463lr hidden seq_length 
 Hyperparameter Ranges:
 [1e-06, 0.001, 'log']
 [1, 30, 'int']
 [1, 30, 'int']
 [1, 1, 'int']
-[128, 128, 'int']
-[1, 1, 'int']
-Search of size: 4
+[16, 256, 'Po2']
+[10, 10, 'int']
+Search of size: 12
 0:  
-(1836.1282958984375, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
-(1833.677978515625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
+(2243.59912109375, {'lr': 5e-05, 'hiddenDimension': 29, 'seq_length': 10, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 0})
+(3837.824951171875, {'lr': 5e-05, 'hiddenDimension': 29, 'seq_length': 10, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 0})
 1:  
-(1909.427978515625, {'lr': 5e-05, 'hiddenDimension': 11, 'seq_length': 20, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 1})
+(11446.6826171875, {'lr': 0.0002, 'hiddenDimension': 15, 'seq_length': 18, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 1})
 2:  
-(8642.9140625, {'lr': 0.005, 'hiddenDimension': 27, 'seq_length': 30, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 2})
+(3836.60400390625, {'lr': 4e-06, 'hiddenDimension': 16, 'seq_length': 11, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 2})
 3:  
-(2010.1015625, {'lr': 1e-05, 'hiddenDimension': 29, 'seq_length': 24, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 3})
+(2993.11669921875, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(321.90411376953125, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(438.13482666015625, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(141.3194122314453, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
 4:  
-(1836.1282958984375, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
-(1833.677978515625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 4})
+(8002.61669921875, {'lr': 0.0001, 'hiddenDimension': 11, 'seq_length': 20, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 10, 'number': 4})
 5:  
-(1836.1282958984375, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
-(1834.9541015625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 5})
+(1873.20751953125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
+(1869.430908203125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
 6:  
-(1836.1282958984375, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 1, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 0})
-(1833.677978515625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 6})
-(1832.3955078125, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 6})
+(2055.28466796875, {'lr': 8e-05, 'hiddenDimension': 15, 'seq_length': 21, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 6})
+(2764.853515625, {'lr': 8e-05, 'hiddenDimension': 15, 'seq_length': 21, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 6})
 7:  
-(1833.677978515625, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 6})
-(1832.3955078125, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 7})
-(1832.3955078125, {'lr': 4.9999999999999996e-06, 'hiddenDimension': 23, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 1, 'number': 6})
+(3927.76025390625, {'lr': 0.008, 'hiddenDimension': 10, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 7})
+8:  
+(4016.9873046875, {'lr': 2e-06, 'hiddenDimension': 26, 'seq_length': 21, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 8})
+9:  
+(11600.9658203125, {'lr': 0.0008, 'hiddenDimension': 11, 'seq_length': 30, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 10, 'number': 9})
+10:  
+(9875.6337890625, {'lr': 0.0005, 'hiddenDimension': 22, 'seq_length': 15, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 10, 'number': 10})
+11:  
+(5702.7119140625, {'lr': 6.000000000000001e-05, 'hiddenDimension': 6, 'seq_length': 8, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 11})
+12:  
+(1873.20751953125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
+(1867.9879150390625, {'lr': 2.500953106649925e-06, 'hiddenDimension': 12, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 12})
+13:  
+(1873.20751953125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
+(1869.03076171875, {'lr': 1.519067632889861e-06, 'hiddenDimension': 12, 'seq_length': 11, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 13})
+14:  
+(1873.20751953125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
+(1865.53662109375, {'lr': 1.643483897025915e-06, 'hiddenDimension': 12, 'seq_length': 13, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 14})
+15:  
+(1873.20751953125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
+(1865.6463623046875, {'lr': 2.0828498627566118e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 15})
+16:  
+(1873.20751953125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
+(1859.732666015625, {'lr': 1.4522625661135202e-06, 'hiddenDimension': 12, 'seq_length': 14, 'numberLayers': 1, 'batch_size': 32, 'num_epochs': 10, 'number': 16})
+(1850.43798828125, {'lr': 1.4522625661135202e-06, 'hiddenDimension': 12, 'seq_length': 14, 'numberLayers': 1, 'batch_size': 32, 'num_epochs': 10, 'number': 16})
+17:  
+(1873.20751953125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
+(1863.7431640625, {'lr': 3.418308481002057e-06, 'hiddenDimension': 12, 'seq_length': 10, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 17})
+(1852.90966796875, {'lr': 3.418308481002057e-06, 'hiddenDimension': 12, 'seq_length': 10, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 17})
+18:  
+(1873.20751953125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
+(1868.0966796875, {'lr': 1.373998166219482e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 18})
+19:  
+(1873.20751953125, {'lr': 1e-06, 'hiddenDimension': 12, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 5})
+(1863.0098876953125, {'lr': 1.4389446150935432e-06, 'hiddenDimension': 12, 'seq_length': 15, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 19})
+(1858.01025390625, {'lr': 1.4389446150935432e-06, 'hiddenDimension': 12, 'seq_length': 15, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 19})
+20:  
+(321.90411376953125, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(1513.6805419921875, {'lr': 0.012269723269487335, 'hiddenDimension': 13, 'seq_length': 8, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 20})
+21:  
+(321.90411376953125, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(1176.2398681640625, {'lr': 0.03014331288616076, 'hiddenDimension': 13, 'seq_length': 8, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 21})
+22:  
+(321.90411376953125, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(114.69978332519531, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})
+(73.31378936767578, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})
+23:  
+(321.90411376953125, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(276.0502624511719, {'lr': 0.013172468908939744, 'hiddenDimension': 13, 'seq_length': 6, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 23})
+(250.2265625, {'lr': 0.013172468908939744, 'hiddenDimension': 13, 'seq_length': 6, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 23})
+24:  
+(1863.0098876953125, {'lr': 1.4389446150935432e-06, 'hiddenDimension': 12, 'seq_length': 15, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 19})
+(1862.748291015625, {'lr': 1.9553296663940223e-06, 'hiddenDimension': 12, 'seq_length': 13, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 24})
+25:  
+(321.90411376953125, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(817.568359375, {'lr': 0.015001149143796258, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 25})
+26:  
+(321.90411376953125, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(354.5528869628906, {'lr': 0.033001442817887916, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 26})
+(12095.8544921875, {'lr': 0.033001442817887916, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 26})
+27:  
+(321.90411376953125, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})
+(3568.953369140625, {'lr': 0.013084476306602422, 'hiddenDimension': 13, 'seq_length': 6, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 27})
+28:  
+(276.0502624511719, {'lr': 0.013172468908939744, 'hiddenDimension': 13, 'seq_length': 6, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 23})
+(2660.751220703125, {'lr': 0.018609855197283788, 'hiddenDimension': 13, 'seq_length': 6, 'numberLayers': 1, 'batch_size': 64, 'num_epochs': 10, 'number': 28})
+29:  
+(114.69978332519531, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})
+(4362.80908203125, {'lr': 0.039760609674801, 'hiddenDimension': 13, 'seq_length': 8, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 29})
+30:  
+(114.69978332519531, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})
+(719.646484375, {'lr': 0.026327516343431227, 'hiddenDimension': 13, 'seq_length': 11, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 30})
+31:  
+(276.0502624511719, {'lr': 0.013172468908939744, 'hiddenDimension': 13, 'seq_length': 6, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 23})
+(3641.298583984375, {'lr': 0.01995692398618933, 'hiddenDimension': 13, 'seq_length': 6, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 31})
+32:  
+(114.69978332519531, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})
+(932.8846435546875, {'lr': 0.027940760439810287, 'hiddenDimension': 13, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 32})
+33:  
+(276.0502624511719, {'lr': 0.013172468908939744, 'hiddenDimension': 13, 'seq_length': 6, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 23})
+(210.56591796875, {'lr': 0.02140776223290753, 'hiddenDimension': 13, 'seq_length': 6, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 33})
+34:  
+(114.69978332519531, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})
+(5158.92236328125, {'lr': 0.05576024734259155, 'hiddenDimension': 13, 'seq_length': 12, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 34})
+35:  
+(114.69978332519531, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})
+(1445.8834228515625, {'lr': 0.03115296908791776, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 35})
+Lowest error model: 
+(73.31378936767578, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})Hyperparameter schedule for top performing model(73.31378936767578, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})(114.69978332519531, {'lr': 0.019114301738307873, 'hiddenDimension': 13, 'seq_length': 9, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 22})(321.90411376953125, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})(2993.11669921875, {'lr': 0.009000000000000001, 'hiddenDimension': 13, 'seq_length': 7, 'numberLayers': 1, 'batch_size': 128, 'num_epochs': 10, 'number': 3})

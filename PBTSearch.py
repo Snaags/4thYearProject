@@ -71,7 +71,7 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 			print(output)
 			
 			
-			output = Explore(models[output],file,0,number)
+			output = Explore(models[output],file,0.3,number)
 			return output
 
 	#return the same model if within the number of healthy models 
@@ -100,11 +100,11 @@ SearchType = "Random"
 hyperparameters = [
 	
 	[0.000001,0.001,"log"],	#"lr" 
-	[1,30,"int"],				#"hiddenDimension" [
-	[1,30,"int"],				#"seq_length" 
+	[1,60,"int"],				#"hiddenDimension" [
+	[1,60,"int"],				#"seq_length" 
 	[1,1,"int"],				#"numberLayers"	
-	[128,128,"int"],			#"batch_size"
-	[1,1,"int"]					#"num_epochs"
+	[16,512,"Po2"],				#"batch_size"
+	[500,500,"int"]					#"num_epochs"
 					]
 
 
@@ -114,7 +114,7 @@ file = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
 file = np.asarray(file)#convert to numpy array
 
 lineage = {}
-searchsize = 70
+searchsize = 60
 if SearchType == "Random":
 	numbers = 0
 	searchSpace = CreateRandomSets(file,hyperparameters,searchsize)
@@ -150,14 +150,14 @@ if __name__ == "__main__":
 	p.join()
 	"""
 	run = True
-	counter = 3
+	counter = 0
 	
 
 	while run == True:
 		Alive = []
 		Models = {}
 		ModelsAlive = {}
-		with Pool(processes=4) as pool:
+		with Pool(processes=8) as pool:
 			results = pool.starmap(RunModel,searchSpace)
 			pool.close()
 			pool.join()
@@ -192,9 +192,12 @@ if __name__ == "__main__":
 			
 best = 9999999999999
 file = open("SearchLog.txt","w")
-file.write("lr hidden seq_length \n")
+file.write("Total run time: "+str(time.time() - start))
 file.close()
 file = open("SearchLog.txt","a")
+file.write("lr hidden seq_length \n")
+
+
 file.write("Hyperparameter Ranges:\n")
 for i in hyperparameters:
 	file.write(str(i)+"\n")
@@ -214,20 +217,26 @@ file.write(str(besttuple))
 print(best)
 
 
+OutputHP = []
 
 
-"""
 while True:
-
-	OutputHP.append(lineage[bestnum][lineage[bestnum].index(besttuple)][1])
+	print(lineage[bestnum])
+	OutputHP.append(lineage[bestnum][lineage[bestnum].index(besttuple)])
 	print(OutputHP)
-	if lineage[bestnum].index([besttuple]) ==0:
+	if lineage[bestnum].index(besttuple) ==0:
 		break
 
-	besttuple = lineage[bestnum][lineage[bestnum].index([besttuple])-1]
+	besttuple = lineage[bestnum][lineage[bestnum].index(besttuple)-1]
 	bestnum = besttuple[1]["number"]
-"""
 
+
+file.write("Hyperparameter schedule for top performing model")
+
+for i in OutputHP:
+	print(i)
+
+	file.write(str(i))
 
 initpoints = []
 finalpoints = []

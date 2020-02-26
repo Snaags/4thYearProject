@@ -59,9 +59,10 @@ def Explore(hyperparameters,file,mutation = 0.05, number = None):
 			output[4] = x
 
 		elif i == "batch_size":
+			
+			if hyperparameters[i] != 1 and random.uniform(mutation-1,mutation)>0:
+				x = math.ceil(2**(math.log2(hyperparameters[i])+(random.choice([-1,1]))))
 
-			if random.uniform(mutation-1,mutation)>0:
-				x = math.ceil(((hyperparameters[i]**0.5)+(random.choice([-1,1])))**2)
 			else:
 				x = hyperparameters[i]
 			output[5] = x
@@ -87,6 +88,12 @@ def RandomRange(min, max,types):
 		maxexp = np.log10(np.abs(max))
 
 		output = random.randint(1,9)*10**random.randint(minexp,maxexp)
+
+	if types == "Po2":
+		minpow = math.log2(min)
+		maxpow = math.log2(max)
+		output = 2**random.randint(minpow,maxpow)
+
 		
 	return output
 
