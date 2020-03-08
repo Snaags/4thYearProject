@@ -71,7 +71,7 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 			print(output)
 			
 			
-			output = Explore(models[output],file,0.3,number)
+			output = Explore(models[output],file,0.15,number)
 			return output
 
 	#return the same model if within the number of healthy models 
@@ -99,12 +99,12 @@ SearchType = "Random"
 
 hyperparameters = [
 	
-	[0.000001,0.001,"log"],	#"lr" 
-	[1,60,"int"],				#"hiddenDimension" [
-	[1,60,"int"],				#"seq_length" 
+	[0.0001,0.001,"log"],	#"lr" 
+	[150,250,"int"],				#"hiddenDimension" [
+	[20,40,"int"],				#"seq_length" 
 	[1,1,"int"],				#"numberLayers"	
-	[16,512,"Po2"],				#"batch_size"
-	[500,500,"int"]					#"num_epochs"
+	[2,256,"Po2"],				#"batch_size"
+	[20,20,"int"]					#"num_epochs"
 					]
 
 
@@ -113,8 +113,72 @@ hyperparameters = [
 file = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
 file = np.asarray(file)#convert to numpy array
 
+file2 = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
+file2 = np.asarray(file2)#convert to numpy array
+
+print(len(file2))
+file3 = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
+file3 = np.asarray(file3)#convert to numpy array
+print(len(file3))
+file4 = pandas.read_csv(path+"/StockData/GOOGL.csv").loc[:,"Close"]
+file4 = np.asarray(file4)#convert to numpy array
+print(len(file4))
+
+
+def RSI(file,N):
+	output = []
+	U = []
+	D = []
+	RSI = 0
+	i_old = 0
+	
+
+	for i in file:
+		v = i - i_old
+
+		if v > 0:
+			U.append(v)
+			D.append(0)
+		else:
+			D.append(-v)
+			U.append(0)
+
+		i_old = i
+
+		if len(U) > 14:
+			U.pop(0)
+			D.pop(0)
+			RS = SMMA(U)/SMMA(D)
+			RSI = 100 - (100/(1+RS))
+		
+		output.append(RSI)
+
+	return output 
+
+
+def SMMA(data):
+
+	N = len(data)
+	MMA = 0
+
+	def step(MMA, new_sample, N):
+
+		return ((N - 1)*MMA + new_sample)/N
+
+	
+	for i in data:
+		MMA = step(MMA,i,N)
+
+	return MMA
+
+RSIdata = np.asarray(RSI(file2, 14))
+
+
+file = np.stack((file,file2,RSIdata,file3,file4),1)
+
+
 lineage = {}
-searchsize = 60
+searchsize = 20
 if SearchType == "Random":
 	numbers = 0
 	searchSpace = CreateRandomSets(file,hyperparameters,searchsize)
@@ -150,14 +214,14 @@ if __name__ == "__main__":
 	p.join()
 	"""
 	run = True
-	counter = 0
+	counter = 6
 	
-
+	
 	while run == True:
 		Alive = []
-		Models = {}
 		ModelsAlive = {}
-		with Pool(processes=8) as pool:
+		Models = {}
+		with Pool(processes=4) as pool:
 			results = pool.starmap(RunModel,searchSpace)
 			pool.close()
 			pool.join()
@@ -178,13 +242,12 @@ if __name__ == "__main__":
 			lineage[i["HyperParameters"]["number"]].append((i["EvalScore"],HP))
 
 		##Searches Models for top performers
-
 		counter -= 1
 		if counter == 0:
 			break 
 
 		for i in ModelsAlive:
-			searchSpace.append(Exploit(0.4, Models,i,file,"Gaussian",ModelsAlive[i][1]))
+			searchSpace.append(Exploit(0.5, Models,i,file,"Gaussian",ModelsAlive[i][1]))
 
 	
 		
@@ -192,7 +255,7 @@ if __name__ == "__main__":
 			
 best = 9999999999999
 file = open("SearchLog.txt","w")
-file.write("Total run time: "+str(time.time() - start))
+file.write("Total run time: "+str(time.time() - start)+"\n")
 file.close()
 file = open("SearchLog.txt","a")
 file.write("lr hidden seq_length \n")
@@ -213,7 +276,7 @@ for i in lineage:
 			bestnum = i
 			besttuple = c
 file.write("Lowest error model: \n")
-file.write(str(besttuple))
+file.write(str(besttuple)+"\n\n")
 print(best)
 
 
@@ -231,12 +294,12 @@ while True:
 	bestnum = besttuple[1]["number"]
 
 
-file.write("Hyperparameter schedule for top performing model")
+file.write("Hyperparameter schedule for top performing model: \n")
 
 for i in OutputHP:
 	print(i)
 
-	file.write(str(i))
+	file.write(str(i)+"\n")
 
 initpoints = []
 finalpoints = []
@@ -265,14 +328,15 @@ for i in lineage:
 init = np.array(initpoints)
 final = np.array(finalpoints)
 
-
-
+stepcounter = float(1/len(lines))
+greencounter = 0
 fig = plt.figure(figsize = [19.20,10.80])
 for i in lines:
 	i = np.array(i)
-	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = "b",lw = 0.5)
+	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	greencounter += stepcounter
 plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
-plt.scatter(final[:,0],final[:,1],s = 15,c = finalscores, cmap = 'summer', alpha = 0.7)
+plt.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 300, cmap = 'summer', alpha = 0.7)
 cbar = plt.colorbar()
 cbar.set_label('RME')
 plt.xscale("log")
@@ -296,29 +360,33 @@ for i in lineage:
 	line = []
 	for c in lineage[i]:
 		if lineage[i].index(c) == 0 and i < searchsize -1 :
-			initpoints.append([c[1]["lr"],c[1]["batch_size"]])
+			initpoints.append([c[1]["lr"],c[1]["hiddenDimension"]])
 
 		if lineage[i].index(c) == len(lineage[i])-1 and i in Alive:
 
-			finalpoints.append([c[1]["lr"],c[1]["batch_size"]])
+			finalpoints.append([c[1]["lr"],c[1]["hiddenDimension"]])
 			finalscores.append(c[0])
 
-		line.append([c[1]["lr"],c[1]["batch_size"]])
+		line.append([c[1]["lr"],c[1]["hiddenDimension"]])
 
 
 init = np.array(initpoints)
 final = np.array(finalpoints)
 
 fig = plt.figure(figsize = [19.20,10.80])
+stepcounter = float(1/len(lines))
+greencounter = 0
 for i in lines:
 	i = np.array(i)
-	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = "b",lw = 0.5)
+	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	greencounter += stepcounter
+
 plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
-plt.scatter(final[:,0],final[:,1],s = 20,c = finalscores, cmap = 'summer', alpha = 0.7)
+plt.scatter(final[:,0],final[:,1],s = 20,vmin = 0, vmax = 300,c = finalscores, cmap = 'summer', alpha = 0.7)
 cbar = plt.colorbar()
 cbar.set_label('RME')
 plt.ylabel("Batch Size")
 plt.xscale("log")
 plt.xlabel("Learning Rate")
-plt.savefig(("Graphs/"+str(float(best))+": lr batch_size.pdf"),dpi=1200)
+plt.savefig(("Graphs/"+str(float(best))+": lr hiddenDimension.pdf"),dpi=1200)
 plt.clf()
