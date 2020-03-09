@@ -56,14 +56,7 @@ class LSTMModel(nn.Module):
         self.hidden_dim = hidden_dim
         self.input_dim = input_dim
         self.layer_dim = layer_dim
-
-        #self.attnEnc = torch.nn.TransformerEncoderLayer(self.input_dim,nhead = 4)
-        #self.lstmEnc = nn.LSTM(input_dim, hidden_dim/2, layer_dim, batch_first=True,dropout = dropout)
-        #self.snn = nn.Linear(4, 1)
-        #self.slstm = nn.LSTM(input_dim, 4, 1, batch_first=False,dropout = 0)
-        #self.attn = nn.MultiheadAttention(hidden_dim, hidden_dim/4)
         self.lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=False,dropout = dropout)
-        
         self.act = nn.ReLU()
         # Readout layer
         self.fc = nn.Linear(hidden_dim, output_dim)
@@ -82,7 +75,7 @@ class LSTMModel(nn.Module):
         
         out = self.act(out) 
         out = self.fc(out[-1,:,:])
-        
+        out = torch.squeeze(out)
 
         return out
 

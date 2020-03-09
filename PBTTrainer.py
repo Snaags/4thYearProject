@@ -16,7 +16,7 @@ path = os.getcwd()
 
 
 
-def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 100,num_epochs = 5,ID= None, number = None):
+def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 100,l2= 1e-5,num_epochs = 5,ID= None, number = None):
 	"""
 	test = []
 	if ID != None:
@@ -36,6 +36,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		"numberLayers":numberLayers,
 		"batch_size":batch_size,
 		"num_epochs":num_epochs,
+		"l2":l2,
 		"ID":ID,
 		"number":number
 	}
@@ -70,26 +71,32 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 	scalers = []
 	scaled_data = []
-	for i in range(len(X[0,:])):
-		scalers.append(MinMaxScaler(feature_range=(-1, 1)))
-	#scaler = MinMaxScaler(feature_range=(-1, 1))	#scale data
-	#scaler1 = MinMaxScaler(feature_range=(-1, 1))	#scale data	
-	#scale2 = MinMaxScaler(feature_range=(-1, 1))	#scale data
-	#scaler3 = MinMaxScaler(feature_range=(-1, 1))	#scale data	
-	#scaler4 = MinMaxScaler(feature_range=(-1, 1))	#scale data
-	index_count = 0
-	for i in scalers:
-		scaled_data.append(i.fit_transform(X[:,index_count].reshape(-1, 1)))
-		index_count +=1 
+	if X.ndim != 1:
+
+		for i in range(len(X[0,:])):
+			scalers.append(MinMaxScaler(feature_range=(-1, 1)))
+		#scaler = MinMaxScaler(feature_range=(-1, 1))	#scale data
+		#scaler1 = MinMaxScaler(feature_range=(-1, 1))	#scale data	
+		#scale2 = MinMaxScaler(feature_range=(-1, 1))	#scale data
+		#scaler3 = MinMaxScaler(feature_range=(-1, 1))	#scale data	
+		#scaler4 = MinMaxScaler(feature_range=(-1, 1))	#scale data
+		index_count = 0
+		for i in scalers:
+			scaled_data.append(i.fit_transform(X[:,index_count].reshape(-1, 1)))
+			index_count +=1 
 
 
-	"""	X0 = scaler.fit_transform(X[:,0].reshape(-1, 1))
-	X1 = scaler1.fit_transform(X[:,1].reshape(-1, 1))
-	X2 = scaler.fit_transform(X[:,2].reshape(-1, 1))
-	X3 = scaler1.fit_transform(X[:,3].reshape(-1, 1))
-	X4 = scaler1.fit_transform(X[:,3].reshape(-1, 1))"""
+		"""	X0 = scaler.fit_transform(X[:,0].reshape(-1, 1))
+		X1 = scaler1.fit_transform(X[:,1].reshape(-1, 1))
+		X2 = scaler.fit_transform(X[:,2].reshape(-1, 1))
+		X3 = scaler1.fit_transform(X[:,3].reshape(-1, 1))
+		X4 = scaler1.fit_transform(X[:,3].reshape(-1, 1))"""
 
-	X = np.stack((scaled_data),1)
+		X = np.stack((scaled_data),1)
+
+	else:
+		scalers.append(MinMaxScaler(feature_range=(-1, 1)))	#scale data
+		X = scalers[0].fit_transform(X.reshape(-1, 1))	
 	input_dim = np.shape(X)[1]
 
 
@@ -114,6 +121,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
 	samples = torch.transpose(samples,0,1)
+	samples = torch.squeeze(samples)
 	samples = torch.split(samples,batch_size,dim = 1)
 	samples = list(samples)
 	del samples[-1]
@@ -121,12 +129,15 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	lables = torch.cuda.FloatTensor(y[:,0])
 	#lables = torch.transpose(lables,0,1)
 	lablesplot = torch.FloatTensor(y[:,0])
+	lables = torch.squeeze(lables)
 	lables = torch.split(lables,batch_size,dim = 0)
 
 	lables = list(lables)
 	del lables[-1]
 	lables = tuple(lables)
 
+
+	
 
 ######################################################################################################################
 	
@@ -205,7 +216,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	
 
 	
-	optimiser = torch.optim.Adam(model.parameters(), lr=lr)
+	optimiser = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2)
 
 
 	#res = torch.cuda.FloatTensor()
@@ -223,6 +234,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 			y_pred = model(X)
 			#res = torch.cat((res, y_pred),0)
 			loss = loss_fn(y_pred, y)
+
 			# Backward pass
 			loss.sum().backward()
 
@@ -279,7 +291,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	for X,y in zip(samples,lables):
 
 		y_pred = model(X)
-		results = torch.cat((results, y_pred),0)
+		results = torch.cat((results, torch.unsqueeze(y_pred,0)),0)
 
 	##test_lost_score =  list(test_lost_score.cpu())
 
@@ -353,7 +365,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	plt.clf()
 
 	#MAPE
-	print("Total training and validation time for model ",number,": ",time.time() - startTime," \n lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;Batch Size:",batch_size," -- MAPE:",float(error)," -- MSE:",float(loss)," -- DS:",float(DS))
+	print("Total training and validation time for model ",number,": ",time.time() - startTime," \n lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;Batch Size:",batch_size,"l2:",l2," -- MAPE:",float(error)," -- MSE:",float(loss)," -- DS:",float(DS))
 	
 
 	
@@ -375,6 +387,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		"numberLayers":numberLayers,
 		"batch_size":batch_size,
 		"num_epochs":num_epochs,
+		"l2":l2,
 		"ID":statedict,
 		"number":number
 	}

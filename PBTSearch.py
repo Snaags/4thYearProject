@@ -23,108 +23,6 @@ import random
 from Utils import CreateRandomSets, Explore
 path = os.getcwd()
 
-
-def Exploit(probability, models,score,file, distribution, number = None):	##probability: percentage of population deemed healthy, 
-												##models: list of scores from population, Score: score of currently testing model
-												##file: dataset for training, distribution: type of selection from healthy models "Guassian", "Uniform"
-
-	
-	score = float(score)
-
-	num_healthy = int(len(models)*probability)
-
-	#Sets healthy set to 1 when calculation produces a number smaller than this
-	if num_healthy < 1:
-		num_healthy = 1
-
-
-	modelrank = int(num_healthy)
-	
-	#loops through models to find the score passed to functions placement.
-	for i in models:
-		if score > float(i):
-			modelrank -= 1
-		
-
-		#Finds replacement model if model is deemed unfit.
-		if modelrank <= 0:
-			#Randomly select healthy model to exploit.
-
-			if distribution == "Uniform":
-				x = random.randint(1,num_healthy)
-
-			if distribution == "Gaussian":
-				x = math.ceil(abs(random.gauss(0,0.2))*num_healthy)
-
-			modelscores = []
-			for i in models:
-				modelscores.append(float(i))
-
-			for c in range(x):
-				output = modelscores.pop(modelscores.index(min(modelscores)))
-
-			#lineage[number].append(str("Mutate "+str(models[output]["number"])))
-			number_new =max(lineage.keys())+1
-			lineage[number_new] = [lineage[models[output]["number"]][-1]]
-			number = number_new
-
-			print(output)
-			
-			
-			output = Explore(models[output],file,0.15,number)
-			return output
-
-	#return the same model if within the number of healthy models 
-	return Explore(models[score],file,0,number)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#########HyperParameter Search Settings###########
-
-
-
-SearchType = "Random"
-
-
-hyperparameters = [
-	
-	[0.0001,0.001,"log"],	#"lr" 
-	[150,250,"int"],				#"hiddenDimension" [
-	[20,40,"int"],				#"seq_length" 
-	[1,1,"int"],				#"numberLayers"	
-	[2,256,"Po2"],				#"batch_size"
-	[20,20,"int"]					#"num_epochs"
-					]
-
-
-
-###Import and scale
-file = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
-file = np.asarray(file)#convert to numpy array
-
-file2 = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
-file2 = np.asarray(file2)#convert to numpy array
-
-print(len(file2))
-file3 = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
-file3 = np.asarray(file3)#convert to numpy array
-print(len(file3))
-file4 = pandas.read_csv(path+"/StockData/GOOGL.csv").loc[:,"Close"]
-file4 = np.asarray(file4)#convert to numpy array
-print(len(file4))
-
-
 def RSI(file,N):
 	output = []
 	U = []
@@ -171,14 +69,107 @@ def SMMA(data):
 
 	return MMA
 
-RSIdata = np.asarray(RSI(file2, 14))
+
+def Exploit(probability, models,score,file, distribution, number = None):	##probability: percentage of population deemed healthy, 
+	##models: list of scores from population, Score: score of currently testing model
+	##file: dataset for training, distribution: type of selection from healthy models "Guassian", "Uniform"
+
+	
+	score = float(score)
+
+	num_healthy = searchsize*probability
+
+	#Sets healthy set to 1 when calculation produces a number smaller than this
+	if num_healthy < 1:
+		num_healthy = 1
 
 
-file = np.stack((file,file2,RSIdata,file3,file4),1)
+	modelrank = int(num_healthy)
+	
+	#loops through models to find the score passed to functions placement.
+	for i in models:
+		if score > float(i):
+			modelrank -= 1
+		
+
+		#Finds replacement model if model is deemed unfit.
+		if modelrank <= 0:
+			#Randomly select healthy model to exploit.
+
+			if distribution == "Uniform":
+				x = random.randint(1,num_healthy)
+
+			if distribution == "Gaussian":
+				x = math.ceil(abs(random.gauss(0,0.2))*num_healthy)
+
+			modelscores = []
+			for i in models:
+				modelscores.append(float(i))
+
+			for c in range(x):
+				output = modelscores.pop(modelscores.index(min(modelscores)))
+
+			#lineage[number].append(str("Mutate "+str(models[output]["number"])))
+			number_new =max(lineage.keys())+1
+			lineage[number_new] = [lineage[models[output]["number"]][-1]]
+			number = number_new
+
+			print(output)
+			
+			
+			output = Explore(models[output],file,0.2,number)
+			return output
+
+	#return the same model if within the number of healthy models 
+	return Explore(models[score],file,0,number)
+
+
+#########HyperParameter Search Settings###########
+
+
+
+SearchType = "Random"
+searchsize = 20
+cores = 4
+mutations = 6
+hyperparameters = [
+	
+	[0.00001,0.001,"log"],	#"lr" 
+	[30,80,"int"],				#"hiddenDimension" [
+	[4,20,"int"],				#"seq_length" 
+	[1,1,"int"],				#"numberLayers"	
+	[32,64,"Po2"],				#"batch_size"
+	[0.0000001,0.0001,"log"]	,	#Regularization
+	[20,20,"int"]					#"num_epochs"
+					]
+
+
+
+###Import and scale
+file = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
+file = np.asarray(file)#convert to numpy array
+
+file2 = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
+file2 = np.asarray(file2)#convert to numpy array
+
+print(len(file2))
+file3 = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
+file3 = np.asarray(file3)#convert to numpy array
+print(len(file3))
+file4 = pandas.read_csv(path+"/StockData/GOOGL.csv").loc[:,"Close"]
+file4 = np.asarray(file4)#convert to numpy array
+print(len(file4))
+
+
+
+RSIdata = np.asarray(RSI(file, 14))
+
+
+#file = np.stack((file,file2,RSIdata,file3,file4),1)
 
 
 lineage = {}
-searchsize = 20
+
 if SearchType == "Random":
 	numbers = 0
 	searchSpace = CreateRandomSets(file,hyperparameters,searchsize)
@@ -193,8 +184,7 @@ if SearchType == "Random":
 print(len(searchSpace)," iterations of model to run")
 start = time.time()
 print(os.cpu_count()," CPU logical cores detected")
-concurrentTasks = 4
-print("Running",concurrentTasks,"models in parrallel")
+print("Running",cores,"models in parrallel")
 
 
 
@@ -214,14 +204,14 @@ if __name__ == "__main__":
 	p.join()
 	"""
 	run = True
-	counter = 6
+	counter = mutations
 	
 	
 	while run == True:
 		Alive = []
 		ModelsAlive = {}
 		Models = {}
-		with Pool(processes=4) as pool:
+		with Pool(processes=cores) as pool:
 			results = pool.starmap(RunModel,searchSpace)
 			pool.close()
 			pool.join()
@@ -247,7 +237,7 @@ if __name__ == "__main__":
 			break 
 
 		for i in ModelsAlive:
-			searchSpace.append(Exploit(0.5, Models,i,file,"Gaussian",ModelsAlive[i][1]))
+			searchSpace.append(Exploit(0.3, Models,i,file,"Gaussian",ModelsAlive[i][1]))
 
 	
 		
@@ -301,6 +291,14 @@ for i in OutputHP:
 
 	file.write(str(i)+"\n")
 
+
+
+
+
+
+##Learning Rate /Sequence length
+
+
 initpoints = []
 finalpoints = []
 finalscores = []
@@ -335,8 +333,10 @@ for i in lines:
 	i = np.array(i)
 	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
 	greencounter += stepcounter
-plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
-plt.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 300, cmap = 'summer', alpha = 0.7)
+if mutations != 1:
+	plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
+
+plt.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
 cbar = plt.colorbar()
 cbar.set_label('RME')
 plt.xscale("log")
@@ -346,6 +346,9 @@ plt.savefig(("Graphs/"+str(float(best))+": lr Seq.pdf"),dpi=1200)
 plt.clf()
 
 
+
+
+##Learning Rate /hidden Dimension
 initpoints = []
 finalpoints = []
 finalscores = []
@@ -380,13 +383,109 @@ for i in lines:
 	i = np.array(i)
 	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
 	greencounter += stepcounter
+if mutations != 1:
+	plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
 
-plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
-plt.scatter(final[:,0],final[:,1],s = 20,vmin = 0, vmax = 300,c = finalscores, cmap = 'summer', alpha = 0.7)
+plt.scatter(final[:,0],final[:,1],s = 20,vmin = 0, vmax = 800,c = finalscores, cmap = 'summer', alpha = 0.7)
 cbar = plt.colorbar()
 cbar.set_label('RME')
-plt.ylabel("Batch Size")
+plt.ylabel("hiddenDimension")
 plt.xscale("log")
 plt.xlabel("Learning Rate")
 plt.savefig(("Graphs/"+str(float(best))+": lr hiddenDimension.pdf"),dpi=1200)
+plt.clf()
+
+
+
+##Learning Rate / Regularisation
+
+initpoints = []
+finalpoints = []
+finalscores = []
+lines = []
+line = []
+
+for i in lineage:
+	if len(line) > 0:
+		lines.append(line)
+	line = []
+	for c in lineage[i]:
+		if lineage[i].index(c) == 0 and i < searchsize -1 :
+			initpoints.append([c[1]["lr"],c[1]["l2"]])
+
+		if lineage[i].index(c) == len(lineage[i])-1 and i in Alive:
+
+			finalpoints.append([c[1]["lr"],c[1]["l2"]])
+			finalscores.append(c[0])
+
+		line.append([c[1]["lr"],c[1]["l2"]])
+
+
+init = np.array(initpoints)
+final = np.array(finalpoints)
+
+fig = plt.figure(figsize = [19.20,10.80])
+stepcounter = float(1/len(lines))
+greencounter = 0
+for i in lines:
+	i = np.array(i)
+	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	greencounter += stepcounter
+if mutations != 1:
+	plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
+
+plt.scatter(final[:,0],final[:,1],s = 20,vmin = 0, vmax = 800,c = finalscores, cmap = 'summer', alpha = 0.7)
+cbar = plt.colorbar()
+cbar.set_label('RME')
+plt.ylabel("l2 Weighting")
+plt.yscale("log")
+plt.xscale("log")
+plt.xlabel("Learning Rate")
+plt.savefig(("Graphs/"+str(float(best))+": lr l2.pdf"),dpi=1200)
+plt.clf()
+
+
+initpoints = []
+finalpoints = []
+finalscores = []
+lines = []
+line = []
+
+
+for i in lineage:
+	if len(line) > 0:
+		lines.append(line)
+	line = []
+	for c in lineage[i]:
+		if lineage[i].index(c) == 0 and i < searchsize -1 :
+			initpoints.append([c[1]["lr"],c[1]["batch_size"]])
+
+		if lineage[i].index(c) == len(lineage[i])-1 and i in Alive:
+
+			finalpoints.append([c[1]["lr"],c[1]["batch_size"]])
+			finalscores.append(c[0])
+
+		line.append([c[1]["lr"],c[1]["batch_size"]])
+
+
+init = np.array(initpoints)
+final = np.array(finalpoints)
+
+fig = plt.figure(figsize = [19.20,10.80])
+stepcounter = float(1/len(lines))
+greencounter = 0
+for i in lines:
+	i = np.array(i)
+	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	greencounter += stepcounter
+if mutations != 1:
+	plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
+
+plt.scatter(final[:,0],final[:,1],s = 20,vmin = 0, vmax = 800,c = finalscores, cmap = 'summer', alpha = 0.7)
+cbar = plt.colorbar()
+cbar.set_label('RME')
+plt.ylabel("batch Size")
+plt.xscale("log")
+plt.xlabel("Learning Rate")
+plt.savefig(("Graphs/"+str(float(best))+": lr batch_size.pdf"),dpi=1200)
 plt.clf()

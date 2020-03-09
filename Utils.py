@@ -26,7 +26,7 @@ import random
 	#Apply to the targeted network
 
 def Explore(hyperparameters,file,mutation = 0.05, number = None):
-	output = [file,0,0,0,0,0,0,hyperparameters["ID"],number]
+	output = [file,0,0,0,0,0,0,0,hyperparameters["ID"],number]
 	for i in hyperparameters:
 		if i == "lr":
 
@@ -67,8 +67,17 @@ def Explore(hyperparameters,file,mutation = 0.05, number = None):
 				x = hyperparameters[i]
 			output[5] = x
 
+		if i == "l2":
+
+			if mutation != 0:
+				x = hyperparameters[i] + hyperparameters[i]*((mutation*10)**random.uniform(-1,1))
+			
+			else:
+				x = hyperparameters[i]
+			output[6] = x
+
 		elif i == "num_epochs":
-			output[6] = hyperparameters[i]
+			output[7] = hyperparameters[i]
 
 	return output
 
