@@ -146,26 +146,22 @@ hyperparameters = [
 
 
 ###Import and scale
-file = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
-file = np.asarray(file)#convert to numpy array
+APPLC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
+APPLC = np.asarray(APPLC)#convert to numpy array
 
-file2 = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
-file2 = np.asarray(file2)#convert to numpy array
+APPLV = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
+APPLV = np.asarray(APPLV)#convert to numpy array
 
-print(len(file2))
-file3 = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
-file3 = np.asarray(file3)#convert to numpy array
-print(len(file3))
-file4 = pandas.read_csv(path+"/StockData/GOOGL.csv").loc[:,"Close"]
-file4 = np.asarray(file4)#convert to numpy array
-print(len(file4))
+MSFTC = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
+MSFTC = np.asarray(MSFTC)#convert to numpy array
 
+GOOGLC = pandas.read_csv(path+"/StockData/GOOGL.csv").loc[:,"Close"]
+GOOGLC = np.asarray(GOOGLC)#convert to numpy array
 
-
-RSIdata = np.asarray(RSI(file, 14))
+APPLRSI = np.asarray(RSI(APPLC, 14))
 
 
-#file = np.stack((file,file2,RSIdata,file3,file4),1)
+file = np.stack((APPLC,APPLV,APPLRSI,MSFTC,GOOGLC),1)
 
 
 lineage = {}
