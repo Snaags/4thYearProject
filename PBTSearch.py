@@ -20,8 +20,27 @@ import matplotlib.colors as colors
 import matplotlib.axes as axes 
 import multiprocessing
 import random
-from Utils import CreateRandomSets, Explore
+from Utils import CreateRandomSets, Explore, CreateSets
 path = os.getcwd()
+#simple moving average
+def SMA(file,N):
+	output = []
+	n = 1
+	for i in range(len(file)):
+		if (i - N) < 0:		
+			m = i
+			if i == 0:
+				n = 1
+			else:
+				n = m
+		else:
+			n = N
+			m = N
+		output.append(sum(file[(i-m):i])/n)
+
+	return output
+
+
 
 def RSI(file,N):
 	output = []
@@ -46,7 +65,7 @@ def RSI(file,N):
 		if len(U) > 14:
 			U.pop(0)
 			D.pop(0)
-			RS = SMMA(U)/SMMA(D)
+			RS = SMMA(U,N)/SMMA(D,N)
 			RSI = 100 - (100/(1+RS))
 		
 		output.append(RSI)
@@ -54,9 +73,8 @@ def RSI(file,N):
 	return output 
 
 
-def SMMA(data):
+def SMMA(data,N):
 
-	N = len(data)
 	MMA = 0
 
 	def step(MMA, new_sample, N):
@@ -68,6 +86,22 @@ def SMMA(data):
 		MMA = step(MMA,i,N)
 
 	return MMA
+
+def SMMA_Seq(data,N):
+	output = []
+	MMA = 0
+
+	def step(MMA, new_sample, N):
+
+		return ((N - 1)*MMA + new_sample)/N
+
+	
+	for i in data:
+		MMA = step(MMA,i,N)
+		output.append(MMA)
+
+	return output
+
 
 
 def Exploit(probability, models,score,file, distribution, number = None):	##probability: percentage of population deemed healthy, 
@@ -124,23 +158,24 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 	return Explore(models[score],file,0,number)
 
 
+
 #########HyperParameter Search Settings###########
 
 
 
 SearchType = "Random"
-searchsize = 20
+searchsize = 64
 cores = 4
-mutations = 6
+mutations =100
 hyperparameters = [
 	
-	[0.00001,0.001,"log"],	#"lr" 
-	[30,80,"int"],				#"hiddenDimension" [
-	[4,20,"int"],				#"seq_length" 
+	[0.000001,0.001,"log"],	#"lr" 
+	[2,30,"int"],				#"hiddenDimension" [
+	[2,30,"int"],				#"seq_length" 
 	[1,1,"int"],				#"numberLayers"	
-	[32,64,"Po2"],				#"batch_size"
-	[0.0000001,0.0001,"log"]	,	#Regularization
-	[20,20,"int"]					#"num_epochs"
+	[8,64,"Po2"],				#"batch_size"
+	[0.00000001,0.0000001,"log"]	,	#Regularization
+	[10,10,"int"]					#"num_epochs"
 					]
 
 
@@ -148,6 +183,8 @@ hyperparameters = [
 ###Import and scale
 APPLC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
 APPLC = np.asarray(APPLC)#convert to numpy array
+
+
 
 APPLV = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
 APPLV = np.asarray(APPLV)#convert to numpy array
@@ -160,8 +197,20 @@ GOOGLC = np.asarray(GOOGLC)#convert to numpy array
 
 APPLRSI = np.asarray(RSI(APPLC, 14))
 
+APPLSMA200 = np.asarray(SMA(APPLC, 200))
+APPLSMA50 = np.asarray(SMA(APPLC, 50))
+APPLSMMA200 = np.asarray(SMMA_Seq(APPLC, 200)) 
+APPLSMMA50 = np.asarray(SMMA_Seq(APPLC, 50)) 
 
-file = np.stack((APPLC,APPLV,APPLRSI,MSFTC,GOOGLC),1)
+
+APPLCD = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
+APPLCD = np.asarray(APPLCD)#convert to numpy array
+
+#APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
+#APPLEPS = np.asarray(APPLEPS)#convert to numpy array
+#APPLVAR = np.var(APPLC)
+file = APPLC
+#file = np.stack((APPLC,APPLRSI,APPLCD,GOOGLC,MSFTC,APPLSMA200,APPLSMA50,APPLSMMA200,APPLSMMA50),1)
 
 
 lineage = {}
@@ -169,11 +218,16 @@ lineage = {}
 if SearchType == "Random":
 	numbers = 0
 	searchSpace = CreateRandomSets(file,hyperparameters,searchsize)
-	for i in searchSpace:
-		i.append(None)
-		i.append(numbers)
-		lineage[numbers] = []
-		numbers +=1
+elif SearchType == "Grid":
+	numbers = 0
+	searchSpace = CreateSets(file,hyperparameters,searchsize)
+
+for i in searchSpace:
+	i.append(None)
+	i.append(numbers)
+	lineage[numbers] = []
+	numbers +=1
+
 
 
 
@@ -212,6 +266,7 @@ if __name__ == "__main__":
 			pool.close()
 			pool.join()
 
+
 		searchSpace = []
 		
 		
@@ -233,7 +288,7 @@ if __name__ == "__main__":
 			break 
 
 		for i in ModelsAlive:
-			searchSpace.append(Exploit(0.3, Models,i,file,"Gaussian",ModelsAlive[i][1]))
+			searchSpace.append(Exploit(0.4, Models,i,file,"Gaussian",ModelsAlive[i][1]))
 
 	
 		
@@ -321,23 +376,46 @@ for i in lineage:
 
 init = np.array(initpoints)
 final = np.array(finalpoints)
+finalscores = np.array(finalscores)
+
+scoresx = np.concatenate((final[:,0].reshape(-1,1),finalscores.reshape(-1,1)),1)
+scoresx = scoresx[scoresx[:,0].argsort()]
+
+scoresy = np.concatenate((final[:,1].reshape(-1,1),finalscores.reshape(-1,1)),1)
+scoresy = scoresy[scoresy[:,0].argsort()]
+
 
 stepcounter = float(1/len(lines))
 greencounter = 0
-fig = plt.figure(figsize = [19.20,10.80])
+
+
+fig = plt.figure(figsize = [10.80,10.80],constrained_layout=True)
+gs = fig.add_gridspec(5, 5)
+mainax = fig.add_subplot(gs[1:,:-1])
+mainax.set_xscale("log")
+Xax = fig.add_subplot(gs[0, :-1],sharex = mainax)
+
+Yax = fig.add_subplot(gs[1:,-1],sharey = mainax)
+
+
+fig.tight_layout()
 for i in lines:
 	i = np.array(i)
-	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
 	greencounter += stepcounter
 if mutations != 1:
-	plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
+	mainax.scatter(init[:,0],init[:,1],c= "r",s = 20)
 
-plt.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
-cbar = plt.colorbar()
-cbar.set_label('RME')
-plt.xscale("log")
-plt.ylabel("Window Sequence Length")
-plt.xlabel("Learning Rate")
+mainax.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
+#cbar = plt.colorbar()
+#cbar.set_label('RME')
+Yax.plot(scoresy[:,1],scoresy[:,0])
+
+Xax.plot(scoresx[:,0],scoresx[:,1])
+mainax.set_ylabel("Window Sequence Length")
+mainax.set_xlabel("Learning Rate")
+Yax.set_ylabel("Model Error (MSE)")
+Xax.set_xlabel("Model Error (MSE)")
 plt.savefig(("Graphs/"+str(float(best))+": lr Seq.pdf"),dpi=1200)
 plt.clf()
 
@@ -345,6 +423,7 @@ plt.clf()
 
 
 ##Learning Rate /hidden Dimension
+
 initpoints = []
 finalpoints = []
 finalscores = []
@@ -371,26 +450,48 @@ for i in lineage:
 
 init = np.array(initpoints)
 final = np.array(finalpoints)
+finalscores = np.array(finalscores)
 
-fig = plt.figure(figsize = [19.20,10.80])
+scoresx = np.concatenate((final[:,0].reshape(-1,1),finalscores.reshape(-1,1)),1)
+scoresx = scoresx[scoresx[:,0].argsort()]
+
+scoresy = np.concatenate((final[:,1].reshape(-1,1),finalscores.reshape(-1,1)),1)
+scoresy = scoresy[scoresy[:,0].argsort()]
+
+
 stepcounter = float(1/len(lines))
 greencounter = 0
+
+
+fig = plt.figure(figsize = [10.80,10.80],constrained_layout=True)
+gs = fig.add_gridspec(5, 5)
+mainax = fig.add_subplot(gs[1:,:-1])
+mainax.set_xscale("log")
+Xax = fig.add_subplot(gs[0, :-1],sharex = mainax)
+
+Yax = fig.add_subplot(gs[1:,-1],sharey = mainax)
+
+
+fig.tight_layout()
 for i in lines:
 	i = np.array(i)
-	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
 	greencounter += stepcounter
 if mutations != 1:
-	plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
+	mainax.scatter(init[:,0],init[:,1],c= "r",s = 20)
 
-plt.scatter(final[:,0],final[:,1],s = 20,vmin = 0, vmax = 800,c = finalscores, cmap = 'summer', alpha = 0.7)
-cbar = plt.colorbar()
-cbar.set_label('RME')
-plt.ylabel("hiddenDimension")
-plt.xscale("log")
-plt.xlabel("Learning Rate")
-plt.savefig(("Graphs/"+str(float(best))+": lr hiddenDimension.pdf"),dpi=1200)
+mainax.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
+#cbar = plt.colorbar()
+#cbar.set_label('RME')
+
+Yax.plot(scoresy[:,1],scoresy[:,0])
+Xax.plot(scoresx[:,0],scoresx[:,1])
+mainax.set_ylabel("Hidden Layer Size")
+mainax.set_xlabel("Learning Rate")
+Yax.set_ylabel("Model Error (MSE)")
+Xax.set_xlabel("Model Error (MSE)")
+plt.savefig(("Graphs/"+str(float(best))+": lr hidden.pdf"),dpi=1200)
 plt.clf()
-
 
 
 ##Learning Rate / Regularisation
@@ -400,6 +501,8 @@ finalpoints = []
 finalscores = []
 lines = []
 line = []
+
+
 
 for i in lineage:
 	if len(line) > 0:
@@ -419,25 +522,49 @@ for i in lineage:
 
 init = np.array(initpoints)
 final = np.array(finalpoints)
+finalscores = np.array(finalscores)
 
-fig = plt.figure(figsize = [19.20,10.80])
+scoresx = np.concatenate((final[:,0].reshape(-1,1),finalscores.reshape(-1,1)),1)
+scoresx = scoresx[scoresx[:,0].argsort()]
+
+scoresy = np.concatenate((final[:,1].reshape(-1,1),finalscores.reshape(-1,1)),1)
+scoresy = scoresy[scoresy[:,0].argsort()]
+
+
 stepcounter = float(1/len(lines))
 greencounter = 0
+
+
+fig = plt.figure(figsize = [10.80,10.80],constrained_layout=True)
+gs = fig.add_gridspec(5, 5)
+mainax = fig.add_subplot(gs[1:,:-1])
+mainax.set_xscale("log")
+Xax = fig.add_subplot(gs[0, :-1],sharex = mainax)
+Xax.set_ylim(bottom = 0)
+Yax = fig.add_subplot(gs[1:,-1],sharey = mainax)
+Yax.set_xlim(left = 0)
+
+fig.tight_layout()
 for i in lines:
 	i = np.array(i)
-	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
 	greencounter += stepcounter
 if mutations != 1:
-	plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
+	mainax.scatter(init[:,0],init[:,1],c= "r",s = 20)
 
-plt.scatter(final[:,0],final[:,1],s = 20,vmin = 0, vmax = 800,c = finalscores, cmap = 'summer', alpha = 0.7)
-cbar = plt.colorbar()
-cbar.set_label('RME')
-plt.ylabel("l2 Weighting")
-plt.yscale("log")
-plt.xscale("log")
-plt.xlabel("Learning Rate")
-plt.savefig(("Graphs/"+str(float(best))+": lr l2.pdf"),dpi=1200)
+mainax.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
+#cbar = plt.colorbar()
+#cbar.set_label('RME')
+
+
+Yax.plot(scoresy[:,1],scoresy[:,0])
+Xax.plot(scoresx[:,0],scoresx[:,1])
+
+mainax.set_ylabel("Optimiser Regularisation (l2)")
+mainax.set_xlabel("Learning Rate")
+Yax.set_ylabel("Model Error (MSE)")
+Xax.set_xlabel("Model Error (MSE)")
+plt.savefig(("Graphs/"+str(float(best))+": lr Regularisation.pdf"),dpi=1200)
 plt.clf()
 
 
@@ -446,6 +573,7 @@ finalpoints = []
 finalscores = []
 lines = []
 line = []
+
 
 
 for i in lineage:
@@ -466,22 +594,43 @@ for i in lineage:
 
 init = np.array(initpoints)
 final = np.array(finalpoints)
+finalscores = np.array(finalscores)
 
-fig = plt.figure(figsize = [19.20,10.80])
+scoresx = np.concatenate((final[:,0].reshape(-1,1),finalscores.reshape(-1,1)),1)
+scoresx = scoresx[scoresx[:,0].argsort()]
+
+scoresy = np.concatenate((final[:,1].reshape(-1,1),finalscores.reshape(-1,1)),1)
+scoresy = scoresy[scoresy[:,0].argsort()]
+
+
 stepcounter = float(1/len(lines))
 greencounter = 0
+
+
+fig = plt.figure(figsize = [10.80,10.80],constrained_layout=True)
+gs = fig.add_gridspec(5, 5)
+mainax = fig.add_subplot(gs[1:,:-1])
+mainax.set_xscale("log")
+Xax = fig.add_subplot(gs[0, :-1],sharex = mainax)
+
+Yax = fig.add_subplot(gs[1:,-1],sharey = mainax)
+
+
+fig.tight_layout()
 for i in lines:
 	i = np.array(i)
-	plt.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
 	greencounter += stepcounter
 if mutations != 1:
-	plt.scatter(init[:,0],init[:,1],c= "r",s = 20)
+	mainax.scatter(init[:,0],init[:,1],c= "r",s = 20)
 
-plt.scatter(final[:,0],final[:,1],s = 20,vmin = 0, vmax = 800,c = finalscores, cmap = 'summer', alpha = 0.7)
-cbar = plt.colorbar()
-cbar.set_label('RME')
-plt.ylabel("batch Size")
-plt.xscale("log")
-plt.xlabel("Learning Rate")
+mainax.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
+
+mainax.set_ylabel("Batch Size")
+mainax.set_xlabel("Learning Rate")
+Yax.set_ylabel("Model Error (MSE)")
+Xax.set_xlabel("Model Error (MSE)")
+Yax.plot(scoresy[:,1],scoresy[:,0])
+Xax.plot(scoresx[:,0],scoresx[:,1])
 plt.savefig(("Graphs/"+str(float(best))+": lr batch_size.pdf"),dpi=1200)
 plt.clf()

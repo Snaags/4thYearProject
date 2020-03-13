@@ -100,7 +100,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	input_dim = np.shape(X)[1]
 
 
-	X_train, X_test = test_train_split(X,0.80) #Training data from 80% of the total data set
+	X_train, X_test = test_train_split(X,0.85) #Training data from 80% of the total data set
 
 
 	X, y = GroupData(X_train,seq_length,predict_distance)
