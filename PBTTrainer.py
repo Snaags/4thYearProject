@@ -27,7 +27,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 #Create dictionary of hyperparameters
 	print("starting model",number)
 	dropout = 0
-	predict_distance = 1
+	predict_distance = 4
 	HyperParameters = {
 		
 		"lr" : lr,

@@ -157,6 +157,21 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 	#return the same model if within the number of healthy models 
 	return Explore(models[score],file,0,number)
 
+def MatchDate(data1,data2):
+	output = []
+	outputb = []
+	hold = 0
+	for i in data1:
+		for c in data2:
+			if i[0] == c[0]:
+				hold = c[1]
+				if type(hold) == str:
+					hold = hold.strip("$")
+					hold = float(hold)
+		output.append(hold)
+	output = np.asarray(output)
+	return output
+
 
 
 #########HyperParameter Search Settings###########
@@ -164,17 +179,17 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 
 SearchType = "Random"
-searchsize = 64
+searchsize = 16
 cores = 4
-mutations =100
+mutations =10
 hyperparameters = [
 	
-	[0.000001,0.001,"log"],	#"lr" 
-	[2,30,"int"],				#"hiddenDimension" [
-	[2,30,"int"],				#"seq_length" 
+	[0.0001,0.0001,"log"],	#"lr" 
+	[25,100,"int"],				#"hiddenDimension" [
+	[4,30,"int"],				#"seq_length" 
 	[1,1,"int"],				#"numberLayers"	
-	[8,64,"Po2"],				#"batch_size"
-	[0.00000001,0.0000001,"log"]	,	#Regularization
+	[8,32,"Po2"],				#"batch_size"
+	[0.00001,0.00001,"log"]	,	#Regularization
 	[10,10,"int"]					#"num_epochs"
 					]
 
@@ -184,6 +199,9 @@ hyperparameters = [
 APPLC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
 APPLC = np.asarray(APPLC)#convert to numpy array
 
+APPLD = pandas.read_csv(path+"/StockData/AAPL.csv")
+APPLD = APPLD[["Date","Close"]]
+APPLD = np.asarray(APPLD)#convert to numpy array
 
 
 APPLV = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
@@ -202,6 +220,14 @@ APPLSMA50 = np.asarray(SMA(APPLC, 50))
 APPLSMMA200 = np.asarray(SMMA_Seq(APPLC, 200)) 
 APPLSMMA50 = np.asarray(SMMA_Seq(APPLC, 50)) 
 
+APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
+APPLEPS = np.asarray(APPLEPS)#convert to numpy array
+APPLEPS = MatchDate(APPLD,APPLEPS)
+
+
+AAPLEMPLY = pandas.read_csv(path+"/StockData/AAPLEMPLY.csv")
+AAPLEMPLY = np.asarray(AAPLEMPLY)#convert to numpy array
+AAPLEMPLY = MatchDate(APPLD,AAPLEMPLY)
 
 APPLCD = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
 APPLCD = np.asarray(APPLCD)#convert to numpy array
@@ -209,8 +235,8 @@ APPLCD = np.asarray(APPLCD)#convert to numpy array
 #APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
 #APPLEPS = np.asarray(APPLEPS)#convert to numpy array
 #APPLVAR = np.var(APPLC)
-file = APPLC
-#file = np.stack((APPLC,APPLRSI,APPLCD,GOOGLC,MSFTC,APPLSMA200,APPLSMA50,APPLSMMA200,APPLSMMA50),1)
+#file = MSFTC
+file = np.stack((APPLC,APPLRSI,APPLSMMA200,AAPLEMPLY,APPLEPS),1)
 
 
 lineage = {}
