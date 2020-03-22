@@ -28,18 +28,18 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	print("starting model",number)
 	dropout = 0
 	predict_distance = 1
-	HyperParameters = {
+	HyperParameters = [
 		
-		"lr" : lr,
-		"hiddenDimension": hiddenDimension,
-		"seq_length": seq_length,
-		"numberLayers":numberLayers,
-		"batch_size":batch_size,
-		"num_epochs":num_epochs,
-		"l2":l2,
-		"ID":ID,
-		"number":number
-	}
+		 lr,
+		 hiddenDimension,
+		 seq_length,
+		numberLayers,
+		batch_size,
+		num_epochs,
+		l2,
+		ID,
+		number
+	]
 
 
 
@@ -379,19 +379,18 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		statedict[i] = df[i].cpu()
 
 
-	HyperParameters = {
+	HyperParameters = [
 		
-		"lr" : lr,
-		"hiddenDimension": hiddenDimension,
-		"seq_length": seq_length,
-		"numberLayers":numberLayers,
-		"batch_size":batch_size,
-		"num_epochs":num_epochs,
-		"l2":l2,
-		"ID":statedict,
-		"number":number
-	}
-
+		 lr,
+		 hiddenDimension,
+		 seq_length,
+		numberLayers,
+		batch_size,
+		l2,
+		num_epochs,
+		ID,
+		number
+	]
 	
 
 

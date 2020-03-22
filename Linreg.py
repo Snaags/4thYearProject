@@ -15,6 +15,10 @@ import scipy.stats as sp
 import os
 path = os.getcwd()
 
+from sklearn.linear_model import Ridge
+from sklearn.linear_model import Lasso
+from sklearn.svm import LinearSVR
+
 
 MSFTC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
 #MSFTC = np.asarray(MSFTC)#convert to numpy array
@@ -40,10 +44,13 @@ test = pandas.DataFrame(test,columns=['Open_MICROSOFT','Open_NASDAQ'])
 x=train[['Open_MICROSOFT','Open_NASDAQ']][:-4]
 y=train['Open_MICROSOFT'][4:]
 
+RidgeReg = Ridge()
+LinrReg = LinearRegression()
+
+SVR = LinearSVR() 
 
 
-
-regressor = LinearRegression()  
+regressor = Ridge()
 regressor.fit(x, y) #training the algorithm
 
 print('Intercept: \n', regressor.intercept_)

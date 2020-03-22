@@ -25,6 +25,60 @@ import random
 	#Extract weights and hyperparameters
 	#Apply to the targeted network
 
+def MatchDate(data1,data2):
+	output = []
+	outputb = []
+	hold2 = 0
+	datelist = []
+	for c in data2:
+		flag = False
+		for i in data1:
+			if i[0] == c[0]:
+				datelist.append([i[0],c[1]])
+				flag = True
+				break
+
+		if flag == False:
+			hold = list(c[0])
+			if "".join(hold[8:]) == "31" or "".join(hold[8:]) == "30":
+				if "".join(hold[5:7]) == "12":
+					hold[3] = str(int(hold[3]) + 1)
+					hold[5:7] = "01"
+				hold[8:] = "02"
+
+			hold[9] = str(int(hold[9]) + 1)	
+			for i in data1:
+				if i[0] == "".join(hold):
+					datelist.append([i[0],c[1]])
+					flag = True
+
+		if flag == False:
+			hold = list(c[0])
+			if "".join(hold[8:]) == "31" or "".join(hold[8:]) == "30":
+				if "".join(hold[5:7]) == "12":
+					hold[3] = str(int(hold[3]) + 1)
+					hold[5:7] = "01"
+				hold[8:] = "03"
+
+			hold[9] = str(int(hold[9]) + 2)	
+			for i in data1:
+				if i[0] == "".join(hold):
+					datelist.append([i[0],c[1]])
+					flag = True
+
+	for i in data1:
+		for c in datelist:
+			if i[0] == c[0]:
+
+
+				hold2 = c[1]
+				if type(hold2) == str:
+					hold2 = hold2.strip("$")
+					hold2 = float(hold2)
+		output.append(hold2)
+	output = np.asarray(output)
+	return output
+
 def Explore(hyperparameters,file,Mutation = 0.4, number = None):
 	mutation = Mutation
 	output = [file,0,0,0,0,0,0,0,hyperparameters["ID"],number]
@@ -34,7 +88,7 @@ def Explore(hyperparameters,file,Mutation = 0.4, number = None):
 		if i == "lr":
 
 			if mutation != 0:
-				x = hyperparameters[i] + hyperparameters[i]*((mutation*10)**random.uniform(-1,1))
+				x = hyperparameters[i]*((mutation*10)**random.uniform(-1,1))
 			
 			else:
 				x = hyperparameters[i]
@@ -73,14 +127,14 @@ def Explore(hyperparameters,file,Mutation = 0.4, number = None):
 		if i == "l2":
 
 			if mutation != 0:
-				x = hyperparameters[i] + hyperparameters[i]*((mutation*10)**random.uniform(-1,1))
+				x = hyperparameters[i]*((mutation*10)**random.uniform(-1,1))
 			
 			else:
 				x = hyperparameters[i]
 			output[6] = x
 
 		elif i == "num_epochs":
-			output[7] = hyperparameters[i]
+			output[7] = math.ceil(hyperparameters[i])
 
 	return output
 
@@ -91,10 +145,8 @@ def RandomRange(min, max,types):
 	output = []
 
 	if types == "int":
-		
 		output = int(random.randint(min,max))
 	
-
 	if types == "log":
 		minexp = np.log10(np.abs(min))
 		maxexp = np.log10(np.abs(max))
@@ -147,29 +199,33 @@ def CreateSets(file,Hyperparms,SearchSize):
 	print(sets)
 	indexs = []
 	for i in Hyperparms:
-
+		#Find variables being searched
 		if (i[1] - i[0]) != 0:
 			indexs.append(Hyperparms.index(i))
+		#Constant variables
 		else:
 			sets[Hyperparms.index(i)].append(i[0])
 
+	##Find the number of steps based on the search size and the number of variables being searched
 	steps = math.ceil(SearchSize**(1/len(indexs)))
-	print(steps)
+
+	##Step through the range of values based on the scale given 
 	for i in indexs:
+		
 		##Integer values
 		if Hyperparms[i][2] == "int":
 			increments = int((Hyperparms[i][1] - Hyperparms[i][0])/(steps -1))
 			sets[i].append([Hyperparms[i][0] + increments* c for c in range(steps)])
+		
 		##log scale
 		elif Hyperparms[i][2] == "log":
-
 			increments = (math.log(Hyperparms[i][1]) -math.log(Hyperparms[i][0]))/(steps - 1)
-
 			sets[i].append(np.exp([math.log(Hyperparms[i][0]) + increments * c for c in range(steps)]))
+		#Power of two
 		elif Hyperparms[i][2] == "Po2":
 			increments = int((Hyperparms[i][1] - Hyperparms[i][0])/(steps -1))
 			sets[i].append([Hyperparms[i][0] + increments* c for c in range(steps)])
-
+		#Catch
 		else:
 			increments = (Hyperparms[i][1] - Hyperparms[i][0])/(steps -1)
 			sets[i].append([Hyperparms[i][0] + increments* c for c in range(steps)])
@@ -178,6 +234,7 @@ def CreateSets(file,Hyperparms,SearchSize):
 	counter = 0
 	count = 1
 
+	###Sorting the values into the different possible combinations 
 	for i in sets:
 		a = []
 			
@@ -208,22 +265,7 @@ def CreateSets(file,Hyperparms,SearchSize):
 		i.insert(0, file)
 	return output
 
-"""
-[1,2]
-[10,15]
-[2,4]
 
-1 10 2
-2 10 2
-1 15 2
-2 15 2 
-1 10 4
-2 10 4
-1 15 4
-2 15 4
-"""
-
-#(name:(min max steps types))
 def CreateRandomSets(file,preparameters,size):
 	
 	setin = list()

@@ -108,7 +108,7 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 	##models: list of scores from population, Score: score of currently testing model
 	##file: dataset for training, distribution: type of selection from healthy models "Guassian", "Uniform"
 
-	
+
 	score = float(score)
 
 	num_healthy = searchsize*probability
@@ -152,7 +152,7 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 			print(output)
 			
 			
-			output = Explore(models[output],file,0.2,number)
+			output = Explore(models[output],file,0.15,number)
 			return output
 
 	#return the same model if within the number of healthy models 
@@ -166,19 +166,19 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 
 SearchType = "Random"
-searchsize = 16
-cores = 2
-mutations =10
+searchsize = 60
+cores = 6
+mutations =100
 
 
 hyperparameters = [
 	
-	[0.0001,0.001,"log"],		#"lr" 
-	[25,100,"int"],				#"hiddenDimension" 
-	[4,30,"int"],				#"seq_length" 
-	[1,1,"int"],				#"numberLayers"	
-	[8,16,"Po2"],				#"batch_size"
-	[0.00001,0.0001,"log"],	#Regularization
+	[0.00001,0.001,"log"],		#"lr" 
+	[25,250,"int"],				#"hiddenDimension" 
+	[4,60,"int"],				#"seq_length" 
+	[1,2,"int"],				#"numberLayers"	
+	[64,64,"Po2"],				#"batch_size"
+	[0.000001,0.00001,"log"],	#Regularization
 	[10,10,"int"]				#"num_epochs"
 					]
 
@@ -232,7 +232,7 @@ APPLPSR = MatchDate(APPLD,APPLPSR)
 #APPLVAR = np.var(APPLC)
 #file = MSFTC
 file = np.stack((APPLC,APPLRSI,APPLEPS,INTEREST,APPLPSR,MSFTC,APPLO),1)
-
+file = APPLC
 
 lineage = {}
 
@@ -264,6 +264,7 @@ print("Running",cores,"models in parrallel")
 
 
 
+
 if __name__ == "__main__":
 
 
@@ -276,7 +277,7 @@ if __name__ == "__main__":
 	"""
 	run = True
 	counter = mutations
-	
+	toggle = 0
 	
 	while run == True:
 		Alive = []
@@ -289,9 +290,20 @@ if __name__ == "__main__":
 
 
 		searchSpace = []
+		while True:
+			file = pandas.read_csv(path+"/StockData/"+os.listdir("StockData")[random.randint(0,len(os.listdir("StockData")))])
+			file = np.asarray(file.loc[:,"Close"])#convert to numpy array
+			if len(file) < 1000:
+				continue
+			if toggle > 10:
+				file = np.asarray(APPLC)#convert to numpy array
+				toggle = 0
+
 		
-		
-		#Adds the new models to a dictionary of models labled by Evaluation Score
+
+			break
+
+				#Adds the new models to a dictionary of models labled by Evaluation Score
 		for i in results:
 			Models[i["EvalScore"]] = i["HyperParameters"]
 
@@ -307,9 +319,13 @@ if __name__ == "__main__":
 		counter -= 1
 		if counter == 0:
 			break 
-
+		if toggle != 0:
+			population = 1
+		else:
+			population = 0.7
+		toggle +=1
 		for i in ModelsAlive:
-			searchSpace.append(Exploit(0.6, Models,i,file,"Gaussian",ModelsAlive[i][1]))
+			searchSpace.append(Exploit(population, Models,i,file,"Gaussian",ModelsAlive[i][1]))
 
 	
 		

@@ -183,22 +183,9 @@ def DailyChange(open,close):
 ###Import and scale
 Features = []
 FeaturesNames = []
-
-APPLC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
+APPLC = pandas.read_csv(path+"/StockData/AAPL.csv")
+APPLC = APPLC[["Date","Close"]]
 APPLC = np.asarray(APPLC)#convert to numpy array
-Features.append(APPLC)
-FeaturesNames.append("APPL Close")
-
-
-APPLO = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
-APPLO = np.asarray(APPLO)#convert to numpy array
-Features.append(APPLO)
-FeaturesNames.append("APPL Open")
-
-
-APPLD = pandas.read_csv(path+"/StockData/AAPL.csv")
-APPLD = APPLD[["Date","Close"]]
-APPLD = np.asarray(APPLD)#convert to numpy array
 
 
 MSFTC = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
@@ -208,73 +195,53 @@ FeaturesNames.append("MSFT Close")
 
 GOOGLC = pandas.read_csv(path+"/StockData/GOOGL.csv").loc[:,"Close"]
 GOOGLC = np.asarray(GOOGLC)#convert to numpy array
-Features.append(GOOGLC)
-FeaturesNames.append("GOOGL Close")
+#Features.append(GOOGLC)
+#FeaturesNames.append("GOOGL Close")
 
 DJIC = pandas.read_csv(path+"/StockData/^DJI.csv").loc[:,"Close"]
 DJIC = np.asarray(DJIC)#convert to numpy array
-Features.append(DJIC)
-FeaturesNames.append("DJI Close")
-
-CCI = pandas.read_csv(path+"/StockData/^CCI.csv")
-CCI = np.asarray(CCI)#convert to numpy array
-CCI = MatchDate(APPLD,CCI)
-Features.append(CCI)
-FeaturesNames.append("Consumer Confidence Index (US)")
-
-APPLAST = pandas.read_csv(path+"/StockData/AAPLAST.csv")
-APPLAST = np.asarray(APPLAST)#convert to numpy array
-APPLAST = MatchDate(APPLD,APPLAST)
-Features.append(APPLAST)
-FeaturesNames.append("APPL Asset Value")
-
-APPLPSR = pandas.read_csv(path+"/StockData/AAPLPSR.csv")
-APPLPSR = np.asarray(APPLPSR)#convert to numpy array
-APPLPSR = MatchDate(APPLD,APPLPSR)
-Features.append(APPLPSR)
-FeaturesNames.append("APPL Price to Share Ratio")
-
-
-
-APPLPSP = pandas.read_csv(path+"/StockData/AAPLSPS.csv")
-APPLPSP = np.asarray(APPLPSP)#convert to numpy array
-APPLPSP = MatchDate(APPLD,APPLPSP)
-Features.append(APPLPSP)
-FeaturesNames.append("APPL Sales Per Share")
+#Features.append(DJIC)
+#FeaturesNames.append("DJI Close")
 
 APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
 APPLEPS = np.asarray(APPLEPS)#convert to numpy array
-APPLEPS = MatchDate(APPLD,APPLEPS)
+APPLEPS = MatchDate(APPLC,APPLEPS)
 Features.append(APPLEPS)
 FeaturesNames.append("APPL Earnings Per Share")
 
-
 AAPLEMPLY = pandas.read_csv(path+"/StockData/AAPLEMPLY.csv")
 AAPLEMPLY = np.asarray(AAPLEMPLY)#convert to numpy array
-AAPLEMPLY = MatchDate(APPLD,AAPLEMPLY)
-Features.append(AAPLEMPLY)
-FeaturesNames.append("AAPL Employees")
+#AAPLEMPLY = MatchDate(APPLC,AAPLEMPLY)
+#Features.append(AAPLEMPLY)
+#FeaturesNames.append("AAPL Employees")
 
 AAPLEREV = pandas.read_csv(path+"/StockData/AAPLREV.csv")
 AAPLEREV = np.asarray(AAPLEREV)#convert to numpy array
-AAPLEREV = MatchDate(APPLD,AAPLEREV)
-Features.append(AAPLEREV)
-FeaturesNames.append("AAPLE Revenue")
+AAPLEREV = MatchDate(APPLC,AAPLEREV)
+#Features.append(AAPLEREV)
+#FeaturesNames.append("AAPLE Revenue")
 
 INTEREST = pandas.read_csv(path+"/StockData/INTEREST.csv")
 INTEREST = np.asarray(INTEREST)#convert to numpy array
-INTEREST = MatchDate(APPLD,INTEREST)
+INTEREST = MatchDate(APPLC,INTEREST)
 Features.append(INTEREST)
 FeaturesNames.append("US Interest Rates")
 
 
-
+APPLC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
+APPLC = np.asarray(APPLC)#convert to numpy array
+Features.append(APPLC)
+FeaturesNames.append("APPL Close")
 
 APPLV = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
 APPLV = np.asarray(APPLV)#convert to numpy array
-Features.append(APPLV)
-FeaturesNames.append("APPL Volume")
+#Features.append(APPLV)
+#FeaturesNames.append("APPL Volume")
 
+APPLO = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
+APPLO = np.asarray(APPLO)#convert to numpy array
+Features.append(APPLO)
+FeaturesNames.append("APPL Open")
 
 
 
@@ -289,9 +256,9 @@ for i,n in zip(RawTickers,RawTickersN):
 	print("RSI length", 14, "completed for ", i)
 	FeaturesNames.append(str(str(n)+" RSI "+str(14)+" Days"))
 
-	Features.append(PercentChange(i,6))
-	print("Percent change length", 6, "completed for ", i)
-	FeaturesNames.append(str(str(6)+" Day Percentage Change "+str(n)))
+	#Features.append(PercentChange(i,6))
+	#print("Percent change length", 6, "completed for ", i)
+	#FeaturesNames.append(str(str(6)+" Day Percentage Change "+str(n)))
 
 	Features.append(DailyChange(APPLO,APPLC))
 	FeaturesNames.append(str("Daily Change "+str(n)))
@@ -307,12 +274,13 @@ scalers = []
 scaled_data = []
 for i,c in zip(Features,FeaturesNames):
 	print(c,": ",len(i))
-	Features[Features.index(i)] = i[:-4]
+	Features[Features.index(i)] = i[:-1]
 Features = np.asarray(Features)
+
 
 """
 for i in range(len(Features[0,:])):
-	scalers.append(MinMaxScaler(feature_range=(-1, 10)))
+	scalers.append(MinMaxScaler(feature_range=(-1, 1)))
 #scaler = MinMaxScaler(feature_range=(-1, 1))	#scale data
 #scaler1 = MinMaxScaler(feature_range=(-1, 1))	#scale data	
 #scale2 = MinMaxScaler(feature_range=(-1, 1))	#scale data
@@ -324,14 +292,13 @@ for i in scalers:
 	index_count +=1 
 
 Features = np.stack((scaled_data),1)
-
 """
 
-y = APPLC[4:]
 
+y = APPLC[1:]
 
 """
-y = scalers[0].fit_transform(y.reshape(-1, 1))
+scalers[6].fit_transform(y.reshape(-1, 1))
 """
 
 #dataset = np.asarray(Features)
@@ -393,19 +360,6 @@ plt.bar(x,height = K.pvalues_)
 plt.xticks(x, FeaturesNames,rotation=90)
 plt.show()
 
-K = SelectKBest(score_func=f_regression, k="all")
-K.fit(Features[:,2:],y)
-x = np.arange(len(FeaturesNames[2:]))
-plt.title("Regressor Corrolation")
-plt.xlabel("Features")
-plt.ylabel("F-Score")
-plt.bar(x,height = K.scores_)
-plt.xticks(x, FeaturesNames[2:],rotation=90)
-plt.show()
-plt.bar(x,height = K.pvalues_)
-plt.xticks(x, FeaturesNames[2:],rotation=90)
-plt.show()
-
 
 K = SelectKBest(score_func=mutual_info_regression, k="all")
 K.fit(Features,y)
@@ -438,7 +392,7 @@ if CV == True:
 
 	RidgeReg = Ridge()
 	LinrReg = LinearRegression(normalize = True)
-	lasso = Lasso()
+	lasso = Lasso(alpha = 0.85)
 	SVR = LinearSVR(max_iter = 100000, dual = False, loss ="squared_epsilon_insensitive") 
 	Tree =DecisionTreeRegressor()
 
@@ -494,7 +448,7 @@ if CV == True:
 
 
 
-	rfe = RFECV(estimator=Tree, step=1,cv = 15)
+	rfe = RFECV(estimator=Tree, step=1,cv = 10)
 	rfe.fit(Features, y)
 
 
@@ -509,7 +463,7 @@ if CV == True:
 	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
 	plt.show()
 
-	rfe = RFECV(estimator=SVR, step=1,cv = 15)
+	rfe = RFECV(estimator=SVR, step=1,cv = 10)
 	rfe.fit(Features, y)
 
 

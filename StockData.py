@@ -25,10 +25,11 @@ def StockHist(TAG,startDate,endDate):
 	pandas.DataFrame.to_csv(hist,str(TAG+".csv"))
 
 
-StockHist("AAPL","2005-01-01","2020-01-01")
-StockHist("MSFT","2005-01-01","2020-01-01")
-StockHist("GOOGL","2005-01-01","2020-01-01")
-StockHist("SMSN","2005-01-01","2020-03-01")
+StockHist("AAPL","2004-12-01","2020-03-01")
+StockHist("MSFT","2004-12-01","2020-03-01")
+StockHist("GOOGL","2004-12-01","2020-03-01")
+StockHist("^DJI","2004-12-01","2020-03-01")
+StockHist("SMSN","2004-12-01","2020-03-01")
 
 
 
