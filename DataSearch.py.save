@@ -1,0 +1,178 @@
+import torch
+import os
+import pandas
+from model import LSTMModel
+from PBTTrainer import RunModel
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.manifold import TSNE
+import numpy as np
+import torch.nn as nn
+import torch.optim as optim
+import time
+import math
+import threading
+import itertools 
+import concurrent.futures
+import os
+from multiprocessing import Pool
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import matplotlib.axes as axes 
+import multiprocessing
+import random
+from Utils import CreateRandomSets, Explore, CreateSets, MatchDate
+path = os.getcwd()
+#simple moving average
+def SMA(file,N):
+	output = []
+	n = 1
+	for i in range(len(file)):
+		if (i - N) < 0:		
+			m = i
+			if i == 0:
+				n = 1
+			else:
+				n = m
+		else:
+			n = N
+			m = N
+		output.append(sum(file[(i-m):i])/n)
+
+	return output
+
+
+
+def RSI(file,N):
+	output = []
+	U = []
+	D = []
+	RSI = 0
+	i_old = 0
+	
+
+	for i in file:
+		v = i - i_old
+
+		if v > 0:
+			U.append(v)
+			D.append(0)
+		else:
+			D.append(-v)
+			U.append(0)
+
+		i_old = i
+
+		if len(U) > 14:
+			U.pop(0)
+			D.pop(0)
+			RS = SMMA(U,N)/SMMA(D,N)
+			RSI = 100 - (100/(1+RS))
+		
+		output.append(RSI)
+
+	return output 
+
+
+def SMMA(data,N):
+
+	MMA = 0
+
+	def step(MMA, new_sample, N):
+
+		return ((N - 1)*MMA + new_sample)/N
+
+	
+	for i in data:
+		MMA = step(MMA,i,N)
+
+	return MMA
+
+def SMMA_Seq(data,N):
+	output = []
+	MMA = 0
+
+	def step(MMA, new_sample, N):
+
+		return ((N - 1)*MMA + new_sample)/N
+
+	
+	for i in data:
+		MMA = step(MMA,i,N)
+		output.append(MMA)
+
+	return output
+
+
+
+def Exploit(probability, models,score,file, distribution, number = None):	##probability: percentage of population deemed healthy, 
+	##models: list of scores from population, Score: score of currently testing model
+	##file: dataset for training, distribution: type of selection from healthy models "Guassian", "Uniform"
+
+
+	score = float(score)
+
+	num_healthy = searchsize*probability
+
+	#Sets healthy set to 1 when calculation produces a number smaller than this
+	if num_healthy < 1:
+		num_healthy = 1
+
+
+	modelrank = int(num_healthy)
+	
+	#loops through models to find the score passed to functions placement.
+	for i in models:
+		if score > float(i):
+			modelrank -= 1
+		
+
+		#Finds replacement model if model is deemed unfit.
+		if modelrank <= 0:
+
+
+			#Randomly select healthy model to exploit.
+			if distribution == "Uniform":
+				x = random.randint(1,num_healthy)
+			#Randomly selects a healthy model weighted towards higher performing models
+			if distribution == "Gaussian":
+				x = math.ceil(abs(random.gauss(0,0.2))*num_healthy)
+
+			modelscores = []
+			for i in models:
+				modelscores.append(float(i))
+
+			for c in range(x):
+				output = modelscores.pop(modelscores.index(min(modelscores)))
+
+			#lineage[number].append(str("Mutate "+str(models[output]["number"])))
+			number_new =max(lineage.keys())+1
+			lineage[number_new] = [lineage[models[output]["number"]][-1]]
+			number = number_new
+
+			print(output)
+			
+			
+			output = Explore(models[output],file,0.15,number)
+			return output
+
+	#return the same model if within the number of healthy models 
+	return Explore(models[score],file,0,number)
+
+
+
+
+#########HyperParameter Search Settings###########
+
+
+
+SearchType = "Random"
+searchsize = 60
+cores = 6
+mutations =10
+
+
+hyperparameters = [
+	
+	[0.000001,0.001,"log"],		#"lr" 
+	[25,350,"int"],				#"hiddenDimension" 
+	[4,80,"int"],				#"seq_length" 

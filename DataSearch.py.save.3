@@ -166,7 +166,7 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 
 SearchType = "Random"
-searchsize = 20
+searchsize = 8
 cores = 8
 mutations = 10
 
@@ -179,7 +179,7 @@ hyperparameters = [
 	[2,12,"int"],				#"numberLayers"	
 	[256,256,"Po2"],				#"batch_size"
 	[0.0000001,0.00001,"log"],	#Regularization
-	[60,60,"int"],				#"num_epochs"
+	[20,20,"int"],				#"num_epochs"
 	[0.001,0.1,"log"]			#dropout
 					]
 
@@ -258,13 +258,16 @@ if __name__ == "__main__":
 			pool.join()
 		
 		if flag == False:
-
-			os.mkdir("Graphs/"+str(counter)+"-"+filename)			
+			
 			for i in os.listdir("Graphs"):
 				x = i.split("/")[-1]
-				if x[-4:] != ".pdf":
-					continue	
+	
+				os.mkdir("Graphs/"+                for i in os.listdir(path+"/Graphs"):
+                        x = i.split("/")[-1]
 
+                        os.replace(i, path+"/Graphs/"+str(counter)+"-"+filename/x)
+
+)
 				os.replace("Graphs/"+i, "Graphs/"+str(counter)+"-"+filename+"/"+x)
 				print("Moved files to", filename)
 		else:
