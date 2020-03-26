@@ -41,8 +41,8 @@ test = pandas.DataFrame(test,columns=['Open_MICROSOFT','Open_NASDAQ'])
 
 
 
-x=train[['Open_MICROSOFT','Open_NASDAQ']][:-4]
-y=train['Open_MICROSOFT'][4:]
+x=train[['Open_MICROSOFT','Open_NASDAQ']][:-1]
+y=train['Open_MICROSOFT'][1:]
 
 RidgeReg = Ridge()
 LinrReg = LinearRegression()
@@ -57,8 +57,8 @@ print('Intercept: \n', regressor.intercept_)
 print('Coefficients: \n', regressor.coef_)
 
 
-x=test[['Open_MICROSOFT','Open_NASDAQ']][:-4]
-y=test['Open_MICROSOFT'][4:]
+x=test[['Open_MICROSOFT','Open_NASDAQ']][:-1]
+y=test['Open_MICROSOFT'][1:]
 
 prediction = []
 print(x)
@@ -77,6 +77,18 @@ mean=mean_squared_error(prediction,y)
 print("Error from prediction: ",mean)
 mean=mean_squared_error(x['Open_MICROSOFT'],y)
 print("Error from input: ",mean)
+
+
+total_error = 0
+for i,c in zip(prediction,y):
+	test_lost_score = abs(c - i)
+	test_lost_score = test_lost_score/c
+	total_error += test_lost_score
+
+total_error = total_error/ len(y)
+total_error = total_error*100
+
+print("MAPE: ", total_error)
 
 plt.plot(y,label = "MSFT")
 plt.plot(prediction, label = "Prediction")

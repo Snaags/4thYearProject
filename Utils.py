@@ -81,7 +81,7 @@ def MatchDate(data1,data2):
 
 def Explore(hyperparameters,file,Mutation = 0.4, number = None):
 	mutation = Mutation
-	output = [file,0,0,0,0,0,0,0,hyperparameters["ID"],number]
+	output = [file,0,0,0,0,0,0,0,0,hyperparameters["ID"],number]
 	for i in hyperparameters:
 
 
@@ -94,8 +94,7 @@ def Explore(hyperparameters,file,Mutation = 0.4, number = None):
 				x = hyperparameters[i]
 			output[1] = x
 
-		elif i == "dropout":
-			x = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
+
 
 		elif i == "hiddenDimension":
 
@@ -135,6 +134,9 @@ def Explore(hyperparameters,file,Mutation = 0.4, number = None):
 
 		elif i == "num_epochs":
 			output[7] = math.ceil(hyperparameters[i])
+
+		elif i == "dropout":
+			output[8] = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
 
 	return output
 

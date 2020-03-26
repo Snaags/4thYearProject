@@ -16,7 +16,7 @@ path = os.getcwd()
 
 
 
-def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 100,l2= 1e-5,num_epochs = 5,ID= None, number = None):
+def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 100,l2= 1e-5,num_epochs = 5,dropout = 0,ID= None, number = None):
 	"""
 	test = []
 	if ID != None:
@@ -26,7 +26,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	"""
 #Create dictionary of hyperparameters
 	print("starting model",number)
-	dropout = 0
+	dropout = dropout
 	predict_distance = 1
 	HyperParameters = {
 		
@@ -365,7 +365,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	plt.clf()
 
 	#MAPE
-	print("Total training and validation time for model ",number,": ",time.time() - startTime," \n lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length," ;Batch Size:",batch_size,"l2:",l2," -- MAPE:",float(error)," -- MSE:",float(loss)," -- DS:",float(DS))
+	print("Total training and validation time for model ",number,": ",time.time() - startTime," \n lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length,";Dropout:",dropout,";Batch Size:",batch_size,"l2:",l2," -- MAPE:",float(error)," -- MSE:",float(loss)," -- DS:",float(DS))
 	
 
 	
@@ -388,6 +388,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		"batch_size":batch_size,
 		"num_epochs":num_epochs,
 		"l2":l2,
+		"dropout":dropout,
 		"ID":statedict,
 		"number":number
 	}

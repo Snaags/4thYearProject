@@ -167,19 +167,20 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 SearchType = "Random"
 searchsize = 60
-cores = 6
-mutations =100
+cores = 8
+mutations = 10
 
 
 hyperparameters = [
 	
 	[0.00001,0.001,"log"],		#"lr" 
-	[25,250,"int"],				#"hiddenDimension" 
-	[4,60,"int"],				#"seq_length" 
-	[1,2,"int"],				#"numberLayers"	
-	[64,64,"Po2"],				#"batch_size"
-	[0.000001,0.00001,"log"],	#Regularization
-	[10,10,"int"]				#"num_epochs"
+	[10,80,"int"],				#"hiddenDimension" 
+	[10,40,"int"],				#"seq_length" 
+	[2,12,"int"],				#"numberLayers"	
+	[256,256,"Po2"],				#"batch_size"
+	[0.0000001,0.00001,"log"],	#Regularization
+	[60,60,"int"],				#"num_epochs"
+	[0.001,0.1,"log"]			#dropout
 					]
 
 
@@ -187,53 +188,20 @@ hyperparameters = [
 ###Import and scale
 APPLC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
 APPLC = np.asarray(APPLC)#convert to numpy array
-
-
-APPLD = pandas.read_csv(path+"/StockData/AAPL.csv")
-APPLD = APPLD[["Date","Close"]]
+APPLD = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Date"]
 APPLD = np.asarray(APPLD)#convert to numpy array
 
-
-MSFTC = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
-MSFTC = np.asarray(MSFTC)#convert to numpy array
-
-GOOGLC = pandas.read_csv(path+"/StockData/GOOGL.csv").loc[:,"Close"]
-GOOGLC = np.asarray(GOOGLC)#convert to numpy array
-
-APPLRSI = np.asarray(RSI(APPLC, 14))
-
-APPLSMA200 = np.asarray(SMA(APPLC, 200))
-APPLSMA50 = np.asarray(SMA(APPLC, 50))
-APPLSMMA200 = np.asarray(SMMA_Seq(APPLC, 200)) 
-APPLSMMA50 = np.asarray(SMMA_Seq(APPLC, 50)) 
-
-APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
-APPLEPS = np.asarray(APPLEPS)#convert to numpy array
-APPLEPS = MatchDate(APPLD,APPLEPS)
-
-
-AAPLEMPLY = pandas.read_csv(path+"/StockData/AAPLEMPLY.csv")
-AAPLEMPLY = np.asarray(AAPLEMPLY)#convert to numpy array
-AAPLEMPLY = MatchDate(APPLD,AAPLEMPLY)
-
-APPLO = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
-APPLO = np.asarray(APPLO)#convert to numpy array
+OIL = pandas.read_csv(path+"/StockData/OIL.csv")
+OIL = OIL[["Date","Price"]]
+OIL = np.asarray(OIL)#convert to numpy array
+OIL = MatchDate(APPLD,OIL)
 
 INTEREST = pandas.read_csv(path+"/StockData/INTEREST.csv")
 INTEREST = np.asarray(INTEREST)#convert to numpy array
 INTEREST = MatchDate(APPLD,INTEREST)
 
-APPLPSR = pandas.read_csv(path+"/StockData/AAPLPSR.csv")
-APPLPSR = np.asarray(APPLPSR)#convert to numpy array
-APPLPSR = MatchDate(APPLD,APPLPSR)
-
-#APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
-#APPLEPS = np.asarray(APPLEPS)#convert to numpy array
-#APPLVAR = np.var(APPLC)
-#file = MSFTC
-file = np.stack((APPLC,APPLRSI,APPLEPS,INTEREST,APPLPSR,MSFTC,APPLO),1)
 file = APPLC
-
+file = np.stack((file,RSI(file,14),INTEREST,OIL),axis = 1)
 lineage = {}
 
 if SearchType == "Random":
@@ -277,7 +245,7 @@ if __name__ == "__main__":
 	"""
 	run = True
 	counter = mutations
-	toggle = 0
+	toggle = 2
 	
 	while run == True:
 		Alive = []
@@ -291,14 +259,16 @@ if __name__ == "__main__":
 
 		searchSpace = []
 		while True:
-			file = pandas.read_csv(path+"/StockData/"+os.listdir("StockData")[random.randint(0,len(os.listdir("StockData")))])
-			file = np.asarray(file.loc[:,"Close"])#convert to numpy array
-			if len(file) < 1000:
+			file = pandas.read_csv(path+"/StockData/"+os.listdir("StockData")[random.randint(0,len(os.listdir("StockData"))-1)])
+			if len(file) != 2769:
 				continue
-			if toggle > 10:
+			file = np.asarray(file.loc[:,"Close"])#convert to numpy array
+			if toggle > 7:
 				file = np.asarray(APPLC)#convert to numpy array
 				toggle = 0
-
+			print(len(file))
+			print(len(OIL))
+			file = np.stack((file,RSI(file,14),INTEREST,OIL),axis = 1)
 		
 
 			break
@@ -313,16 +283,19 @@ if __name__ == "__main__":
 			for c in i["HyperParameters"]:
 				if c != "ID":
 					HP[c] = i["HyperParameters"][c]
-			lineage[i["HyperParameters"]["number"]].append((i["EvalScore"],HP))
+			if toggle == 1:
+
+				lineage[i["HyperParameters"]["number"]].append((i["EvalScore"],HP))
 
 		##Searches Models for top performers
-		counter -= 1
-		if counter == 0:
-			break 
-		if toggle != 0:
+
+		if toggle != 1:
 			population = 1
 		else:
 			population = 0.7
+			counter -= 1
+			if counter == 1:
+				break 
 		toggle +=1
 		for i in ModelsAlive:
 			searchSpace.append(Exploit(population, Models,i,file,"Gaussian",ModelsAlive[i][1]))
