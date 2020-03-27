@@ -167,7 +167,7 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 SearchType = "Random"
 searchsize = 20
-cores = 8
+cores = 4
 mutations = 10
 
 
@@ -179,7 +179,7 @@ hyperparameters = [
 	[2,12,"int"],				#"numberLayers"	
 	[256,256,"Po2"],				#"batch_size"
 	[0.0000001,0.00001,"log"],	#Regularization
-	[60,60,"int"],				#"num_epochs"
+	[30,30,"int"],				#"num_epochs"
 	[0.001,0.1,"log"]			#dropout
 					]
 
@@ -196,12 +196,20 @@ OIL = OIL[["Date","Price"]]
 OIL = np.asarray(OIL)#convert to numpy array
 OIL = MatchDate(APPLD,OIL)
 
+CCI = pandas.read_csv(path+"/StockData/^CCI.csv")
+CCI = np.asarray(CCI)#convert to numpy array
+CCI = MatchDate(APPLD,CCI)
+
+USD = pandas.read_csv(path+"/StockData/USD.csv").loc[:,"Date":"Price"]
+USD = np.asarray(USD)#convert to numpy array
+USD = MatchDate(APPLD,USD)
+
 INTEREST = pandas.read_csv(path+"/StockData/INTEREST.csv")
 INTEREST = np.asarray(INTEREST)#convert to numpy array
 INTEREST = MatchDate(APPLD,INTEREST)
 
 file = APPLC
-file = np.stack((file,RSI(file,14),INTEREST,OIL),axis = 1)
+file = np.stack((file,RSI(file,14),INTEREST,OIL,CCI,USD),axis = 1)
 lineage = {}
 
 if SearchType == "Random":
@@ -281,7 +289,7 @@ if __name__ == "__main__":
 				toggle = 0
 			print(len(file))
 			print(len(OIL))
-			file = np.stack((file,RSI(file,14),INTEREST,OIL),axis = 1)
+			file = np.stack((file,RSI(file,14),INTEREST,OIL,CCI,USD),axis = 1)
 		
 
 			break

@@ -234,7 +234,19 @@ APPLPSR = MatchDate(APPLD,APPLPSR)
 Features.append(APPLPSR)
 FeaturesNames.append("APPL Price to Share Ratio")
 
+USD = pandas.read_csv(path+"/StockData/USD.csv").loc[:,"Date":"Price"]
+USD = np.asarray(USD)#convert to numpy array
+USD = MatchDate(APPLD,USD)
+Features.append(USD)
+FeaturesNames.append("USD Exchange")
 
+OIL = pandas.read_csv(path+"/StockData/OIL.csv")
+OIL = OIL[["Date","Price"]]
+OIL = np.asarray(OIL)#convert to numpy array
+
+OIL = MatchDate(APPLD,OIL)
+Features.append(OIL)
+FeaturesNames.append("OIL")
 
 APPLPSP = pandas.read_csv(path+"/StockData/AAPLSPS.csv")
 APPLPSP = np.asarray(APPLPSP)#convert to numpy array
@@ -279,8 +291,8 @@ FeaturesNames.append("APPL Volume")
 
 
 
-RawTickers = [APPLC,DJIC]
-RawTickersN = ["APPL","DJI"]
+RawTickers = [APPLC]
+RawTickersN = ["APPL"]
 
 
 for i,n in zip(RawTickers,RawTickersN):
@@ -289,12 +301,7 @@ for i,n in zip(RawTickers,RawTickersN):
 	print("RSI length", 14, "completed for ", i)
 	FeaturesNames.append(str(str(n)+" RSI "+str(14)+" Days"))
 
-	Features.append(PercentChange(i,6))
-	print("Percent change length", 6, "completed for ", i)
-	FeaturesNames.append(str(str(6)+" Day Percentage Change "+str(n)))
 
-	Features.append(DailyChange(APPLO,APPLC))
-	FeaturesNames.append(str("Daily Change "+str(n)))
 
 
 #APPLVAR = np.var(APPLC)
@@ -307,7 +314,7 @@ scalers = []
 scaled_data = []
 for i,c in zip(Features,FeaturesNames):
 	print(c,": ",len(i))
-	Features[Features.index(i)] = i[:-4]
+	Features[Features.index(i)] = i[:-1]
 Features = np.asarray(Features)
 
 """
@@ -327,7 +334,7 @@ Features = np.stack((scaled_data),1)
 
 """
 
-y = APPLC[4:]
+y = APPLC[1:]
 
 
 """
@@ -443,7 +450,7 @@ if CV == True:
 	Tree =DecisionTreeRegressor()
 
 		##Linear Regression
-	rfe = RFECV(estimator=LinrReg, step=1,min_features_to_select = 2,cv = 3)
+	rfe = RFECV(estimator=LinrReg, step=1,min_features_to_select = 5,cv = 3)
 	rfe.fit(Features, y)
 	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
 	    print(str(c)+": "+ str(i))
@@ -460,7 +467,7 @@ if CV == True:
 	plt.show()
 
 	##Ridge Regression
-	rfe = RFECV(estimator=RidgeReg, step=1,min_features_to_select = 2,cv = 3)
+	rfe = RFECV(estimator=RidgeReg, step=1,min_features_to_select = 5,cv = 3)
 	rfe.fit(Features, y)
 	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
 	    print(str(c)+": "+ str(i))
@@ -478,7 +485,7 @@ if CV == True:
 
 
 
-	rfe = RFECV(estimator=lasso, step=1,min_features_to_select = 2,cv = 3)
+	rfe = RFECV(estimator=lasso, step=1,min_features_to_select = 5,cv = 3)
 	rfe.fit(Features, y)
 	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
 	    print(str(c)+": "+ str(i))
