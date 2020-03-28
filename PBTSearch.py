@@ -168,7 +168,7 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 SearchType = "Random"
 searchsize = 60
 cores = 10
-mutations =30
+mutations =15
 
 
 hyperparameters = [
@@ -245,7 +245,7 @@ USD = MatchDate(APPLD,USD)
 #APPLEPS = np.asarray(APPLEPS)#convert to numpy array
 #APPLVAR = np.var(APPLC)
 #file = MSFTC
-file = np.stack((APPLC,APPLEPS,INTEREST,APPLPSR,OIL,CCI,USD),1)
+file = APPLC
 
 
 lineage = {}
