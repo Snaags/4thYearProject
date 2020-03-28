@@ -279,9 +279,6 @@ INTEREST = MatchDate(APPLD,INTEREST)
 Features.append(INTEREST)
 FeaturesNames.append("US Interest Rates")
 
-
-
-
 APPLV = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
 APPLV = np.asarray(APPLV)#convert to numpy array
 Features.append(APPLV)
@@ -450,7 +447,7 @@ if CV == True:
 	Tree =DecisionTreeRegressor()
 
 		##Linear Regression
-	rfe = RFECV(estimator=LinrReg, step=1,min_features_to_select = 5,cv = 3)
+	rfe = RFECV(estimator=LinrReg, step=1,min_features_to_select = 3,cv = 10)
 	rfe.fit(Features, y)
 	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
 	    print(str(c)+": "+ str(i))
@@ -467,7 +464,7 @@ if CV == True:
 	plt.show()
 
 	##Ridge Regression
-	rfe = RFECV(estimator=RidgeReg, step=1,min_features_to_select = 5,cv = 3)
+	rfe = RFECV(estimator=RidgeReg, step=1,min_features_to_select = 3,cv = 10)
 	rfe.fit(Features, y)
 	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
 	    print(str(c)+": "+ str(i))
@@ -485,7 +482,7 @@ if CV == True:
 
 
 
-	rfe = RFECV(estimator=lasso, step=1,min_features_to_select = 5,cv = 3)
+	rfe = RFECV(estimator=lasso, step=1,min_features_to_select = 3,cv = 10)
 	rfe.fit(Features, y)
 	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
 	    print(str(c)+": "+ str(i))
@@ -501,7 +498,7 @@ if CV == True:
 
 
 
-	rfe = RFECV(estimator=Tree, step=1,cv = 15)
+	rfe = RFECV(estimator=Tree, step=1,cv = 10)
 	rfe.fit(Features, y)
 
 
@@ -516,7 +513,7 @@ if CV == True:
 	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
 	plt.show()
 
-	rfe = RFECV(estimator=SVR, step=1,cv = 15)
+	rfe = RFECV(estimator=SVR, step=1,cv = 10)
 	rfe.fit(Features, y)
 
 

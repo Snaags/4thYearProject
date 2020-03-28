@@ -1,58 +1,21 @@
-Total run time: 260.3978304862976
+Total run time: 818.4975817203522
 lr hidden seq_length 
 Hyperparameter Ranges:
-[1e-05, 0.001, 'log']
-[10, 80, 'int']
-[10, 40, 'int']
-[2, 12, 'int']
+[1e-05, 0.0001, 'log']
+[150, 150, 'int']
+[5, 5, 'int']
+[1, 1, 'int']
 [256, 256, 'Po2']
-[1e-06, 1e-05, 'log']
-[10, 10, 'int']
-Search of size: 6
+[1e-05, 1e-05, 'log']
+[200, 200, 'int']
+[0.001, 0.001, 'log']
+Search of size: 2
 0:  
-(12713.3125, {'lr': 0.002, 'hiddenDimension': 13, 'seq_length': 12, 'numberLayers': 8, 'batch_size': 256, 'num_epochs': 10, 'l2': 2e-05, 'number': 0})
+(3502.646240234375, {'lr': 5e-05, 'hiddenDimension': 150, 'seq_length': 5, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 200, 'l2': 6.000000000000001e-05, 'dropout': 0.001, 'number': 0})
 1:  
-(12621.255859375, {'lr': 0.008, 'hiddenDimension': 76, 'seq_length': 37, 'numberLayers': 6, 'batch_size': 256, 'num_epochs': 10, 'l2': 1e-05, 'number': 1})
-2:  
-(12525.9189453125, {'lr': 0.006, 'hiddenDimension': 52, 'seq_length': 19, 'numberLayers': 11, 'batch_size': 256, 'num_epochs': 10, 'l2': 3.0000000000000004e-05, 'number': 2})
-3:  
-(6667.58154296875, {'lr': 7.000000000000001e-05, 'hiddenDimension': 77, 'seq_length': 17, 'numberLayers': 3, 'batch_size': 256, 'num_epochs': 10, 'l2': 9e-06, 'number': 3})
-(4605.66650390625, {'lr': 7.000000000000001e-05, 'hiddenDimension': 77, 'seq_length': 17, 'numberLayers': 3, 'batch_size': 256, 'num_epochs': 10, 'l2': 9e-06, 'number': 3})
-(534.4036254882812, {'lr': 7.000000000000001e-05, 'hiddenDimension': 77, 'seq_length': 17, 'numberLayers': 3, 'batch_size': 256, 'num_epochs': 10, 'l2': 9e-06, 'number': 3})
-4:  
-(5390.541015625, {'lr': 9e-05, 'hiddenDimension': 58, 'seq_length': 13, 'numberLayers': 6, 'batch_size': 256, 'num_epochs': 10, 'l2': 2e-06, 'number': 4})
-(6726.47314453125, {'lr': 9e-05, 'hiddenDimension': 58, 'seq_length': 13, 'numberLayers': 6, 'batch_size': 256, 'num_epochs': 10, 'l2': 2e-06, 'number': 4})
-5:  
-(8482.7568359375, {'lr': 0.0005, 'hiddenDimension': 17, 'seq_length': 24, 'numberLayers': 2, 'batch_size': 256, 'num_epochs': 10, 'l2': 5e-05, 'number': 5})
-6:  
-(5390.541015625, {'lr': 9e-05, 'hiddenDimension': 58, 'seq_length': 13, 'numberLayers': 6, 'batch_size': 256, 'num_epochs': 10, 'l2': 2e-06, 'number': 4})
-(7410.23193359375, {'lr': 7.574624255704086e-05, 'hiddenDimension': 58, 'seq_length': 15, 'numberLayers': 6, 'batch_size': 256, 'num_epochs': 10, 'l2': 2.6434604821554587e-06, 'number': 6})
-7:  
-(5390.541015625, {'lr': 9e-05, 'hiddenDimension': 58, 'seq_length': 13, 'numberLayers': 6, 'batch_size': 256, 'num_epochs': 10, 'l2': 2e-06, 'number': 4})
-(8676.109375, {'lr': 6.634840467333409e-05, 'hiddenDimension': 58, 'seq_length': 13, 'numberLayers': 6, 'batch_size': 256, 'num_epochs': 10, 'l2': 2.2043646486187844e-06, 'number': 7})
-8:  
-(5390.541015625, {'lr': 9e-05, 'hiddenDimension': 58, 'seq_length': 13, 'numberLayers': 6, 'batch_size': 256, 'num_epochs': 10, 'l2': 2e-06, 'number': 4})
-(6239.85302734375, {'lr': 0.00010040519481815107, 'hiddenDimension': 58, 'seq_length': 13, 'numberLayers': 6, 'batch_size': 256, 'num_epochs': 10, 'l2': 1.3691572598498398e-06, 'number': 8})
-9:  
-(6667.58154296875, {'lr': 7.000000000000001e-05, 'hiddenDimension': 77, 'seq_length': 17, 'numberLayers': 3, 'batch_size': 256, 'num_epochs': 10, 'l2': 9e-06, 'number': 3})
-(981.0974731445312, {'lr': 0.00010467783619761885, 'hiddenDimension': 77, 'seq_length': 20, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 6.939771817226493e-06, 'number': 9})
-(246.48489379882812, {'lr': 0.00010467783619761885, 'hiddenDimension': 77, 'seq_length': 20, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 6.939771817226493e-06, 'number': 9})
-10:  
-(981.0974731445312, {'lr': 0.00010467783619761885, 'hiddenDimension': 77, 'seq_length': 20, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 6.939771817226493e-06, 'number': 9})
-(374.85260009765625, {'lr': 0.00013672411879994467, 'hiddenDimension': 77, 'seq_length': 23, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 8.14847936307162e-06, 'number': 10})
-11:  
-(981.0974731445312, {'lr': 0.00010467783619761885, 'hiddenDimension': 77, 'seq_length': 20, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 6.939771817226493e-06, 'number': 9})
-(85.38870239257812, {'lr': 7.56386391911126e-05, 'hiddenDimension': 77, 'seq_length': 21, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 5.3840928366367e-06, 'number': 11})
-12:  
-(981.0974731445312, {'lr': 0.00010467783619761885, 'hiddenDimension': 77, 'seq_length': 20, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 6.939771817226493e-06, 'number': 9})
-(283.598876953125, {'lr': 0.00011298754601303702, 'hiddenDimension': 77, 'seq_length': 23, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 5.543585379208728e-06, 'number': 12})
-13:  
-(981.0974731445312, {'lr': 0.00010467783619761885, 'hiddenDimension': 77, 'seq_length': 20, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 6.939771817226493e-06, 'number': 9})
-(260.5077209472656, {'lr': 0.00010948265905490386, 'hiddenDimension': 77, 'seq_length': 22, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 8.206302874626401e-06, 'number': 13})
+(3502.721923828125, {'lr': 5e-05, 'hiddenDimension': 150, 'seq_length': 5, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 200, 'l2': 4e-05, 'dropout': 0.007, 'number': 1})
 Lowest error model: 
-(85.38870239257812, {'lr': 7.56386391911126e-05, 'hiddenDimension': 77, 'seq_length': 21, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 5.3840928366367e-06, 'number': 11})
+(3502.646240234375, {'lr': 5e-05, 'hiddenDimension': 150, 'seq_length': 5, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 200, 'l2': 6.000000000000001e-05, 'dropout': 0.001, 'number': 0})
 
 Hyperparameter schedule for top performing model: 
-(85.38870239257812, {'lr': 7.56386391911126e-05, 'hiddenDimension': 77, 'seq_length': 21, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 5.3840928366367e-06, 'number': 11})
-(981.0974731445312, {'lr': 0.00010467783619761885, 'hiddenDimension': 77, 'seq_length': 20, 'numberLayers': 3, 'batch_size': 128, 'num_epochs': 10, 'l2': 6.939771817226493e-06, 'number': 9})
-(6667.58154296875, {'lr': 7.000000000000001e-05, 'hiddenDimension': 77, 'seq_length': 17, 'numberLayers': 3, 'batch_size': 256, 'num_epochs': 10, 'l2': 9e-06, 'number': 3})
+(3502.646240234375, {'lr': 5e-05, 'hiddenDimension': 150, 'seq_length': 5, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 200, 'l2': 6.000000000000001e-05, 'dropout': 0.001, 'number': 0})

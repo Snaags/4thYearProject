@@ -217,8 +217,8 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 	
 	optimiser = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2)
-
-
+	epochloss = []
+	x = 0
 	#res = torch.cuda.FloatTensor()
 	startTime = time.time()
 	model.init_hidden()
@@ -234,7 +234,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 			y_pred = model(X)
 			#res = torch.cat((res, y_pred),0)
 			loss = loss_fn(y_pred, y)
-
+			epochloss.append(loss)
 			# Backward pass
 			loss.sum().backward()
 
@@ -242,7 +242,10 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 			optimiser.step()
 			model.zero_grad()
 			# Zero out gradient, else they will accumulate between epochs
-			
+		for i in epochloss:
+			x += sum(i)
+		print("Model", number ,"Loss: ",float(x/(len(epochloss[0])*len(epochloss))))
+		x = 0
 		#torch.save(model,path+"/Models/"+str(lr)+".pth")
 		if t % 5 ==  0:
 			print("Epoch",t,"completed in:",time.time()-startTime,"seconds")

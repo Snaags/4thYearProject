@@ -166,20 +166,21 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 
 SearchType = "Random"
-searchsize = 16
-cores = 2
-mutations =10
+searchsize = 60
+cores = 10
+mutations =30
 
 
 hyperparameters = [
 	
-	[0.0001,0.001,"log"],		#"lr" 
-	[25,100,"int"],				#"hiddenDimension" 
-	[4,30,"int"],				#"seq_length" 
+	[0.00001,0.0001,"log"],		#"lr" 
+	[50,250,"int"],				#"hiddenDimension" 
+	[5,30,"int"],				#"seq_length" 
 	[1,1,"int"],				#"numberLayers"	
-	[8,16,"Po2"],				#"batch_size"
-	[0.00001,0.0001,"log"],	#Regularization
-	[10,10,"int"]				#"num_epochs"
+	[2,16,"Po2"],				#"batch_size"
+	[0.000001,0.00001,"log"],	#Regularization
+	[10,10,"int"],				#"num_epochs"
+	[0,0,"log"]			#dropout
 					]
 
 
@@ -227,11 +228,24 @@ APPLPSR = pandas.read_csv(path+"/StockData/AAPLPSR.csv")
 APPLPSR = np.asarray(APPLPSR)#convert to numpy array
 APPLPSR = MatchDate(APPLD,APPLPSR)
 
+OIL = pandas.read_csv(path+"/StockData/OIL.csv")
+OIL = OIL[["Date","Price"]]
+OIL = np.asarray(OIL)#convert to numpy array
+OIL = MatchDate(APPLD,OIL)
+
+CCI = pandas.read_csv(path+"/StockData/^CCI.csv")
+CCI = np.asarray(CCI)#convert to numpy array
+CCI = MatchDate(APPLD,CCI)
+
+USD = pandas.read_csv(path+"/StockData/USD.csv").loc[:,"Date":"Price"]
+USD = np.asarray(USD)#convert to numpy array
+USD = MatchDate(APPLD,USD)
+
 #APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
 #APPLEPS = np.asarray(APPLEPS)#convert to numpy array
 #APPLVAR = np.var(APPLC)
 #file = MSFTC
-file = np.stack((APPLC,APPLRSI,APPLEPS,INTEREST,APPLPSR,MSFTC,APPLO),1)
+file = np.stack((APPLC,APPLEPS,INTEREST,APPLPSR,OIL,CCI,USD),1)
 
 
 lineage = {}
@@ -309,7 +323,7 @@ if __name__ == "__main__":
 			break 
 
 		for i in ModelsAlive:
-			searchSpace.append(Exploit(0.6, Models,i,file,"Gaussian",ModelsAlive[i][1]))
+			searchSpace.append(Exploit(0.9, Models,i,file,"Gaussian",ModelsAlive[i][1]))
 
 	
 		
