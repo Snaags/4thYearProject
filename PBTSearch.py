@@ -166,20 +166,20 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 
 SearchType = "Random"
-searchsize = 60
-cores = 10
+searchsize = 4
+cores = 4
 mutations =1
 
 
 hyperparameters = [
 	
 	[0.000001,0.001,"log"],		#"lr" 
-	[20,250,"int"],				#"hiddenDimension" 
+	[20,50,"int"],				#"hiddenDimension" 
 	[2,60,"int"],				#"seq_length" 
 	[1,2,"int"],				#"numberLayers"	
 	[4,16,"Po2"],				#"batch_size"
 	[0.000001,0.001,"log"],	#Regularization
-	[100,100,"int"],				#"num_epochs"
+	[1,1,"int"],				#"num_epochs"
 	[0.0001,0.1,"log"]			#dropout
 					]
 
@@ -434,7 +434,7 @@ plt.setp(Xax.get_xticklabels(), visible=False)
 cbar = fig.add_subplot(gs[2:,-1])
 Yax = fig.add_subplot(gs[2:,-3:-1],sharey = mainax)
 plt.setp(Yax.get_yticklabels(), visible=False)
-Yax.axes.yaxis.set_ticklabels([])
+
 
 
 
@@ -448,16 +448,17 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'winter', alpha = 0.9)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 400, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 Yax.plot(scoresy[:,1],scoresy[:,0])
 
 Xax.plot(scoresx[:,0],scoresx[:,1])
+plt.setp(Yax.xaxis.get_majorticklabels(), rotation=90)
 mainax.set_ylabel("Window Sequence Length")
 mainax.set_xlabel("Learning Rate")
-Yax.set_ylabel("Model Error (MSE)")
-Xax.set_xlabel("Model Error (MSE)")
+Yax.set_xlabel("Model Error (MSE)")
+Xax.set_ylabel("Model Error (MSE)")
 plt.savefig(("Graphs/"+str(float(best))+": lr Seq.pdf"),dpi=1200)
 plt.clf()
 
@@ -515,7 +516,7 @@ plt.setp(Xax.get_xticklabels(), visible=False)
 cbar = fig.add_subplot(gs[2:,-1])
 Yax = fig.add_subplot(gs[2:,-3:-1],sharey = mainax)
 plt.setp(Yax.get_yticklabels(), visible=False)
-Yax.axes.yaxis.set_ticklabels([])
+
 
 
 
@@ -529,7 +530,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'winter', alpha = 0.9)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 400, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 
@@ -592,12 +593,13 @@ gs = fig.add_gridspec(14, 15)
 mainax = fig.add_subplot(gs[2:,:-3])
 fig.suptitle('Error of Models Across Hyperparameter Space')
 mainax.set_xscale("log")
+mainax.set_yscale("log")
 Xax = fig.add_subplot(gs[0:2, :-3],sharex = mainax)
 plt.setp(Xax.get_xticklabels(), visible=False)
 cbar = fig.add_subplot(gs[2:,-1])
 Yax = fig.add_subplot(gs[2:,-3:-1],sharey = mainax)
 plt.setp(Yax.get_yticklabels(), visible=False)
-Yax.axes.yaxis.set_ticklabels([])
+
 
 
 
@@ -611,7 +613,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'winter', alpha = 0.9)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 400, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 
@@ -674,12 +676,13 @@ gs = fig.add_gridspec(14, 15)
 mainax = fig.add_subplot(gs[2:,:-3])
 fig.suptitle('Error of Models Across Hyperparameter Space')
 mainax.set_xscale("log")
+
 Xax = fig.add_subplot(gs[0:2, :-3],sharex = mainax)
 plt.setp(Xax.get_xticklabels(), visible=False)
 cbar = fig.add_subplot(gs[2:,-1])
 Yax = fig.add_subplot(gs[2:,-3:-1],sharey = mainax)
 plt.setp(Yax.get_yticklabels(), visible=False)
-Yax.axes.yaxis.set_ticklabels([])
+
 
 
 
@@ -691,7 +694,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'winter', alpha = 0.9)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 400, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 
 mainax.set_ylabel("Batch Size")
