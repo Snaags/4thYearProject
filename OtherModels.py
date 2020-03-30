@@ -142,9 +142,10 @@ def DailyChange(open,close):
 ###Import and scale
 Features = []
 FeaturesNames = []
-APPLC = pandas.read_csv(path+"/StockData/AAPL.csv")
-APPLC = APPLC[["Date","Close"]]
-APPLC = np.asarray(APPLC)#convert to numpy array
+
+APPLD = pandas.read_csv(path+"/StockData/AAPL.csv")
+APPLD = APPLD[["Date","Close"]]
+APPLD = np.asarray(APPLD)#convert to numpy array
 
 
 MSFTC = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
@@ -164,13 +165,13 @@ FeaturesNames.append("DJIC")
 
 APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
 APPLEPS = np.asarray(APPLEPS)#convert to numpy array
-APPLEPS = MatchDate(APPLC,APPLEPS)
+APPLEPS = MatchDate(APPLD,APPLEPS)
 Features.append(APPLEPS)
 FeaturesNames.append("APPLEPS")
 
 AAPLEMPLY = pandas.read_csv(path+"/StockData/AAPLEMPLY.csv")
 AAPLEMPLY = np.asarray(AAPLEMPLY)#convert to numpy array
-AAPLEMPLY = MatchDate(APPLC,AAPLEMPLY)
+AAPLEMPLY = MatchDate(APPLD,AAPLEMPLY)
 Features.append(AAPLEMPLY)
 FeaturesNames.append("AAPLEMPLY")
 
@@ -188,13 +189,9 @@ FeaturesNames.append("APPLV")
 APPLO = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
 APPLO = np.asarray(APPLO)#convert to numpy array
 
-AAPLEREV = pandas.read_csv(path+"/StockData/AAPLREV.csv")
-AAPLEREV = np.asarray(AAPLEREV)#convert to numpy array
-AAPLEREV = MatchDate(APPLC,AAPLEREV)
-Features.append(AAPLEREV)
-FeaturesNames.append("AAPLEREV")
 
 
+"""
 
 RawTickers = [APPLC,DJIC,GOOGLC,MSFTC]
 RawTickersN = ["APPLC","DJIC","MSFTC","GOOGLC"]
@@ -212,7 +209,7 @@ for i,n in zip(RawTickers,RawTickersN):
 
 	Features.append(DailyChange(APPLO,APPLC))
 	FeaturesNames.append(str("DC"+str(n)))
-
+"""
 
 #APPLVAR = np.var(APPLC)
 #file = np.stack((APPLC,APPLRSI,APPLCD,GOOGLC,MSFTC,APPLSMA200,APPLSMA50,APPLSMMA200,APPLSMMA50),1)
@@ -223,7 +220,7 @@ for i,n in zip(RawTickers,RawTickersN):
 scalers = []
 scaled_data = []
 for i in Features:
-	Features[Features.index(i)] = i[:-1]
+	Features[Features.index(i)] = i[:-4]
 Features = np.asarray(Features)
 
 
@@ -244,7 +241,7 @@ Features = np.stack((scaled_data),1)
 """
 
 
-y = APPLC[1:]
+y = APPLC[4:]
 
 """
 scalers[6].fit_transform(y.reshape(-1, 1))

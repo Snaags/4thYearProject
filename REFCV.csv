@@ -1,18 +1,10 @@
 ,LinearRegression,RidgeRegression,Lasso,Tree,SVR,Times Selected,Mean
-APPL Close,1,1,1,1,1,5,1.0
-APPL Open,1,1,1,1,1,5,1.0
-OIL,1,1,6,1,1,4,2.0
-Consumer Confidence Index (US),1,1,8,1,1,4,2.4
-US Interest Rates,1,1,3,4,1,3,2.0
-APPL Earnings Per Share,1,1,4,6,1,3,2.6
-GOOGL Close,4,8,1,1,1,3,3.0
-APPL Price to Share Ratio,1,1,7,5,1,3,3.0
-USD Exchange,1,1,10,3,1,3,3.2
-APPL Sales Per Share,1,1,5,8,1,3,3.2
-APPL Volume,9,9,1,1,1,3,4.2
-APPL RSI 14 Days,2,2,2,1,1,2,1.6
-DJI Close,5,4,1,2,1,2,2.6
-MSFT Close,3,3,9,1,1,2,3.4
-AAPL Employees,6,5,1,9,1,2,4.4
-APPL Asset Value,8,7,1,7,1,2,4.8
-AAPLE Revenue,7,6,1,10,1,2,5.0
+AAPL Close,1,1,1,1,1,5,1.0
+AAPL Open,5,4,1,2,1,2,2.6
+Consumer Confidence Index (US),2,1,8,3,1,2,3.0
+USD Exchange,4,3,6,5,1,1,3.8
+AAPL Price to Share Ratio,3,2,7,8,1,1,4.2
+AAPL Earnings Per Share,6,5,3,7,1,1,4.4
+US Interest Rates,7,6,2,6,1,1,4.4
+OIL,9,8,5,4,1,1,5.4
+AAPL Sales Per Share,8,7,4,9,1,1,5.8

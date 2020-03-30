@@ -184,23 +184,23 @@ def DailyChange(open,close):
 Features = []
 FeaturesNames = []
 
-APPLC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
-APPLC = np.asarray(APPLC)#convert to numpy array
-Features.append(APPLC)
-FeaturesNames.append("APPL Close")
+AAPLC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
+AAPLC = np.asarray(AAPLC)#convert to numpy array
+Features.append(AAPLC)
+FeaturesNames.append("AAPL Close")
 
 
-APPLO = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
-APPLO = np.asarray(APPLO)#convert to numpy array
-Features.append(APPLO)
-FeaturesNames.append("APPL Open")
+AAPLO = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
+AAPLO = np.asarray(AAPLO)#convert to numpy array
+Features.append(AAPLO)
+FeaturesNames.append("AAPL Open")
 
 
-APPLD = pandas.read_csv(path+"/StockData/AAPL.csv")
-APPLD = APPLD[["Date","Close"]]
-APPLD = np.asarray(APPLD)#convert to numpy array
+AAPLD = pandas.read_csv(path+"/StockData/AAPL.csv")
+AAPLD = AAPLD[["Date","Close"]]
+AAPLD = np.asarray(AAPLD)#convert to numpy array
 
-
+"""
 MSFTC = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
 MSFTC = np.asarray(MSFTC)#convert to numpy array
 Features.append(MSFTC)
@@ -215,28 +215,28 @@ DJIC = pandas.read_csv(path+"/StockData/^DJI.csv").loc[:,"Close"]
 DJIC = np.asarray(DJIC)#convert to numpy array
 Features.append(DJIC)
 FeaturesNames.append("DJI Close")
-
+"""
 CCI = pandas.read_csv(path+"/StockData/^CCI.csv")
 CCI = np.asarray(CCI)#convert to numpy array
-CCI = MatchDate(APPLD,CCI)
+CCI = MatchDate(AAPLD,CCI)
 Features.append(CCI)
 FeaturesNames.append("Consumer Confidence Index (US)")
-
-APPLAST = pandas.read_csv(path+"/StockData/AAPLAST.csv")
-APPLAST = np.asarray(APPLAST)#convert to numpy array
-APPLAST = MatchDate(APPLD,APPLAST)
-Features.append(APPLAST)
-FeaturesNames.append("APPL Asset Value")
-
-APPLPSR = pandas.read_csv(path+"/StockData/AAPLPSR.csv")
-APPLPSR = np.asarray(APPLPSR)#convert to numpy array
-APPLPSR = MatchDate(APPLD,APPLPSR)
-Features.append(APPLPSR)
-FeaturesNames.append("APPL Price to Share Ratio")
+"""
+AAPLAST = pandas.read_csv(path+"/StockData/AAPLAST.csv")
+AAPLAST = np.asarray(AAPLAST)#convert to numpy array
+AAPLAST = MatchDate(AAPLD,AAPLAST)
+Features.append(AAPLAST)
+FeaturesNames.append("AAPL Asset Value")
+"""
+AAPLPSR = pandas.read_csv(path+"/StockData/AAPLPSR.csv")
+AAPLPSR = np.asarray(AAPLPSR)#convert to numpy array
+AAPLPSR = MatchDate(AAPLD,AAPLPSR)
+Features.append(AAPLPSR)
+FeaturesNames.append("AAPL Price to Share Ratio")
 
 USD = pandas.read_csv(path+"/StockData/USD.csv").loc[:,"Date":"Price"]
 USD = np.asarray(USD)#convert to numpy array
-USD = MatchDate(APPLD,USD)
+USD = MatchDate(AAPLD,USD)
 Features.append(USD)
 FeaturesNames.append("USD Exchange")
 
@@ -244,51 +244,51 @@ OIL = pandas.read_csv(path+"/StockData/OIL.csv")
 OIL = OIL[["Date","Price"]]
 OIL = np.asarray(OIL)#convert to numpy array
 
-OIL = MatchDate(APPLD,OIL)
+OIL = MatchDate(AAPLD,OIL)
 Features.append(OIL)
 FeaturesNames.append("OIL")
 
-APPLPSP = pandas.read_csv(path+"/StockData/AAPLSPS.csv")
-APPLPSP = np.asarray(APPLPSP)#convert to numpy array
-APPLPSP = MatchDate(APPLD,APPLPSP)
-Features.append(APPLPSP)
-FeaturesNames.append("APPL Sales Per Share")
+AAPLPSP = pandas.read_csv(path+"/StockData/AAPLSPS.csv")
+AAPLPSP = np.asarray(AAPLPSP)#convert to numpy array
+AAPLPSP = MatchDate(AAPLD,AAPLPSP)
+Features.append(AAPLPSP)
+FeaturesNames.append("AAPL Sales Per Share")
 
-APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
-APPLEPS = np.asarray(APPLEPS)#convert to numpy array
-APPLEPS = MatchDate(APPLD,APPLEPS)
-Features.append(APPLEPS)
-FeaturesNames.append("APPL Earnings Per Share")
+AAPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
+AAPLEPS = np.asarray(AAPLEPS)#convert to numpy array
+AAPLEPS = MatchDate(AAPLD,AAPLEPS)
+Features.append(AAPLEPS)
+FeaturesNames.append("AAPL Earnings Per Share")
 
-
+"""
 AAPLEMPLY = pandas.read_csv(path+"/StockData/AAPLEMPLY.csv")
 AAPLEMPLY = np.asarray(AAPLEMPLY)#convert to numpy array
-AAPLEMPLY = MatchDate(APPLD,AAPLEMPLY)
+AAPLEMPLY = MatchDate(AAPLD,AAPLEMPLY)
 Features.append(AAPLEMPLY)
 FeaturesNames.append("AAPL Employees")
 
 AAPLEREV = pandas.read_csv(path+"/StockData/AAPLREV.csv")
 AAPLEREV = np.asarray(AAPLEREV)#convert to numpy array
-AAPLEREV = MatchDate(APPLD,AAPLEREV)
+AAPLEREV = MatchDate(AAPLD,AAPLEREV)
 Features.append(AAPLEREV)
-FeaturesNames.append("AAPLE Revenue")
-
+FeaturesNames.append("AAPL Revenue")
+"""
 INTEREST = pandas.read_csv(path+"/StockData/INTEREST.csv")
 INTEREST = np.asarray(INTEREST)#convert to numpy array
-INTEREST = MatchDate(APPLD,INTEREST)
+INTEREST = MatchDate(AAPLD,INTEREST)
 Features.append(INTEREST)
 FeaturesNames.append("US Interest Rates")
 
+"""
+AAPLV = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
+AAPLV = np.asarray(AAPLV)#convert to numpy array
+Features.append(AAPLV)
+FeaturesNames.append("AAPL Volume")
+"""
 
-APPLV = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
-APPLV = np.asarray(APPLV)#convert to numpy array
-Features.append(APPLV)
-FeaturesNames.append("APPL Volume")
+"""
 
-
-
-
-RawTickers = [APPLC]
+RawTickers = [AAPLC]
 RawTickersN = ["APPL"]
 
 
@@ -298,7 +298,7 @@ for i,n in zip(RawTickers,RawTickersN):
 	print("RSI length", 14, "completed for ", i)
 	FeaturesNames.append(str(str(n)+" RSI "+str(14)+" Days"))
 
-
+"""
 
 
 #APPLVAR = np.var(APPLC)
@@ -331,7 +331,7 @@ Features = np.stack((scaled_data),1)
 
 """
 
-y = APPLC[1:]
+y = AAPLC[1:]
 
 
 """
@@ -447,7 +447,7 @@ if CV == True:
 	Tree =DecisionTreeRegressor()
 
 		##Linear Regression
-	rfe = RFECV(estimator=LinrReg, step=1,min_features_to_select = 8,cv = 5)
+	rfe = RFECV(estimator=LinrReg, step=1,min_features_to_select = 1,cv = 5)
 	rfe.fit(Features, y)
 	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
 	    print(str(c)+": "+ str(i))
@@ -459,12 +459,12 @@ if CV == True:
 	plt.figure()
 	plt.title("LinearRegression")
 	plt.xlabel("Number of features selected")
-	plt.ylabel("Cross validation score (nb of correct classifications)")
+	plt.ylabel("R Squared Error Score")
 	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
 	plt.show()
 
 	##Ridge Regression
-	rfe = RFECV(estimator=RidgeReg, step=1,min_features_to_select = 8,cv = 5)
+	rfe = RFECV(estimator=RidgeReg, step=1,min_features_to_select = 1,cv = 5)
 	rfe.fit(Features, y)
 	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
 	    print(str(c)+": "+ str(i))
@@ -476,13 +476,13 @@ if CV == True:
 	plt.figure()
 	plt.title("Ridge Regression")
 	plt.xlabel("Number of features selected")
-	plt.ylabel("Cross validation score (nb of correct classifications)")
+	plt.ylabel("R Squared Error Score")
 	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
 	plt.show()
 
 
 
-	rfe = RFECV(estimator=lasso, step=1,min_features_to_select = 8,cv = 5)
+	rfe = RFECV(estimator=lasso, step=1,min_features_to_select = 1,cv = 5)
 	rfe.fit(Features, y)
 	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
 	    print(str(c)+": "+ str(i))
@@ -491,14 +491,14 @@ if CV == True:
 	plt.figure()
 	plt.title("Lasso")
 	plt.xlabel("Number of features selected")
-	plt.ylabel("Cross validation score (nb of correct classifications)")
+	plt.ylabel("R Squared Error Score")
 	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
 	plt.show()
 
 
 
 
-	rfe = RFECV(estimator=Tree, step=1,min_features_to_select = 8,cv = 15)
+	rfe = RFECV(estimator=Tree, step=1,min_features_to_select = 1,cv = 15)
 	rfe.fit(Features, y)
 
 
@@ -507,13 +507,14 @@ if CV == True:
 	scores["Tree"] = rfe.ranking_
 
 	plt.figure()
-	plt.title("Tree")
+	plt.title("Decision Tree Regression")
 	plt.xlabel("Number of features selected")
-	plt.ylabel("Cross validation score (nb of correct classifications)")
+	plt.ylabel("R Squared Error Score")
 	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
 	plt.show()
 
-	rfe = RFECV(estimator=SVR,min_features_to_select = 8, step=1,cv = 10)
+
+	rfe = RFECV(estimator=SVR,min_features_to_select = 1, step=1,cv = 15)
 	rfe.fit(Features, y)
 
 
@@ -524,9 +525,10 @@ if CV == True:
 	plt.figure()
 	plt.title("SVR")
 	plt.xlabel("Number of features selected")
-	plt.ylabel("Cross validation score (nb of correct classifications)")
+	plt.ylabel("R Squared Error Score")
 	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
 	plt.show()
+
 	mean =  abs(scores.mean(axis = 1))
 	scores["Times Selected"] = scores.isin([1]).sum(axis=1)
 	scores["Mean"] = mean 
@@ -562,17 +564,12 @@ regressor.fit(Features, y) #training the algorithm
 Results["Ridge"] = abs(regressor.coef_)
 
 
-"""
-regressor = LinearSVR()
-regressor.fit(Features, y) #training the algorithm
-
-Results["SVR"] = abs(regressor.coef_)
 
 regressor = LinearSVR(max_iter = 100000, dual = False, loss ="squared_epsilon_insensitive")
 regressor.fit(Features, y) #training the algorithm
 
 Results["SVR2"] = abs(regressor.coef_)
-"""
+
 
 	###Tree
 

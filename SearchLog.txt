@@ -1,21 +1,31 @@
-Total run time: 818.4975817203522
+Total run time: 14.168197393417358
 lr hidden seq_length 
 Hyperparameter Ranges:
 [1e-05, 0.0001, 'log']
-[150, 150, 'int']
-[5, 5, 'int']
+[50, 60, 'int']
+[2, 2, 'int']
 [1, 1, 'int']
-[256, 256, 'Po2']
-[1e-05, 1e-05, 'log']
-[200, 200, 'int']
-[0.001, 0.001, 'log']
-Search of size: 2
+[16, 16, 'Po2']
+[1e-06, 1e-05, 'log']
+[1, 1, 'int']
+[0.0001, 0.01, 'log']
+Search of size: 4
 0:  
-(3502.646240234375, {'lr': 5e-05, 'hiddenDimension': 150, 'seq_length': 5, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 200, 'l2': 6.000000000000001e-05, 'dropout': 0.001, 'number': 0})
+(3527.35546875, {'lr': 0.0009000000000000001, 'hiddenDimension': 55, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 4e-05, 'dropout': 0, 'number': 0})
+(3710.193359375, {'lr': 0.0009000000000000001, 'hiddenDimension': 55, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 4e-05, 'dropout': 0, 'number': 0})
 1:  
-(3502.721923828125, {'lr': 5e-05, 'hiddenDimension': 150, 'seq_length': 5, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 200, 'l2': 4e-05, 'dropout': 0.007, 'number': 1})
+(5033.08544921875, {'lr': 6.000000000000001e-05, 'hiddenDimension': 50, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 9e-06, 'dropout': 0, 'number': 1})
+(5468.08837890625, {'lr': 6.000000000000001e-05, 'hiddenDimension': 50, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 9e-06, 'dropout': 0, 'number': 1})
+2:  
+(3513.904541015625, {'lr': 0.0001, 'hiddenDimension': 53, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 1e-05, 'dropout': 0, 'number': 2})
+(5199.5751953125, {'lr': 0.0001, 'hiddenDimension': 53, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 1e-05, 'dropout': 0, 'number': 2})
+3:  
+(5168.392578125, {'lr': 0.0007, 'hiddenDimension': 56, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 5e-05, 'dropout': 0, 'number': 3})
+4:  
+(3513.904541015625, {'lr': 0.0001, 'hiddenDimension': 53, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 1e-05, 'dropout': 0, 'number': 2})
+(5166.89501953125, {'lr': 5.9991623252067064e-05, 'hiddenDimension': 53, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 8, 'num_epochs': 1, 'l2': 1.167739579113466e-05, 'dropout': 0, 'number': 4})
 Lowest error model: 
-(3502.646240234375, {'lr': 5e-05, 'hiddenDimension': 150, 'seq_length': 5, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 200, 'l2': 6.000000000000001e-05, 'dropout': 0.001, 'number': 0})
+(3513.904541015625, {'lr': 0.0001, 'hiddenDimension': 53, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 1e-05, 'dropout': 0, 'number': 2})
 
 Hyperparameter schedule for top performing model: 
-(3502.646240234375, {'lr': 5e-05, 'hiddenDimension': 150, 'seq_length': 5, 'numberLayers': 1, 'batch_size': 256, 'num_epochs': 200, 'l2': 6.000000000000001e-05, 'dropout': 0.001, 'number': 0})
+(3513.904541015625, {'lr': 0.0001, 'hiddenDimension': 53, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 1, 'l2': 1e-05, 'dropout': 0, 'number': 2})

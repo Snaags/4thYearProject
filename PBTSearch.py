@@ -168,19 +168,19 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 SearchType = "Random"
 searchsize = 60
 cores = 10
-mutations =15
+mutations =1
 
 
 hyperparameters = [
 	
-	[0.00001,0.0001,"log"],		#"lr" 
-	[50,250,"int"],				#"hiddenDimension" 
-	[5,30,"int"],				#"seq_length" 
-	[1,1,"int"],				#"numberLayers"	
-	[2,16,"Po2"],				#"batch_size"
-	[0.000001,0.00001,"log"],	#Regularization
-	[10,10,"int"],				#"num_epochs"
-	[0,0,"log"]			#dropout
+	[0.000001,0.001,"log"],		#"lr" 
+	[20,250,"int"],				#"hiddenDimension" 
+	[2,60,"int"],				#"seq_length" 
+	[1,2,"int"],				#"numberLayers"	
+	[4,16,"Po2"],				#"batch_size"
+	[0.000001,0.001,"log"],	#Regularization
+	[100,100,"int"],				#"num_epochs"
+	[0.0001,0.1,"log"]			#dropout
 					]
 
 
@@ -424,25 +424,32 @@ stepcounter = float(1/len(lines))
 greencounter = 0
 
 
-fig = plt.figure(figsize = [10.80,10.80],constrained_layout=True)
-gs = fig.add_gridspec(5, 5)
-mainax = fig.add_subplot(gs[1:,:-1])
+fig = plt.figure(figsize = [10.80,10.80],constrained_layout=False)
+gs = fig.add_gridspec(14, 15)
+mainax = fig.add_subplot(gs[2:,:-3])
+fig.suptitle('Error of Models Across Hyperparameter Space')
 mainax.set_xscale("log")
-Xax = fig.add_subplot(gs[0, :-1],sharex = mainax)
+Xax = fig.add_subplot(gs[0:2, :-3],sharex = mainax)
+plt.setp(Xax.get_xticklabels(), visible=False)
+cbar = fig.add_subplot(gs[2:,-1])
+Yax = fig.add_subplot(gs[2:,-3:-1],sharey = mainax)
+plt.setp(Yax.get_yticklabels(), visible=False)
+Yax.axes.yaxis.set_ticklabels([])
 
-Yax = fig.add_subplot(gs[1:,-1],sharey = mainax)
 
 
-fig.tight_layout()
+
+
+
 for i in lines:
 	i = np.array(i)
-	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.7)
 	greencounter += stepcounter
 if mutations != 1:
-	mainax.scatter(init[:,0],init[:,1],c= "r",s = 20)
+	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-mainax.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
-#cbar = plt.colorbar()
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'summer', alpha = 0.7)
+cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 Yax.plot(scoresy[:,1],scoresy[:,0])
 
@@ -498,33 +505,42 @@ stepcounter = float(1/len(lines))
 greencounter = 0
 
 
-fig = plt.figure(figsize = [10.80,10.80],constrained_layout=True)
-gs = fig.add_gridspec(5, 5)
-mainax = fig.add_subplot(gs[1:,:-1])
+fig = plt.figure(figsize = [10.80,10.80],constrained_layout=False)
+gs = fig.add_gridspec(14, 15)
+mainax = fig.add_subplot(gs[2:,:-3])
+fig.suptitle('Error of Models Across Hyperparameter Space')
 mainax.set_xscale("log")
-Xax = fig.add_subplot(gs[0, :-1],sharex = mainax)
+Xax = fig.add_subplot(gs[0:2, :-3],sharex = mainax)
+plt.setp(Xax.get_xticklabels(), visible=False)
+cbar = fig.add_subplot(gs[2:,-1])
+Yax = fig.add_subplot(gs[2:,-3:-1],sharey = mainax)
+plt.setp(Yax.get_yticklabels(), visible=False)
+Yax.axes.yaxis.set_ticklabels([])
 
-Yax = fig.add_subplot(gs[1:,-1],sharey = mainax)
 
 
-fig.tight_layout()
+
+
+
 for i in lines:
 	i = np.array(i)
-	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.7)
 	greencounter += stepcounter
 if mutations != 1:
-	mainax.scatter(init[:,0],init[:,1],c= "r",s = 20)
+	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-mainax.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
-#cbar = plt.colorbar()
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'summer', alpha = 0.7)
+cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 
 Yax.plot(scoresy[:,1],scoresy[:,0])
 Xax.plot(scoresx[:,0],scoresx[:,1])
 mainax.set_ylabel("Hidden Layer Size")
 mainax.set_xlabel("Learning Rate")
-Yax.set_ylabel("Model Error (MSE)")
-Xax.set_xlabel("Model Error (MSE)")
+Yax.set_xlabel("Model Error (MSE)")
+plt.setp(Yax.xaxis.get_majorticklabels(), rotation=90)
+Xax.set_ylabel("Model Error (MSE)")
+
 plt.savefig(("Graphs/"+str(float(best))+": lr hidden.pdf"),dpi=1200)
 plt.clf()
 
@@ -570,26 +586,33 @@ stepcounter = float(1/len(lines))
 greencounter = 0
 
 
-fig = plt.figure(figsize = [10.80,10.80],constrained_layout=True)
-gs = fig.add_gridspec(5, 5)
-mainax = fig.add_subplot(gs[1:,:-1])
+fig = plt.figure(figsize = [10.80,10.80],constrained_layout=False)
+
+gs = fig.add_gridspec(14, 15)
+mainax = fig.add_subplot(gs[2:,:-3])
+fig.suptitle('Error of Models Across Hyperparameter Space')
 mainax.set_xscale("log")
-mainax.set_yscale("log")
-Xax = fig.add_subplot(gs[0, :-1],sharex = mainax)
+Xax = fig.add_subplot(gs[0:2, :-3],sharex = mainax)
+plt.setp(Xax.get_xticklabels(), visible=False)
+cbar = fig.add_subplot(gs[2:,-1])
+Yax = fig.add_subplot(gs[2:,-3:-1],sharey = mainax)
+plt.setp(Yax.get_yticklabels(), visible=False)
+Yax.axes.yaxis.set_ticklabels([])
 
-Yax = fig.add_subplot(gs[1:,-1],sharey = mainax)
 
 
-fig.tight_layout()
+
+
+
 for i in lines:
 	i = np.array(i)
-	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.7)
 	greencounter += stepcounter
 if mutations != 1:
-	mainax.scatter(init[:,0],init[:,1],c= "r",s = 20)
+	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-mainax.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
-#cbar = plt.colorbar()
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'summer', alpha = 0.7)
+cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 
 
@@ -598,8 +621,10 @@ Xax.plot(scoresx[:,0],scoresx[:,1])
 
 mainax.set_ylabel("Optimiser Regularisation (l2)")
 mainax.set_xlabel("Learning Rate")
-Yax.set_ylabel("Model Error (MSE)")
-Xax.set_xlabel("Model Error (MSE)")
+Yax.set_xlabel("Model Error (MSE)")
+plt.setp(Yax.xaxis.get_majorticklabels(), rotation=90)
+
+Xax.set_ylabel("Model Error (MSE)")
 plt.savefig(("Graphs/"+str(float(best))+": lr Regularisation.pdf"),dpi=1200)
 plt.clf()
 
@@ -643,29 +668,37 @@ stepcounter = float(1/len(lines))
 greencounter = 0
 
 
-fig = plt.figure(figsize = [10.80,10.80],constrained_layout=True)
-gs = fig.add_gridspec(5, 5)
-mainax = fig.add_subplot(gs[1:,:-1])
+fig = plt.figure(figsize = [10.80,10.80],constrained_layout=False)
+
+gs = fig.add_gridspec(14, 15)
+mainax = fig.add_subplot(gs[2:,:-3])
+fig.suptitle('Error of Models Across Hyperparameter Space')
 mainax.set_xscale("log")
-Xax = fig.add_subplot(gs[0, :-1],sharex = mainax)
+Xax = fig.add_subplot(gs[0:2, :-3],sharex = mainax)
+plt.setp(Xax.get_xticklabels(), visible=False)
+cbar = fig.add_subplot(gs[2:,-1])
+Yax = fig.add_subplot(gs[2:,-3:-1],sharey = mainax)
+plt.setp(Yax.get_yticklabels(), visible=False)
+Yax.axes.yaxis.set_ticklabels([])
 
-Yax = fig.add_subplot(gs[1:,-1],sharey = mainax)
 
 
-fig.tight_layout()
+
 for i in lines:
 	i = np.array(i)
-	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.5)
+	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.7)
 	greencounter += stepcounter
 if mutations != 1:
-	mainax.scatter(init[:,0],init[:,1],c= "r",s = 20)
+	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-mainax.scatter(final[:,0],final[:,1],s = 15,c = finalscores,vmin = 0, vmax = 800, cmap = 'summer', alpha = 0.7)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'summer', alpha = 0.7)
+cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 
 mainax.set_ylabel("Batch Size")
 mainax.set_xlabel("Learning Rate")
-Yax.set_ylabel("Model Error (MSE)")
-Xax.set_xlabel("Model Error (MSE)")
+Yax.set_xlabel("Model Error (MSE)")
+plt.setp(Yax.xaxis.get_majorticklabels(), rotation=90)
+Xax.set_ylabel("Model Error (MSE)")
 Yax.plot(scoresy[:,1],scoresy[:,0])
 Xax.plot(scoresx[:,0],scoresx[:,1])
 plt.savefig(("Graphs/"+str(float(best))+": lr batch_size.pdf"),dpi=1200)

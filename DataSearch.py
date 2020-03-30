@@ -209,7 +209,7 @@ INTEREST = np.asarray(INTEREST)#convert to numpy array
 INTEREST = MatchDate(APPLD,INTEREST)
 
 file = APPLC
-file = np.stack((file,RSI(file,14),INTEREST,OIL,CCI,USD),axis = 1)
+file = np.stack((file,RSI(file,14),INTEREST,CCI,USD),axis = 1)
 lineage = {}
 
 if SearchType == "Random":
