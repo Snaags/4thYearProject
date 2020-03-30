@@ -448,7 +448,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'summer', alpha = 0.7)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 Yax.plot(scoresy[:,1],scoresy[:,0])
@@ -529,7 +529,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'summer', alpha = 0.7)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 
@@ -611,7 +611,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'summer', alpha = 0.7)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 
@@ -691,7 +691,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'summer', alpha = 0.7)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 200, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 
 mainax.set_ylabel("Batch Size")

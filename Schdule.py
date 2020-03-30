@@ -6,7 +6,7 @@ import random
 from Utils import MatchDate
 path = os.getcwd()
 
-hyperparameters = [0.01,100,1,1,4,0.00000003,1000000]
+hyperparameters = [0.0001,104,24,1,8,0.00000003,30]
 toggle = 0
 x = 20
 error = []
@@ -72,7 +72,7 @@ hyperparameters[0] = APPLC
 """
 
 file = np.stack((APPLC,USD,CCI,OIL),axis = 1)
-fle = APPLC
+file = APPLC
 for i in range(20):
 	hyperparameters.insert(0,file)
 	results = RunModel(*hyperparameters)

@@ -73,8 +73,9 @@ class LSTMModel(nn.Module):
         #out, (self.h0, self.c0) = self.lstmEnc(x.view(self.batch_size,self.seq_len,-1), (self.h0.detach(), self.c0.detach()))
         out, (self.h0, self.c0) = self.lstm(x.view(self.seq_len,self.batch_size,self.input_dim), (self.h0.detach(), self.c0.detach()))
         
-        out = self.act(out) 
+        out = self.act(out)
         out = self.fc(out[-1,:,:])
+         
         out = torch.squeeze(out)
 
         return out
