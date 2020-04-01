@@ -74,7 +74,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	if X.ndim != 1:
 
 		for i in range(len(X[0,:])):
-			scalers.append(MinMaxScaler(feature_range=(-1, 1)))
+			scalers.append(MinMaxScaler(feature_range=(0, 1)))
 		#scaler = MinMaxScaler(feature_range=(-1, 1))	#scale data
 		#scaler1 = MinMaxScaler(feature_range=(-1, 1))	#scale data	
 		#scale2 = MinMaxScaler(feature_range=(-1, 1))	#scale data
@@ -95,28 +95,17 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		X = np.stack((scaled_data),1)
 
 	else:
-		scalers.append(MinMaxScaler(feature_range=(-1, 1)))	#scale data
+		scalers.append(MinMaxScaler(feature_range=(0, 1)))	#scale data
 		X = scalers[0].fit_transform(X.reshape(-1, 1))	
 	input_dim = np.shape(X)[1]
 
 
-	X_train, X_test = test_train_split(X,0.85) #Training data from 80% of the total data set
+	X_train, X_test = test_train_split(X,0.9) #Training data from 80% of the total data set
 
 
 	X, y = GroupData(X_train,seq_length,predict_distance)
 
 	y = np.asarray(y)
-
-	"""
-	count = 0
-	hold = []
-	Xnew = []
-	for i in X:
-		hold.append(i)
-		count +=1
-		if count == 100:
-			Xnew.append	
-	"""
 
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
@@ -229,6 +218,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 		# Clear stored gradient
 		model.zero_grad()
+		model.init_hidden()
 
 		for X,y in zip(samples,lables):
 			y_pred = model(X)
@@ -270,38 +260,56 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	X, y = GroupData(X_test,seq_length,predict_distance)
 
 	##Convert samples and lables
-	samples = torch.cuda.FloatTensor(X)
-	#samples = torch.split(samples,batch_size)
-	#samples = list(samples)
-	#del samples[-1]
-	#samples = tuple(samples)
 	y = np.asarray(y)
+
+	##Convert samples and lables
+	samples = torch.cuda.FloatTensor(X)
+	samples = torch.transpose(samples,0,1)
+	samples = torch.squeeze(samples)
+	samples = torch.split(samples,batch_size,dim = 1)
+	samples = list(samples)
+	del samples[-1]
+
+	samples = tuple(samples)
 	lables = torch.cuda.FloatTensor(y[:,0])
-	#lablesplot = torch.FloatTensor(y)
-	#lables = torch.split(lables,batch_size)
-	#lables = list(lables)
-	#lablesplot = lablesplot[0:-len(lables[-1])]
-	#del lables[-1]
-	#lables = tuple(lables)
+	#lables = torch.transpose(lables,0,1)
+	lablesplot = torch.FloatTensor(y[:,0])
+	lables = torch.squeeze(lables)
+	lables = torch.split(lables,batch_size,dim = 0)
+	lablesplot = lablesplot[0:-len(lables[-1])]
+	lables = list(lables)
+	del lables[-1]
+	lables = tuple(lables)
+
+
+
 	loss_fn = torch.nn.MSELoss(reduction = "mean")
-	test_lost_score = 0
-	model.batch_size = 1
-	model.init_hidden()
+	
+	#model.init_hidden()
 	results = torch.cuda.FloatTensor()
 	for X,y in zip(samples,lables):
 
 		y_pred = model(X)
-		results = torch.cat((results, torch.unsqueeze(y_pred,0)),0)
+
+		results = torch.cat((results, y_pred),0)
 
 	##test_lost_score =  list(test_lost_score.cpu())
 
-	#lables = lablesplot
+	lables = lablesplot
 	results = results.cpu().detach()
 	lables = lables.cpu().detach()
 	results = np.asarray(results)
+	x = torch.FloatTensor()
+	for i in samples:
+		i= i.cpu()
+		x = torch.cat((x,i[-1,:]),0)
+	plt.plot(x)
+	plt.plot(results)
+	plt.show()
 	print(np.shape(results))
 	results = scalers[0].inverse_transform(results.reshape(-1,1))
 
+	test_lost_score = 0
 	test_lost_score = np.asarray(test_lost_score)
 	test_lost_score = scalers[0].inverse_transform(test_lost_score.reshape(-1,1))
 

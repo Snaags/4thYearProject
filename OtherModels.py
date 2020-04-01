@@ -147,7 +147,7 @@ APPLD = pandas.read_csv(path+"/StockData/AAPL.csv")
 APPLD = APPLD[["Date","Close"]]
 APPLD = np.asarray(APPLD)#convert to numpy array
 
-
+"""
 MSFTC = pandas.read_csv(path+"/StockData/MSFT.csv").loc[:,"Close"]
 MSFTC = np.asarray(MSFTC)#convert to numpy array
 Features.append(MSFTC)
@@ -174,12 +174,14 @@ AAPLEMPLY = np.asarray(AAPLEMPLY)#convert to numpy array
 AAPLEMPLY = MatchDate(APPLD,AAPLEMPLY)
 Features.append(AAPLEMPLY)
 FeaturesNames.append("AAPLEMPLY")
-
+"""
 
 APPLC = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Close"]
 APPLC = np.asarray(APPLC)#convert to numpy array
 Features.append(APPLC)
 FeaturesNames.append("APPLC")
+
+
 
 APPLV = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
 APPLV = np.asarray(APPLV)#convert to numpy array
@@ -188,7 +190,6 @@ FeaturesNames.append("APPLV")
 
 APPLO = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
 APPLO = np.asarray(APPLO)#convert to numpy array
-
 
 
 """
@@ -220,7 +221,7 @@ for i,n in zip(RawTickers,RawTickersN):
 scalers = []
 scaled_data = []
 for i in Features:
-	Features[Features.index(i)] = i[:-4]
+	Features[Features.index(i)] = i[:-1]
 Features = np.asarray(Features)
 
 
@@ -241,7 +242,7 @@ Features = np.stack((scaled_data),1)
 """
 
 
-y = APPLC[4:]
+y = APPLC[1:]
 
 """
 scalers[6].fit_transform(y.reshape(-1, 1))
@@ -298,18 +299,18 @@ Test = np.matrix(Test)
 Test = np.transpose(Test)
 
 prediction = (regressor.predict(Test))
-
+print 
 
 
 
 from sklearn.metrics import mean_squared_error
 
-mean=mean_squared_error(prediction,yTest)
+mean=mean_squared_error(prediction[:-1],yTest[1:])
 print("Error from prediction: ",mean)
 
 
 plt.plot(yTest,label = "AAPL")
-plt.plot(prediction, label = "Prediction")
+plt.plot(prediction[:-1], label = "Prediction")
 #plt.plot(x, label = "input")
 plt.legend()
 plt.show()
@@ -328,7 +329,7 @@ prediction = (regressor.predict(Test))
 
 
 
-mean=mean_squared_error(prediction,yTest)
+mean=mean_squared_error(prediction[:-1],yTest[1:])
 print("Error from prediction: ",mean)
 
 total_error = 0
@@ -360,7 +361,6 @@ for i,c in zip(FeaturesNames,regressor.coef_):
 
 Results["SVR"] = regressor.coef_
 prediction = (regressor.predict(Test))
-
 
 regressor = Ridge()
 regressor.fit(Features, y) #training the algorithm

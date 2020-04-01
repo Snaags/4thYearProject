@@ -30,7 +30,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		dropout = 0
 	else:
 		dropout = dropout
-	predict_distance = 1
+	predict_distance = 4
 	HyperParameters = {
 		
 		"lr" : lr,
@@ -232,7 +232,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 		# Clear stored gradient
 		model.zero_grad()
-
+		model.init_hidden()
 		for X,y in zip(samples,lables):
 			y_pred = model(X)
 			#res = torch.cat((res, y_pred),0)
@@ -272,24 +272,29 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 	X, y = GroupData(X_test,seq_length,predict_distance)
 
+	y = np.asarray(y)
+
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
-	#samples = torch.split(samples,batch_size)
-	#samples = list(samples)
-	#del samples[-1]
-	#samples = tuple(samples)
-	y = np.asarray(y)
+	samples = torch.transpose(samples,0,1)
+	samples = torch.squeeze(samples)
+	samples = torch.split(samples,batch_size,dim = 1)
+	samples = list(samples)
+	del samples[-1]
+
+	samples = tuple(samples)
 	lables = torch.cuda.FloatTensor(y[:,0])
-	#lablesplot = torch.FloatTensor(y)
-	#lables = torch.split(lables,batch_size)
-	#lables = list(lables)
-	#lablesplot = lablesplot[0:-len(lables[-1])]
-	#del lables[-1]
-	#lables = tuple(lables)
+	#lables = torch.transpose(lables,0,1)
+	lablesplot = torch.FloatTensor(y[:,0])
+	lables = torch.squeeze(lables)
+	lables = torch.split(lables,batch_size,dim = 0)
+	lablesplot = lablesplot[0:-len(lables[-1])]
+	lables = list(lables)
+	del lables[-1]
+	lables = tuple(lables)
 	loss_fn = torch.nn.MSELoss(reduction = "mean")
 	test_lost_score = 0
-	model.batch_size = 1
-	model.init_hidden()
+
 	results = torch.cuda.FloatTensor()
 	for X,y in zip(samples,lables):
 
@@ -298,7 +303,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 	##test_lost_score =  list(test_lost_score.cpu())
 
-	#lables = lablesplot
+	lables = lablesplot
 	results = results.cpu().detach()
 	lables = lables.cpu().detach()
 	results = np.asarray(results)

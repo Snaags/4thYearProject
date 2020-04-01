@@ -167,20 +167,20 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 SearchType = "Random"
 searchsize = 4
-cores = 4
-mutations =1
+cores = 2
+mutations =5
 
 
 hyperparameters = [
 	
-	[0.000001,0.001,"log"],		#"lr" 
-	[20,50,"int"],				#"hiddenDimension" 
-	[2,60,"int"],				#"seq_length" 
+	[0.0001,0.001,"log"],		#"lr" 
+	[50,200,"int"],				#"hiddenDimension" 
+	[10,70,"int"],				#"seq_length" 
 	[1,2,"int"],				#"numberLayers"	
-	[4,16,"Po2"],				#"batch_size"
-	[0.000001,0.001,"log"],	#Regularization
-	[1,1,"int"],				#"num_epochs"
-	[0.0001,0.1,"log"]			#dropout
+	[32,32,"Po2"],				#"batch_size"
+	[0.0000001,0.00001,"log"],	#Regularization
+	[20,20,"int"],				#"num_epochs"
+	[0.0001,0.001,"log"]			#dropout
 					]
 
 
@@ -245,7 +245,7 @@ USD = MatchDate(APPLD,USD)
 #APPLEPS = np.asarray(APPLEPS)#convert to numpy array
 #APPLVAR = np.var(APPLC)
 #file = MSFTC
-file = APPLC
+file = np.stack((APPLC,OIL,CCI,APPLEPS,USD,INTEREST),axis = 1)
 
 
 lineage = {}

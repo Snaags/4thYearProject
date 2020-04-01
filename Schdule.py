@@ -6,18 +6,19 @@ import random
 from Utils import MatchDate
 path = os.getcwd()
 
-hyperparameters = [0.0001,104,24,1,8,0.00000003,30]
+hyperparameters = [0.001,20,2,1,4,0.0000001,100]
 toggle = 0
 x = 20
 error = []
+
+APPLC = pandas.read_csv(path+"/StockData/AAPL.csv")
+APPLC = np.asarray(APPLC.loc[:,"Close"])
 
 APPLD = pandas.read_csv(path+"/StockData/AAPL.csv")
 APPLD = APPLD[["Date","Close"]]
 APPLD = np.asarray(APPLD)#convert to numpy array
 
 
-APPLC = pandas.read_csv(path+"/StockData/AAPL.csv")
-APPLC = np.asarray(APPLC.loc[:,"Close"])
 INTEREST = pandas.read_csv(path+"/StockData/INTEREST.csv")
 INTEREST = np.asarray(INTEREST)#convert to numpy array
 INTEREST = MatchDate(APPLD,INTEREST)
@@ -37,6 +38,7 @@ CCI = MatchDate(APPLD,CCI)
 USD = pandas.read_csv(path+"/StockData/USD.csv").loc[:,"Date":"Price"]
 USD = np.asarray(USD)#convert to numpy array
 USD = MatchDate(APPLD,USD)
+
 """
 while x > 0:
 
@@ -71,13 +73,33 @@ hyperparameters[0] = APPLC
 
 """
 
-file = np.stack((APPLC,USD,CCI,OIL),axis = 1)
-file = APPLC
-for i in range(20):
+file = np.stack((APPLC,USD,CCI),axis = 1)
+#file = APPLC
+error = {}
+
+
+
+hyperparameters = [
+	
+	0.002,		#"lr" 
+	220,			#"hiddenDimension" 
+	24,				#"seq_length" 
+	1,				#"numberLayers"	
+	16,				#"batch_size"
+	0,	#Regularization
+	40			#"num_epochs"
+	#.0005			#dropout
+					]
+counter = 0
+
+for i in range(10):
+	counter +=1
 	hyperparameters.insert(0,file)
 	results = RunModel(*hyperparameters)
 
 	hyperparameters = results["HyperParameters"]
 	print(results["EvalScore"])
-	error.append(results["EvalScore"])
+
+	error[results["EvalScore"]] = counter
 	print(error)
+

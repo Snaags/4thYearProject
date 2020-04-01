@@ -239,8 +239,9 @@ def CreateSets(file,Hyperparms,SearchSize):
 	###Sorting the values into the different possible combinations 
 	for i in sets:
 		a = []
+		print(i)
 			
-		if type(i[0]) is int:
+		if type(i[0]) is int or type(i[0]) is float:
 			hold = [i[0]]*SearchSize
 
 		else:

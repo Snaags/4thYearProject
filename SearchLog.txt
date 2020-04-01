@@ -1,25 +1,57 @@
-Total run time: 33.83729147911072
+Total run time: 3184.9497017860413
 lr hidden seq_length 
 Hyperparameter Ranges:
-[1e-06, 0.001, 'log']
-[20, 50, 'int']
-[2, 60, 'int']
-[1, 2, 'int']
-[4, 16, 'Po2']
-[1e-06, 0.001, 'log']
+[0.001, 0.001, 'log']
+[107, 107, 'int']
+[56, 56, 'int']
 [1, 1, 'int']
-[0.0001, 0.1, 'log']
-Search of size: 4
+[16, 16, 'Po2']
+[1e-07, 1e-07, 'log']
+[10, 300, 'int']
+[0, 0, 'log']
+Search of size: 20
 0:  
-(3549.95068359375, {'lr': 2e-05, 'hiddenDimension': 29, 'seq_length': 11, 'numberLayers': 2, 'batch_size': 8, 'num_epochs': 1, 'l2': 0.004, 'dropout': 0.01, 'number': 0})
+(1345.12109375, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 10, 'l2': 1e-07, 'dropout': 0, 'number': 0})
 1:  
-(5541.32763671875, {'lr': 4e-05, 'hiddenDimension': 39, 'seq_length': 54, 'numberLayers': 2, 'batch_size': 4, 'num_epochs': 1, 'l2': 0.0006000000000000001, 'dropout': 0.004, 'number': 1})
+(376.0466613769531, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 25, 'l2': 1e-07, 'dropout': 0, 'number': 1})
 2:  
-(2908.727294921875, {'lr': 9e-05, 'hiddenDimension': 28, 'seq_length': 18, 'numberLayers': 2, 'batch_size': 8, 'num_epochs': 1, 'l2': 0.0007, 'dropout': 0.0002, 'number': 2})
+(594.4248046875, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 40, 'l2': 1e-07, 'dropout': 0, 'number': 2})
 3:  
-(2003.19140625, {'lr': 0.004, 'hiddenDimension': 28, 'seq_length': 48, 'numberLayers': 2, 'batch_size': 4, 'num_epochs': 1, 'l2': 5e-05, 'dropout': 0.005, 'number': 3})
+(138.4712677001953, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 55, 'l2': 1e-07, 'dropout': 0, 'number': 3})
+4:  
+(28.75335121154785, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 70, 'l2': 1e-07, 'dropout': 0, 'number': 4})
+5:  
+(134.18020629882812, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 85, 'l2': 1e-07, 'dropout': 0, 'number': 5})
+6:  
+(66.569091796875, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 100, 'l2': 1e-07, 'dropout': 0, 'number': 6})
+7:  
+(57.34727478027344, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 115, 'l2': 1e-07, 'dropout': 0, 'number': 7})
+8:  
+(62.34457778930664, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 130, 'l2': 1e-07, 'dropout': 0, 'number': 8})
+9:  
+(21.197412490844727, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 145, 'l2': 1e-07, 'dropout': 0, 'number': 9})
+10:  
+(47.39779281616211, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 160, 'l2': 1e-07, 'dropout': 0, 'number': 10})
+11:  
+(59.62260437011719, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 175, 'l2': 1e-07, 'dropout': 0, 'number': 11})
+12:  
+(90.30860137939453, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 190, 'l2': 1e-07, 'dropout': 0, 'number': 12})
+13:  
+(26.232959747314453, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 205, 'l2': 1e-07, 'dropout': 0, 'number': 13})
+14:  
+(67.72713470458984, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 220, 'l2': 1e-07, 'dropout': 0, 'number': 14})
+15:  
+(113.49913787841797, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 235, 'l2': 1e-07, 'dropout': 0, 'number': 15})
+16:  
+(19.12762451171875, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 250, 'l2': 1e-07, 'dropout': 0, 'number': 16})
+17:  
+(67.79763793945312, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 265, 'l2': 1e-07, 'dropout': 0, 'number': 17})
+18:  
+(47.46761703491211, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 280, 'l2': 1e-07, 'dropout': 0, 'number': 18})
+19:  
+(19.356651306152344, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 295, 'l2': 1e-07, 'dropout': 0, 'number': 19})
 Lowest error model: 
-(2003.19140625, {'lr': 0.004, 'hiddenDimension': 28, 'seq_length': 48, 'numberLayers': 2, 'batch_size': 4, 'num_epochs': 1, 'l2': 5e-05, 'dropout': 0.005, 'number': 3})
+(19.12762451171875, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 250, 'l2': 1e-07, 'dropout': 0, 'number': 16})
 
 Hyperparameter schedule for top performing model: 
-(2003.19140625, {'lr': 0.004, 'hiddenDimension': 28, 'seq_length': 48, 'numberLayers': 2, 'batch_size': 4, 'num_epochs': 1, 'l2': 5e-05, 'dropout': 0.005, 'number': 3})
+(19.12762451171875, {'lr': 0.001, 'hiddenDimension': 107, 'seq_length': 56, 'numberLayers': 1, 'batch_size': 16, 'num_epochs': 250, 'l2': 1e-07, 'dropout': 0, 'number': 16})
