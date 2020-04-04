@@ -2,6 +2,7 @@ import torch
 import os
 import pandas
 from model import LSTMModel
+from modelpre import LSTMModelpre
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import torch.nn as nn
@@ -16,7 +17,7 @@ path = os.getcwd()
 
 
 
-def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 100,l2= 0,num_epochs = 5,ID= None, number = None):
+def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 100,l2= 1e-5,num_epochs = 5,ID= None, number = None):
 	"""
 	test = []
 	if ID != None:
@@ -74,7 +75,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	if X.ndim != 1:
 
 		for i in range(len(X[0,:])):
-			scalers.append(MinMaxScaler(feature_range=(0, 0.5)))
+			scalers.append(MinMaxScaler(feature_range=(0, 1)))
 		#scaler = MinMaxScaler(feature_range=(-1, 1))	#scale data
 		#scaler1 = MinMaxScaler(feature_range=(-1, 1))	#scale data	
 		#scale2 = MinMaxScaler(feature_range=(-1, 1))	#scale data
@@ -95,9 +96,9 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		X = np.stack((scaled_data),1)
 
 	else:
-		scalers.append(MinMaxScaler(feature_range=(0, 0.5)))	#scale data
+		scalers.append(MinMaxScaler(feature_range=(0, 1)))	#scale data
 		X = scalers[0].fit_transform(X.reshape(-1, 1))	
-	input_dim = np.shape(X)[1]
+	input_dim = np.shape(X)[1] -1
 
 
 	X_train, X_test = test_train_split(X,0.85) #Training data from 80% of the total data set
@@ -110,12 +111,23 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
 
+	samplesX = samples[:,:,1,:]
+	samples = samples[:,:,1:,:]
+
 	samples = torch.transpose(samples,0,1)
 	samples = torch.squeeze(samples)
 	samples = torch.split(samples,batch_size,dim = 1)
 	samples = list(samples)
 	del samples[-1]
+
+	samplesX = torch.transpose(samplesX,0,1)
+	samplesX = torch.squeeze(samplesX)
+	samplesX = torch.split(samplesX,batch_size,dim = 1)
+	samplesX = list(samplesX)
+	del samplesX[-1]
 	samples = tuple(samples)
+	samplesX = tuple(samplesX)
+
 	lables = torch.cuda.FloatTensor(y[:,0])
 	#lables = torch.transpose(lables,0,1)
 	lablesplot = torch.FloatTensor(y[:,0])
@@ -132,8 +144,8 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 ######################################################################################################################
 	
 
-	model = LSTMModel(input_dim = input_dim, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers,dropout = dropout, batch_size = batch_size)
-	
+	modelpre = LSTMModelpre(input_dim = input_dim, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=numberLayers,dropout = dropout, batch_size = batch_size)
+	modelpost = LSTMModel(input_dim = 2, hidden_dim = hiddenDimension,seq= seq_length, output_dim=1, layer_dim=1,dropout = dropout, batch_size = batch_size)
 	if ID != None:
 		
 
@@ -196,42 +208,61 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		
 		
 
-	model.cuda()
+	modelpre.cuda()
+	modelpost.cuda()
 
 
 
 
-	loss_fn = torch.nn.MSELoss(reduction = "none")
-
+	loss_fn1 = torch.nn.MSELoss(reduction = "none")
+	loss_fn2 = torch.nn.MSELoss(reduction = "none")
 	
 
 	
-	optimiser = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2,eps = 1e-25)
+	optimiser1 = torch.optim.Adam(modelpre.parameters(), lr=lr, weight_decay=l2)
 
-	#optimiser = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2,eps = 1e-25)
+	optimiser2 = torch.optim.Adam(modelpost.parameters(), lr=lr, weight_decay=l2)
 
 	#res = torch.cuda.FloatTensor()
 	startTime = time.time()
-	model.init_hidden()
+	modelpre.init_hidden()
+	modelpost.init_hidden()
 	for t in range(num_epochs):
 
 		#for param in model.parameters():
 		#	print(param.size())
 
 		# Clear stored gradient
-		model.zero_grad()
-		#model.init_hidden()
-		for X,y in zip(samples,lables):
-			y_pred = model(X)
+		modelpre.zero_grad()
+		modelpre.init_hidden()
+		modelpost.zero_grad()
+		modelpost.init_hidden()
+
+		for X,X2,y in zip(samples,samplesX,lables):
+			y_pred = modelpre(X)
 			#res = torch.cat((res, y_pred),0)
-			loss = loss_fn(y_pred, y)
+			loss1 = loss_fn1(y_pred[-1,:], y)
 
 			# Backward pass
-			loss.sum().backward()
+			loss1.sum().backward(retain_graph=True)
 
 			# Update parameters
-			optimiser.step()
-			model.zero_grad()
+			optimiser1.step()
+			modelpre.zero_grad()
+			# Zero out gradient, else they will accumulate between epochs
+
+
+			y_pred = modelpost(torch.cat((y_pred,X2),0))
+			#res = torch.cat((res, y_pred),0)
+
+			loss2 = loss_fn2(y_pred, y)
+
+			# Backward pass
+			loss2.sum().backward()
+
+			# Update parameters
+			optimiser2.step()
+			modelpost.zero_grad()
 			# Zero out gradient, else they will accumulate between epochs
 			
 		#torch.save(model,path+"/Models/"+str(lr)+".pth")
@@ -265,13 +296,25 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 
 	##Convert samples and lables
 	samples = torch.cuda.FloatTensor(X)
+
+	samplesX = samples[:,:,1,:]
+	samples = samples[:,:,1:,:]
+
 	samples = torch.transpose(samples,0,1)
 	samples = torch.squeeze(samples)
 	samples = torch.split(samples,batch_size,dim = 1)
 	samples = list(samples)
 	del samples[-1]
 
+	samplesX = torch.transpose(samplesX,0,1)
+	samplesX = torch.squeeze(samplesX)
+	samplesX = torch.split(samplesX,batch_size,dim = 1)
+	samplesX = list(samplesX)
+	del samplesX[-1]
 	samples = tuple(samples)
+	samplesX = tuple(samplesX)
+
+
 	lables = torch.cuda.FloatTensor(y[:,0])
 	#lables = torch.transpose(lables,0,1)
 	lablesplot = torch.FloatTensor(y[:,0])
@@ -288,10 +331,10 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	
 	#model.init_hidden()
 	results = torch.cuda.FloatTensor()
-	for X,y in zip(samples,lables):
+	for X,X2,y in zip(samples,samplesX,lables):
 
-		y_pred = model(X)
-
+		X3 = modelpre(X)
+		y_pred = modelpost(torch.cat((X3,X2),0))
 		results = torch.cat((results, y_pred),0)
 
 	##test_lost_score =  list(test_lost_score.cpu())
@@ -336,6 +379,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		tprime_old = tprime 
 
 	DS = d*(100/(len(results)-1))
+	DS = 100 - DS
 
 
 
@@ -381,26 +425,6 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	#print("lr:",lr ," ;hiddenDimension:",hiddenDimension," ;numberLayers:",numberLayers," ;seq_length:",seq_length, " -- RMSE:",float(error))
 	
 	#print(model.state_dict())
-	statedict = {}
-	df = model.state_dict()
-	for i in model.state_dict():
-		statedict[i] = df[i].cpu()
-	ID = statedict
-
-	HyperParameters = [
-		
-		 lr,
-		 hiddenDimension,
-		 seq_length,
-		numberLayers,
-		batch_size,
-		l2,
-		num_epochs,
-		ID,
-		number
-	]
-	
-
 
 
 
@@ -411,7 +435,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	ReturnDict = {
 
 	"EvalScore": float(loss),
-	"HyperParameters": HyperParameters
+
 	}
 
 	return ReturnDict

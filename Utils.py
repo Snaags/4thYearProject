@@ -116,11 +116,8 @@ def Explore(hyperparameters,file,Mutation = 0.4, number = None):
 
 		elif i == "batch_size":
 			
-			if hyperparameters[i] != 1 and random.uniform(mutation-1,mutation)>0:
-				x = math.ceil(2**(math.log2(hyperparameters[i])+(random.choice([-1,1]))))
 
-			else:
-				x = hyperparameters[i]
+			x = hyperparameters[i]
 			output[5] = x
 
 		if i == "l2":
@@ -133,8 +130,11 @@ def Explore(hyperparameters,file,Mutation = 0.4, number = None):
 			output[6] = x
 
 		elif i == "num_epochs":
-			output[7] = math.ceil(hyperparameters[i])
+			x = int(hyperparameters[i]+math.ceil(random.uniform(-1,1)*mutation*hyperparameters[i]))
+			if x < 20:
+				x = 20
 
+			output[7] = x
 		elif i == "dropout":
 			output[8] = hyperparameters[i] + hyperparameters[i]*random.uniform(-1,1)*mutation
 
@@ -159,8 +159,7 @@ def RandomRange(min, max,types):
 		minpow = math.log2(min)
 		maxpow = math.log2(max)
 		output = 2**random.randint(minpow,maxpow)
-
-		
+	
 	return output
 
 """
@@ -273,7 +272,7 @@ def CreateRandomSets(file,preparameters,size):
 	
 	setin = list()
 	setout = list()
-	#Loop through the keys in the input dict, passing the values as arguements to the function for each iteration
+	#Loop through the keys in the input list, passing the values as arguements to the function for each iteration
 	for c in range(size):
 		for i in preparameters:
 			setin.append(RandomRange(*i))

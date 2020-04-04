@@ -1,0 +1,57 @@
+Total run time: 2713.19797205925
+lr hidden seq_length 
+Hyperparameter Ranges:
+[0.001, 0.001, 'log']
+[20, 20, 'int']
+[2, 2, 'int']
+[1, 1, 'int']
+[4, 4, 'Po2']
+[1e-07, 1e-07, 'log']
+[10, 300, 'int']
+[0, 0, 'log']
+Search of size: 20
+0:  
+(1039.487060546875, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 10, 'l2': 1e-07, 'dropout': 0, 'number': 0})
+1:  
+(997.2469482421875, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 25, 'l2': 1e-07, 'dropout': 0, 'number': 1})
+2:  
+(624.5956420898438, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 40, 'l2': 1e-07, 'dropout': 0, 'number': 2})
+3:  
+(491.3085632324219, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 55, 'l2': 1e-07, 'dropout': 0, 'number': 3})
+4:  
+(605.267578125, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 70, 'l2': 1e-07, 'dropout': 0, 'number': 4})
+5:  
+(470.88568115234375, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 85, 'l2': 1e-07, 'dropout': 0, 'number': 5})
+6:  
+(314.71099853515625, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 100, 'l2': 1e-07, 'dropout': 0, 'number': 6})
+7:  
+(508.6371154785156, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 115, 'l2': 1e-07, 'dropout': 0, 'number': 7})
+8:  
+(472.865966796875, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 130, 'l2': 1e-07, 'dropout': 0, 'number': 8})
+9:  
+(191.1692352294922, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 145, 'l2': 1e-07, 'dropout': 0, 'number': 9})
+10:  
+(443.1111755371094, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 160, 'l2': 1e-07, 'dropout': 0, 'number': 10})
+11:  
+(105.21635437011719, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 175, 'l2': 1e-07, 'dropout': 0, 'number': 11})
+12:  
+(606.2423706054688, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 190, 'l2': 1e-07, 'dropout': 0, 'number': 12})
+13:  
+(79.01412200927734, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 205, 'l2': 1e-07, 'dropout': 0, 'number': 13})
+14:  
+(127.30209350585938, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 220, 'l2': 1e-07, 'dropout': 0, 'number': 14})
+15:  
+(71.81974029541016, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 235, 'l2': 1e-07, 'dropout': 0, 'number': 15})
+16:  
+(239.47352600097656, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 250, 'l2': 1e-07, 'dropout': 0, 'number': 16})
+17:  
+(37.52030944824219, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 265, 'l2': 1e-07, 'dropout': 0, 'number': 17})
+18:  
+(223.79635620117188, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 280, 'l2': 1e-07, 'dropout': 0, 'number': 18})
+19:  
+(44.1937141418457, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 295, 'l2': 1e-07, 'dropout': 0, 'number': 19})
+Lowest error model: 
+(37.52030944824219, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 265, 'l2': 1e-07, 'dropout': 0, 'number': 17})
+
+Hyperparameter schedule for top performing model: 
+(37.52030944824219, {'lr': 0.001, 'hiddenDimension': 20, 'seq_length': 2, 'numberLayers': 1, 'batch_size': 4, 'num_epochs': 265, 'l2': 1e-07, 'dropout': 0, 'number': 17})

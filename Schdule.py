@@ -6,6 +6,75 @@ import random
 from Utils import MatchDate
 path = os.getcwd()
 
+def RSI(file,N):
+	output = []
+	U = []
+	D = []
+	RSI = 0
+	i_old = 0
+	
+
+	for i in file:
+		v = i - i_old
+
+		if v > 0:
+			U.append(v)
+			D.append(0)
+		else:
+			D.append(-v)
+			U.append(0)
+
+		i_old = i
+
+		if len(U) > 14:
+			U.pop(0)
+			D.pop(0)
+			RS = SMMA(U,N)/SMMA(D,N)
+			RSI = 100 - (100/(1+RS))
+		
+		output.append(RSI)
+
+	return output 
+
+
+def SMMA(data,N):
+
+	MMA = 0
+
+	def step(MMA, new_sample, N):
+
+		return ((N - 1)*MMA + new_sample)/N
+
+	
+	for i in data:
+		MMA = step(MMA,i,N)
+
+	return MMA
+
+def PercentChange(data,n):
+	data = list(data)
+	output = [0]*n
+
+
+	for i in data[n:]:
+		output.append(((i-data[data.index(i)-n])/i)*100)
+	return output
+
+def SMMA_Seq(data,N):
+	output = []
+	MMA = 0
+
+	def step(MMA, new_sample, N):
+
+		return ((N - 1)*MMA + new_sample)/N
+
+	
+	for i in data:
+		MMA = step(MMA,i,N)
+		output.append(MMA)
+
+	return output
+
 hyperparameters = [0.001,20,2,1,4,0.0000001,100]
 toggle = 0
 x = 20
@@ -13,6 +82,9 @@ error = []
 
 APPLC = pandas.read_csv(path+"/StockData/AAPL.csv")
 APPLC = np.asarray(APPLC.loc[:,"Close"])
+
+APPLO = pandas.read_csv(path+"/StockData/AAPL.csv")
+APPLO = np.asarray(APPLO.loc[:,"Volume"])
 
 APPLD = pandas.read_csv(path+"/StockData/AAPL.csv")
 APPLD = APPLD[["Date","Close"]]
@@ -38,6 +110,21 @@ CCI = MatchDate(APPLD,CCI)
 USD = pandas.read_csv(path+"/StockData/USD.csv").loc[:,"Date":"Price"]
 USD = np.asarray(USD)#convert to numpy array
 USD = MatchDate(APPLD,USD)
+
+APPLEPS = pandas.read_csv(path+"/StockData/AAPLEPS.csv")
+APPLEPS = np.asarray(APPLEPS)#convert to numpy array
+APPLEPS = MatchDate(APPLD,APPLEPS)
+
+APPLPSR = pandas.read_csv(path+"/StockData/AAPLPSR.csv")
+APPLPSR = np.asarray(APPLPSR)#convert to numpy array
+APPLPSR = MatchDate(APPLD,APPLPSR)
+
+DJI = pandas.read_csv(path+"/StockData/^DJI.csv")
+DJI = np.asarray(DJI.loc[:,"Close"])
+
+
+DJI = pandas.read_csv(path+"/StockData/MSFT.csv")
+DJI = np.asarray(DJI.loc[:,"Close"])
 
 """
 while x > 0:
@@ -73,31 +160,36 @@ hyperparameters[0] = APPLC
 
 """
 
-file = np.stack((APPLC,USD,CCI),axis = 1)
+file = np.stack((APPLC,USD),axis = 1)
 #file = APPLC
 error = {}
 
 
 
+
 hyperparameters = [
 	
-	0.002,		#"lr" 
-	220,			#"hiddenDimension" 
-	24,				#"seq_length" 
+	0.006,		#"lr" 
+	224,			#"hiddenDimension" 
+	14,				#"seq_length" 
 	1,				#"numberLayers"	
-	16,				#"batch_size"
-	0,	#Regularization
-	40			#"num_epochs"
-	#.0005			#dropout
+	32,				#"batch_size"
+	0,			#Regularization
+	
+	120		#"num_epochs"
+	#0.0005			#dropout
 					]
 counter = 0
 
-for i in range(10):
+for i in range(15):
+
 	counter +=1
 	hyperparameters.insert(0,file)
 	results = RunModel(*hyperparameters)
 
 	hyperparameters = results["HyperParameters"]
+	hyperparameters[6] = 10
+
 	print(results["EvalScore"])
 
 	error[results["EvalScore"]] = counter

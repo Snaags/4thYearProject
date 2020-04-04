@@ -30,7 +30,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		dropout = 0
 	else:
 		dropout = dropout
-	predict_distance = 4
+	predict_distance = 1
 	HyperParameters = {
 		
 		"lr" : lr,
@@ -57,7 +57,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		for i in range(len(X)-(seq_length + predict_distance)):
 			hold = X[i:(i+seq_length)]
 			sample = tuple(hold)
-			lable = tuple(X[i+(seq_length + predict_distance)])
+			lable = tuple(X[i+(seq_length + predict_distance)-1])
 			x_out.append(sample)
 			y_out.append(lable)
 
@@ -77,7 +77,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	if X.ndim != 1:
 
 		for i in range(len(X[0,:])):
-			scalers.append(MinMaxScaler(feature_range=(-1, 1)))
+			scalers.append(MinMaxScaler(feature_range=(0, 1)))
 		#scaler = MinMaxScaler(feature_range=(-1, 1))	#scale data
 		#scaler1 = MinMaxScaler(feature_range=(-1, 1))	#scale data	
 		#scale2 = MinMaxScaler(feature_range=(-1, 1))	#scale data
@@ -98,7 +98,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		X = np.stack((scaled_data),1)
 
 	else:
-		scalers.append(MinMaxScaler(feature_range=(-1, 1)))	#scale data
+		scalers.append(MinMaxScaler(feature_range=(0, 1)))	#scale data
 		X = scalers[0].fit_transform(X.reshape(-1, 1))	
 	input_dim = np.shape(X)[1]
 
@@ -219,7 +219,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	
 
 	
-	optimiser = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2)
+	optimiser = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2, eps = 1e-25)
 	epochloss = []
 	x = 0
 	#res = torch.cuda.FloatTensor()
@@ -299,7 +299,8 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 	for X,y in zip(samples,lables):
 
 		y_pred = model(X)
-		results = torch.cat((results, torch.unsqueeze(y_pred,0)),0)
+
+		results = torch.cat((results, y_pred),0)
 
 	##test_lost_score =  list(test_lost_score.cpu())
 
@@ -397,7 +398,7 @@ def RunModel(X,lr ,hiddenDimension,seq_length=10,numberLayers = 1,batch_size = 1
 		"num_epochs":num_epochs,
 		"l2":l2,
 		"dropout":dropout,
-		"ID":statedict,
+		"ID":None,
 		"number":number
 	}
 

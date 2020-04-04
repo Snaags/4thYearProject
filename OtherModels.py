@@ -183,14 +183,6 @@ FeaturesNames.append("APPLC")
 
 
 
-APPLV = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Volume"]
-APPLV = np.asarray(APPLV)#convert to numpy array
-Features.append(APPLV)
-FeaturesNames.append("APPLV")
-
-APPLO = pandas.read_csv(path+"/StockData/AAPL.csv").loc[:,"Open"]
-APPLO = np.asarray(APPLO)#convert to numpy array
-
 
 """
 
@@ -221,7 +213,7 @@ for i,n in zip(RawTickers,RawTickersN):
 scalers = []
 scaled_data = []
 for i in Features:
-	Features[Features.index(i)] = i[:-1]
+	Features[Features.index(i)] = i[:-8]
 Features = np.asarray(Features)
 
 
@@ -242,7 +234,7 @@ Features = np.stack((scaled_data),1)
 """
 
 
-y = APPLC[1:]
+y = APPLC[8:]
 
 """
 scalers[6].fit_transform(y.reshape(-1, 1))
@@ -284,6 +276,14 @@ y, yTest = test_train_split(y, 0.85)
 Features = np.matrix(Features)
 Features = np.transpose(Features)
 
+
+
+
+
+
+
+
+
 regressor = LinearRegression()
 regressor.fit(Features, y) #training the algorithm
 
@@ -309,11 +309,45 @@ mean=mean_squared_error(prediction[:-1],yTest[1:])
 print("Error from prediction: ",mean)
 
 
-plt.plot(yTest,label = "AAPL")
+plt.plot(yTest[1:],label = "AAPL")
 plt.plot(prediction[:-1], label = "Prediction")
+plt.title("Linear Regression Prediction of AAPL Stock Value")
+plt.ylabel("Price ($)")
+plt.xlabel("Trading Days")
 #plt.plot(x, label = "input")
 plt.legend()
 plt.show()
+
+
+
+total_error = 0
+for i,c in zip(prediction[:-1],yTest[1:]):
+	test_lost_score = abs(c - i)
+	test_lost_score = test_lost_score/c
+	total_error += test_lost_score
+
+total_error = total_error/ len(yTest)
+total_error = total_error*100
+
+print("MAPE: ", total_error)
+
+
+t_old = prediction[0]
+tprime_old = yTest[1]
+d = 0
+for t,tprime in zip(prediction[1:-1],yTest[2:]):
+
+
+
+	if ((t - t_old)*(tprime - tprime_old)) >0:
+		d += 1
+
+	t_old = t
+	tprime_old = tprime 
+
+DS = d*(100/(len(yTest)-1))
+
+print("DS: ",DS)
 
 
 
@@ -333,7 +367,7 @@ mean=mean_squared_error(prediction[:-1],yTest[1:])
 print("Error from prediction: ",mean)
 
 total_error = 0
-for i,c in zip(prediction,yTest):
+for i,c in zip(prediction[:-1],yTest[1:]):
 	test_lost_score = abs(c - i)
 	test_lost_score = test_lost_score/c
 	total_error += test_lost_score
@@ -345,22 +379,83 @@ print("MAPE: ", total_error)
 
 error = total_error*100
 
-plt.plot(yTest,label = "AAPL")
-plt.plot(prediction, label = "Prediction")
+
+t_old = prediction[0]
+tprime_old = yTest[1]
+d = 0
+for t,tprime in zip(prediction[1:-1],yTest[2:]):
+
+
+
+	if ((t - t_old)*(tprime - tprime_old)) >0:
+		d += 1
+
+	t_old = t
+	tprime_old = tprime 
+
+DS = d*(100/(len(yTest)-1))
+
+print("DS: ",DS)
+
+
+plt.plot(yTest[1:],label = "AAPL")
+plt.plot(prediction[:-1], label = "Prediction")
 #plt.plot(x, label = "input")
 plt.legend()
 plt.show()
 
 
+
+
+
+
 regressor = LinearSVR(max_iter = 100000, dual = False, loss ="squared_epsilon_insensitive")
 regressor.fit(Features, y) #training the algorithm
 
-print('Intercept: \n', regressor.intercept_)
-for i,c in zip(FeaturesNames,regressor.coef_):
-	print(i,": ",c)
 
-Results["SVR"] = regressor.coef_
 prediction = (regressor.predict(Test))
+
+
+plt.plot(yTest[1:],label = "AAPL")
+plt.plot(prediction[:-1], label = "Prediction")
+plt.title("Support Vector Regression Prediction of AAPL Stock Value")
+plt.ylabel("Price ($)")
+plt.xlabel("Trading Days")
+#plt.plot(x, label = "input")
+plt.legend()
+plt.show()
+
+
+
+
+total_error = 0
+for i,c in zip(prediction[:-1],yTest[1:]):
+	test_lost_score = abs(c - i)
+	test_lost_score = test_lost_score/c
+	total_error += test_lost_score
+
+total_error = total_error/ len(yTest)
+total_error = total_error*100
+
+print("MAPE: ", total_error)
+
+t_old = prediction[0]
+tprime_old = yTest[1]
+d = 0
+for t,tprime in zip(prediction[1:-1],yTest[2:]):
+
+
+
+	if ((t - t_old)*(tprime - tprime_old)) >0:
+		d += 1
+
+	t_old = t
+	tprime_old = tprime 
+
+DS = d*(100/(len(yTest)-1))
+
+print("DS: ",DS)
+
 
 regressor = Ridge()
 regressor.fit(Features, y) #training the algorithm
@@ -372,8 +467,43 @@ for i,c in zip(FeaturesNames,regressor.coef_):
 Results["Ridge"] = regressor.coef_
 prediction = (regressor.predict(Test))
 
+plt.plot(yTest[1:],label = "AAPL")
+plt.plot(prediction[:-1], label = "Prediction")
+plt.title("Ridge Regression Prediction of AAPL Stock Value")
+plt.ylabel("Price ($)")
+plt.xlabel("Trading Days")
+#plt.plot(x, label = "input")
+plt.legend()
+plt.show()
 
 
+total_error = 0
+for i,c in zip(prediction[:-1],yTest[1:]):
+	test_lost_score = abs(c - i)
+	test_lost_score = test_lost_score/c
+	total_error += test_lost_score
+
+total_error = total_error/ len(yTest)
+total_error = total_error*100
+
+print("MAPE: ", total_error)
+
+t_old = prediction[0]
+tprime_old = yTest[1]
+d = 0
+for t,tprime in zip(prediction[1:-1],yTest[2:]):
+
+
+
+	if ((t - t_old)*(tprime - tprime_old)) >0:
+		d += 1
+
+	t_old = t
+	tprime_old = tprime 
+
+DS = d*(100/(len(yTest)-1))
+
+print("DS: ",DS)
 
 Results["Mean"] = abs(Results.mean(axis = 1))
 
@@ -382,150 +512,6 @@ Results = Results.sort_values(by = ["Mean"])
 
 print(Results)
 
-
-
-
-
-
-
-
-
-
-
-scores = {}
-CV = True
-if CV == True:
-
-
-
-	RidgeReg = Ridge(normalize = True)
-	LinrReg = LinearRegression(normalize = True)
-	Lasso = Lasso(alpha = 0.75,normalize = True)
-	SVR = LinearSVR(max_iter = 100000, dual = False, loss ="squared_epsilon_insensitive") 
-
-		##Linear Regression
-	rfe = RFECV(estimator=LinrReg, step=1,cv = 5)
-	rfe.fit(Features, y)
-	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
-	    print(str(c)+": "+ str(i))
-	print(rfe.support_)
-	scores["LinearRegression"] = rfe.ranking_
-
-
-
-	plt.figure()
-	plt.xlabel("Number of features selected")
-	plt.ylabel("Cross validation score (nb of correct classifications)")
-	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
-	plt.show()
-
-	##Ridge Regression
-	rfe = RFECV(estimator=RidgeReg, step=1,cv = 5)
-	rfe.fit(Features, y)
-	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
-	    print(str(c)+": "+ str(i))
-	print(rfe.support_)
-	scores["RidgeRegression"] = rfe.ranking_
-
-
-
-	plt.figure()
-	plt.title("Ridge Regression")
-	plt.xlabel("Number of features selected")
-	plt.ylabel("Cross validation score (nb of correct classifications)")
-	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
-	plt.show()
-
-
-
-	rfe = RFECV(estimator=Lasso, step=1,cv = 5)
-	rfe.fit(Features, y)
-	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
-	    print(str(c)+": "+ str(i))
-	print(rfe.support_)
-	scores["Lasso"] = rfe.ranking_
-	plt.figure()
-	plt.xlabel("Number of features selected")
-	plt.ylabel("Cross validation score (nb of correct classifications)")
-	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
-	plt.show()
-
-
-
-
-
-
-	rfe = RFECV(estimator=SVR, step=1,cv = 5)
-
-	rfe.fit(Features, y)
-	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
-	    print(str(c)+": "+ str(i))
-	print(rfe.ranking_)
-	print(rfe.support_)
-	print(rfe.grid_scores_[0])
-	scores["SVR"] = rfe.ranking_
-	plt.figure()
-	plt.xlabel("Number of features selected")
-	plt.ylabel("Cross validation score (nb of correct classifications)")
-	plt.plot(range(1, len(rfe.grid_scores_) + 1), rfe.grid_scores_)
-	plt.show()
-
-else:
-
-	lasso = Lasso(normalize = True, alpha = 0.85)
-	lasso.fit(Features, y)
-
-	for c,i in zip(FeaturesNames,np.abs(lasso.coef_)):
-
-		print(c,": ", i)
-	plt.plot(lasso.predict(Features))
-	RidgeReg = Ridge(normalize = True)
-	LinrReg = LinearRegression(normalize = True)
-	#Lasso = Lasso(normalize = True)
-	SVR = LinearSVR(max_iter = 100000, dual = False, loss ="squared_epsilon_insensitive") 
-
-
-	##Linear Regression
-	rfe = RFE(estimator=LinrReg, step=1)
-	rfe.fit(Features, y)
-	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
-		print(str(c)+": "+ str(i))
-	print( "Features sorted by their rank:")
-	print(sorted(zip(map(lambda x: round(x, 4), rfe.ranking_), FeaturesNames)))
-	print(rfe.score(Features,y))
-	linrank = rfe.ranking_
-
-	##Ridge Regression
-	rfe = RFE(estimator=RidgeReg, step = 1)
-	rfe.fit(Features, y)
-	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
-	    print(str(c)+": "+ str(i))
-
-
-	ridgerank = rfe.ranking_
-
-
-	rfe = RFE(estimator=lasso, step=1)
-	rfe.fit(Features, y)
-	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
-	    print(str(c)+": "+ str(i))
-	print(rfe.ranking_)
-
-
-	lassorank = rfe.ranking_
-
-	rfe = RFE(estimator=SVR, step=1)
-	rfe.fit(Features, y)
-	for i,c in zip(rfe.ranking_,list(FeaturesNames)):
-	    print(str(c)+": "+ str(i))
-	print(rfe.ranking_)
-
-	SVRrank = rfe.ranking_
-	plt.figure()
-	plt.plot(linrank, label = "Linear Regression")
-	plt.plot(lassorank,label = "Lasso Regression")
-	plt.plot(ridgerank,label = "Ridge Regression")
-	plt.plot(SVRrank,label = "Support Vector Regression")
-	plt.legend()
-	plt.show()
+mean=mean_squared_error(prediction[:-1],yTest[1:])
+print("Error from prediction: ",mean)
 

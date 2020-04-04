@@ -28,7 +28,7 @@ def StockHist(TAG,startDate,endDate):
 StockHist("AAPL","2008-01-01","2019-01-01")
 StockHist("MSFT","2008-01-01","2019-01-01")
 StockHist("GOOGL","2008-01-01","2019-01-01")
-StockHist("^DJI","2008-01-01","2019-01-01")
+StockHist("^DJI","2016-01-01","2019-01-01")
 StockHist("SMSN","2004-12-01","2019-01-01")
 
 

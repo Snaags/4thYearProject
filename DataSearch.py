@@ -84,7 +84,8 @@ def SMMA(data,N):
 	
 	for i in data:
 		MMA = step(MMA,i,N)
-
+	if MMA == 0: 
+		MMA = 1
 	return MMA
 
 def SMMA_Seq(data,N):
@@ -166,21 +167,21 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 
 SearchType = "Random"
-searchsize = 20
-cores = 4
-mutations = 10
+searchsize = 3
+cores = 3
+mutations = 15
 
 
 hyperparameters = [
 	
 	[0.00001,0.001,"log"],		#"lr" 
-	[10,80,"int"],				#"hiddenDimension" 
+	[90,150,"int"],				#"hiddenDimension" 
 	[10,40,"int"],				#"seq_length" 
-	[2,12,"int"],				#"numberLayers"	
+	[4,4,"int"],				#"numberLayers"	
 	[256,256,"Po2"],				#"batch_size"
-	[0.0000001,0.00001,"log"],	#Regularization
-	[30,30,"int"],				#"num_epochs"
-	[0.001,0.1,"log"]			#dropout
+	[0.000000001,0.00000001,"log"],	#Regularization
+	[60,60,"int"],				#"num_epochs"
+	[0.0001,0.1,"log"]			#dropout
 					]
 
 
@@ -209,7 +210,7 @@ INTEREST = np.asarray(INTEREST)#convert to numpy array
 INTEREST = MatchDate(APPLD,INTEREST)
 
 file = APPLC
-file = np.stack((file,RSI(file,14),INTEREST,CCI,USD),axis = 1)
+file = np.stack((file,RSI(file,14),OIL,USD),axis = 1)
 lineage = {}
 
 if SearchType == "Random":
@@ -289,7 +290,7 @@ if __name__ == "__main__":
 				toggle = 0
 			print(len(file))
 			print(len(OIL))
-			file = np.stack((file,RSI(file,14),INTEREST,OIL,CCI,USD),axis = 1)
+			file = np.stack((file,RSI(file,14),OIL,USD),axis = 1)
 		
 
 			break
@@ -313,7 +314,10 @@ if __name__ == "__main__":
 		if toggle != 1:
 			population = 1
 		else:
-			population = 0.7
+			if counter % 3:
+				population = 0.7
+			else:
+				population = 1
 			counter -= 1
 			if counter == 1:
 				break 

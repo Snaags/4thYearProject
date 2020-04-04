@@ -152,7 +152,7 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 			print(output)
 			
 			
-			output = Explore(models[output],file,0.2,number)
+			output = Explore(models[output],file,0.4,number)
 			return output
 
 	#return the same model if within the number of healthy models 
@@ -166,21 +166,21 @@ def Exploit(probability, models,score,file, distribution, number = None):	##prob
 
 
 SearchType = "Random"
-searchsize = 4
-cores = 2
-mutations =5
+searchsize = 20
+cores = 4
+mutations =10
 
 
 hyperparameters = [
 	
 	[0.0001,0.001,"log"],		#"lr" 
-	[50,200,"int"],				#"hiddenDimension" 
-	[10,70,"int"],				#"seq_length" 
-	[1,2,"int"],				#"numberLayers"	
+	[30,150,"int"],				#"hiddenDimension" 
+	[2,50,"int"],				#"seq_length" 
+	[1,1,"int"],				#"numberLayers"	
 	[32,32,"Po2"],				#"batch_size"
-	[0.0000001,0.00001,"log"],	#Regularization
-	[20,20,"int"],				#"num_epochs"
-	[0.0001,0.001,"log"]			#dropout
+	[0.000000000001,0.00000000001,"log"],	#Regularization
+	[20,80,"int"],				#"num_epochs"
+	[0.01,0.1,"log"]			#dropout
 					]
 
 
@@ -245,8 +245,8 @@ USD = MatchDate(APPLD,USD)
 #APPLEPS = np.asarray(APPLEPS)#convert to numpy array
 #APPLVAR = np.var(APPLC)
 #file = MSFTC
-file = np.stack((APPLC,OIL,CCI,APPLEPS,USD,INTEREST),axis = 1)
-
+file = np.stack((APPLC,USD),axis = 1)
+file = APPLC
 
 lineage = {}
 
@@ -323,7 +323,7 @@ if __name__ == "__main__":
 			break 
 
 		for i in ModelsAlive:
-			searchSpace.append(Exploit(0.9, Models,i,file,"Gaussian",ModelsAlive[i][1]))
+			searchSpace.append(Exploit(0.5, Models,i,file,"Gaussian",ModelsAlive[i][1]))
 
 	
 		
@@ -448,7 +448,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 400, cmap = 'winter', alpha = 0.9)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 100, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 Yax.plot(scoresy[:,1],scoresy[:,0])
@@ -530,7 +530,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 400, cmap = 'winter', alpha = 0.9)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 100, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 
@@ -613,7 +613,7 @@ for i in lines:
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 400, cmap = 'winter', alpha = 0.9)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 100, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 #cbar.set_label('RME')
 
@@ -688,13 +688,12 @@ plt.setp(Yax.get_yticklabels(), visible=False)
 
 
 for i in lines:
-	i = np.array(i)
 	mainax.plot(i[:,0],i[:,1], alpha = 0.2, c = (0,greencounter,1),lw = 0.7)
 	greencounter += stepcounter
 if mutations != 1:
 	mainax.scatter(init[:,0],init[:,1],c= "r",s = 10)
 
-maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 400, cmap = 'winter', alpha = 0.9)
+maps = mainax.scatter(final[:,0],final[:,1],s = 10,c = finalscores,vmin = 0, vmax = 100, cmap = 'winter', alpha = 0.9)
 cbar = fig.colorbar(maps,cax = cbar,use_gridspec = True)
 
 mainax.set_ylabel("Batch Size")
